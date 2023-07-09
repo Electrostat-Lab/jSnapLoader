@@ -31,8 +31,12 @@
  */
 package com.avrsandbox.snaploader;
 
+import java.io.File;
+
 /**
  * Represents a native binary domain with a {@link NativeDynamicLibrary#directory} and a {@link NativeDynamicLibrary#library}.
+ * 
+ * @apiNote Internal use only.
  * 
  * @author pavl_g
  */
@@ -40,71 +44,146 @@ public enum NativeDynamicLibrary {
     /**
      * Represents a linux x86 binary with 64-bit instruction set.
      */
-    LINUX_x86_64("lib/linux/x86-64", "lib" + LibraryInfo.LIBRARY.getBaseName() + ".so"),
+    LINUX_x86_64(null, "lib/linux/x86-64", null, null),
     
     /**
      * Represents a linux x86 binary with 32-bit instruction set.
      */
-    LINUX_x86("lib/linux/x86", "lib" + LibraryInfo.LIBRARY.getBaseName() + ".so"),
+    LINUX_x86(null, "lib/linux/x86", null, null),
 
     /**
      * Represents a mac x86 binary with 64-bit instruction set.
      */
-    MAC_x86_64("lib/macos/x86-64", "lib" + LibraryInfo.LIBRARY.getBaseName() + ".dylib"),
+    MAC_x86_64(null, "lib/macos/x86-64", null, null),
 
     /**
      * Represents a mac x86 binary with 32-bit instruction set.
      */
-    MAC_x86("lib/macos/x86", "lib" + LibraryInfo.LIBRARY.getBaseName() + ".dylib"),
+    MAC_x86(null, "lib/macos/x86", null, null),
 
     /**
      * Represents a windows x86 binary with 64-bit instruction set.
      */
-    WIN_x86_64("lib/windows/x86-64", "lib" + LibraryInfo.LIBRARY.getBaseName() + ".dll"),
+    WIN_x86_64(null, "lib/windows/x86-64", null, null),
 
     /**
      * Represents a windows x86 binary with 32-bit instruction set.
      */
-    WIN_x86("lib/windows/x86", "lib" + LibraryInfo.LIBRARY.getBaseName() + ".dll");
+    WIN_x86(null, "lib/windows/x86", null, null);
 
-    private final String library;
-    private final String directory;
+    private String jarPath;
+    private String directory;
+    private String library;
+    private String extractionDir;
 
     /**
      * Creates a Native dynamic library from a relative directory and a library file.
      * 
+     * @param jarPath 
      * @param directory the relative path inside the jar file.
      * @param library the library filename.
      */
-    NativeDynamicLibrary(final String directory, final String library) {
+    NativeDynamicLibrary(String jarPath, String directory, String library, String extractionDir) {
+        this.jarPath = jarPath;
         this.directory = directory;
         this.library = library;
+        this.extractionDir = extractionDir;
     }
 
-    /**
-     * Retrieves the directory to which the native binary is located.
-     * 
-     * @return the directory in a string format
-     */
+    public static void initWithLibraryInfo(LibraryInfo libraryInfo) {
+        /* Initializes the library basename */
+        if (libraryInfo.getBaseName() != null) {
+            NativeDynamicLibrary.LINUX_x86.setLibrary("lib" + libraryInfo.getBaseName() + ".so");
+            NativeDynamicLibrary.LINUX_x86_64.setLibrary("lib" + libraryInfo.getBaseName() + ".so");
+            NativeDynamicLibrary.MAC_x86.setLibrary("lib" + libraryInfo.getBaseName() + ".dylib");
+            NativeDynamicLibrary.MAC_x86_64.setLibrary("lib" + libraryInfo.getBaseName() + ".dylib");
+            NativeDynamicLibrary.WIN_x86.setLibrary("lib" + libraryInfo.getBaseName() + ".dll");
+            NativeDynamicLibrary.WIN_x86_64.setLibrary("lib" + libraryInfo.getBaseName() + ".dll");
+        }
+        
+        /* Initializes the library jar path to locate before extracting, "null" to use the classpath */
+        NativeDynamicLibrary.LINUX_x86.setJarPath(libraryInfo.getJarPath());
+        NativeDynamicLibrary.LINUX_x86_64.setJarPath(libraryInfo.getJarPath());
+        NativeDynamicLibrary.MAC_x86.setJarPath(libraryInfo.getJarPath());
+        NativeDynamicLibrary.MAC_x86_64.setJarPath(libraryInfo.getJarPath());
+        NativeDynamicLibrary.WIN_x86.setJarPath(libraryInfo.getJarPath());
+        NativeDynamicLibrary.WIN_x86_64.setJarPath(libraryInfo.getJarPath());
+
+        /* Initializes the library with an extraction path, "null" to extract to the current user directory */
+        NativeDynamicLibrary.LINUX_x86.setExtractionDir(libraryInfo.getExtractionDir());
+        NativeDynamicLibrary.LINUX_x86_64.setExtractionDir(libraryInfo.getExtractionDir());
+        NativeDynamicLibrary.MAC_x86.setExtractionDir(libraryInfo.getExtractionDir());
+        NativeDynamicLibrary.MAC_x86_64.setExtractionDir(libraryInfo.getExtractionDir());
+        NativeDynamicLibrary.WIN_x86.setExtractionDir(libraryInfo.getExtractionDir());
+        NativeDynamicLibrary.WIN_x86_64.setExtractionDir(libraryInfo.getExtractionDir());
+
+        /* Initializes the library directory within the jar, "null" for the default library directory */
+        if (libraryInfo.getDirectory() != null) {
+            NativeDynamicLibrary.LINUX_x86.setDirectory(libraryInfo.getDirectory());
+            NativeDynamicLibrary.LINUX_x86_64.setDirectory(libraryInfo.getDirectory());
+            NativeDynamicLibrary.MAC_x86.setDirectory(libraryInfo.getDirectory());
+            NativeDynamicLibrary.MAC_x86_64.setDirectory(libraryInfo.getDirectory());
+            NativeDynamicLibrary.WIN_x86.setDirectory(libraryInfo.getDirectory());
+            NativeDynamicLibrary.WIN_x86_64.setDirectory(libraryInfo.getDirectory());
+        }
+    } 
+
+    public void setExtractionDir(String extractionDir) {
+        this.extractionDir = extractionDir;
+    }
+
+    public void setJarPath(String jarPath) {
+        this.jarPath = jarPath;
+    }
+
+    public String getJarPath() {
+        return jarPath;
+    }
+
+    public String getExtractionDir() {
+        return extractionDir;
+    }
+
     public String getDirectory() {
         return directory;
     }
 
-    /**
-     * Retrieves the binary name.
-     * 
-     * @return the binary file-name in a string format
-     */
+    public void setDirectory(String directory) {
+        this.directory = directory;
+    }
+
+    public void setLibrary(String library) {
+        this.library = library;
+    }
+
     public String getLibrary() {
         return library;
     }
 
-    /**
-     * Retrieves the full path of the binary inside the jar file.
-     * 
-     * @return the absolute (full path) starting from the root directory represented by the jar file
-     */
     public String getAbsoluteLibraryLocation() {
         return directory + "/" + library;
+    }
+
+    /**
+     * Retrieves the absolute path for the native library as supposed to be on the current user dir.
+     * 
+     * @param library the native library
+     * @return the absolute path composed of the current user directory and the library name and system specific extension
+     */
+    public String getAbsoluteLibraryDirectory() {
+        if (getExtractionDir() != null) {
+            return getExtractionDir() + System.getProperty("file.separator") + this.getLibrary();
+        }
+        return System.getProperty("user.dir") + System.getProperty("file.separator") + this.getLibrary();
+    }
+
+    /**
+     * Tests whether the native library is extracted to the current user dir.
+     * 
+     * @param library the native library
+     * @return true if the library has been extracted before, false otherwise
+     */
+    public boolean isExtracted() {
+        return new File(getAbsoluteLibraryDirectory()).exists();
     }
 }

@@ -36,27 +36,28 @@ package com.avrsandbox.snaploader;
  * 
  * @author pavl_g
  */
-public enum LibraryInfo {
-    
-    /**
-     * Represents the default basename to the native binary.
-     */
-    LIBRARY("");
+public final class LibraryInfo {
 
+    private String jarPath;
+    private String directory;
     private String baseName;
+    private String extractionDir;
 
     /**
-     * Wraps information about the library.
+     * Instantiates a library info data structure pointing to a library in an external jar with jarPath.
      * 
+     * @param jarPath a path to an external jar to locate the library inside, "null" to use the project jar (classpath).
      * @param baseName the library basename, for example: 'lib-basename.so'.
      */
-    LibraryInfo(final String baseName) {
+    public LibraryInfo(String jarPath, String directory, String baseName, String extractionDir) {
+        this.jarPath = jarPath;
+        this.directory = directory;
         this.baseName = baseName;
+        this.extractionDir = extractionDir;
     }
 
     /**
      * Retrieves the dynamic library basename.
-     * Default is [jmealloc].
      * 
      * @return the library base-name in string
      */
@@ -64,13 +65,36 @@ public enum LibraryInfo {
         return baseName;
     }
 
+    public String getJarPath() {
+        return jarPath;
+    }
+
+    public String getDirectory() {
+        return directory;
+    }
+
+    public String getExtractionDir() {
+        return extractionDir;
+    }
+
+    public void setJarPath(String jarPath) {
+        this.jarPath = jarPath;
+    }
+
+    public void setDirectory(String directory) {
+        this.directory = directory;
+    }
+
     /**
      * Adjusts the library base name in a dynamic library name (lib-[basename]).
-     * Default is [jmealloc].
      * 
      * @param baseName a new base-name to assign
      */
     public void setBaseName(final String baseName) {
         this.baseName = baseName;
+    }
+
+    public void setExtractionDir(String extractionDir) {
+        this.extractionDir = extractionDir;
     }
 }
