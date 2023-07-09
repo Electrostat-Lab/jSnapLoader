@@ -36,7 +36,7 @@ package com.avrsandbox.snaploader;
  * 
  * @author pavl_g
  */
-public enum RetryCriteria {
+enum RetryCriteria {
     
     /**
      * Extracts the native binary, ignoring its existence (the newly extracted binary will replace the current file).

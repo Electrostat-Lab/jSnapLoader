@@ -40,7 +40,7 @@ import java.io.File;
  * 
  * @author pavl_g
  */
-public enum NativeDynamicLibrary {
+enum NativeDynamicLibrary {
     /**
      * Represents a linux x86 binary with 64-bit instruction set.
      */
