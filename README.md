@@ -1,4 +1,4 @@
-# jSnapLoader
+# <img src="https://github.com/Software-Hardware-Codesign/jSnapLoader/assets/60224159/85ac90d0-7d10-4d7c-a57e-390246ac5dee" width=60 height=60/> jSnapLoader
 A high-performance cross-platform dynamic library loader API for JVM Applications.
 
 ## Appendix 
