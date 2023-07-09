@@ -36,7 +36,7 @@ package com.avrsandbox.snaploader;
  * 
  * @author pavl_g
  */
-public enum NativeVariant {
+enum NativeVariant {
     /**
      * The Operating system name property for this variant.
      */

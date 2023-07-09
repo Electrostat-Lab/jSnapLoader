@@ -29,8 +29,23 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.avrsandbox.snaploader.examples;
 
-/**
- * Provides a loader api for the library, the loader extracts and loads the system specific binary on the runtime.
- */
-package com.avrsandbox.snaploader;
+import com.avrsandbox.snaploader.LibraryInfo;
+import com.avrsandbox.snaploader.NativeBinaryLoader;
+
+public final class TestBasicFeatures {
+
+    private static final String userdir = System.getProperty("user.dir");
+    private static final String fileSeparator = System.getProperty("file.separator");
+    private static final String jar = "jme3-alloc-desktop-1.0.0-pre-gamma-2.jar";
+    private static final String libraryBasename = "jmealloc";
+
+    private static final String libraryAbsolutePath = userdir + fileSeparator + "libs";
+    private static final String jarFile = libraryAbsolutePath + fileSeparator + jar;
+    private static final LibraryInfo libraryInfo = new LibraryInfo(jarFile, null, libraryBasename, libraryAbsolutePath);
+
+    public static void main(String[] args) {
+        new NativeBinaryLoader(libraryInfo).loadLibraryIfEnabled();
+    }
+}

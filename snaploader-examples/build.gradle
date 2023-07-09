@@ -1,0 +1,12 @@
+plugins {
+    // Apply the java-library plugin for API and implementation separation.
+    id 'application'
+}
+
+application {
+    mainClass = 'com.avrsandbox.snaploader.examples.TestBasicFeatures'
+}
+
+dependencies {
+    implementation project(path: ':snaploader')
+}
