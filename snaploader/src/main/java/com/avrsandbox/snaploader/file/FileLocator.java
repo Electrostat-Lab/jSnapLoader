@@ -29,41 +29,57 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.avrsandbox.snaploader.library;
+package com.avrsandbox.snaploader.file;
 
 import java.io.IOException;
-import java.util.jar.JarFile;
+import java.io.InputStream;
 import java.util.zip.ZipEntry;
-import com.avrsandbox.snaploader.file.ZipCompressionType;
-import com.avrsandbox.snaploader.file.FileLocator;
+import java.util.zip.ZipFile;
 
 /**
- * Locates a library inside a jar file, the probable source for the native dynamic libraries to extract and load.
+ * An Input Stream Provider that locates a file inside a zip compression and provides an 
+ * input stream object for the located file entry.
  * 
  * @author pavl_g
  */
-public class LibraryLocator extends FileLocator {
+public class FileLocator implements InputStreamProvider {
     
     /**
-     * Locates the library inside the stock jar file.
-     * 
-     * @param libraryPath the path to the dynamic native library inside that jar file
-     * @apiNote this object leaks an input stream.
+     * The input stream associated with the located file.
      */
-    public LibraryLocator(String libraryPath) {
-        this.fileInputStream = LibraryLocator.class.getClassLoader().getResourceAsStream(libraryPath);
-    } 
+    protected InputStream fileInputStream;
 
     /**
-     * Locates a library inside an external jar, the external jar is defined by the means of a {@link JarFile} and 
-     * the native library is defined as a {@link ZipEntry}.
+     * Locates a file inside an external zip compression, the zip file is defined as a {@link ZipFile} object and 
+     * the locatable file is defined as a {@link ZipEntry} object.
      * 
      * @param directory the absolute path for the external jar file
-     * @param libraryPath the path to the dynamic native library inside that jar file
-     * @throws IOException if the jar to be located is not found or an interrupt I/O operation has occured
-     * @apiNote this object leaks an input stream.
+     * @param filePath the path to the file to be extracted
+     * @param compressionType the type of the zip compression, ZIP or JAR
+     * 
+     * @throws IOException if the jar to be located is not found or an interrupted I/O exception has occured
+     * @apiNote this object leaks an input stream
      */
-    public LibraryLocator(String directory, String libraryPath) throws IOException {
-        super(directory, libraryPath, ZipCompressionType.JAR);
+    public FileLocator(String directory, String filePath, ZipCompressionType compressionType) throws IOException {
+        ZipFile compression = compressionType.createNewCompressionObject(directory);
+        ZipEntry nativeLibraryEntry = compression.getEntry(filePath);
+        this.fileInputStream = compression.getInputStream(nativeLibraryEntry);
+    }
+
+    /**
+     * Instantiates an empty file locator object.
+     */
+    protected FileLocator() {   
+    }
+
+    @Override
+    public InputStream getFileInputStream() {
+        return fileInputStream;
+    }
+
+    @Override
+    public void close() throws IOException {
+        fileInputStream.close();
+        fileInputStream = null;
     }
 }

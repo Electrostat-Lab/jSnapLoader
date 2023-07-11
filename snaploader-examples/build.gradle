@@ -7,6 +7,18 @@ application {
     mainClass = 'com.avrsandbox.snaploader.examples.TestBasicFeatures'
 }
 
+tasks.register("TestBasicFeatures") {
+    application.mainClass = 'com.avrsandbox.snaploader.examples.TestBasicFeatures'
+}
+
+tasks.register("TestMultipleLoads") {
+    application.mainClass = 'com.avrsandbox.snaploader.examples.TestMultipleLoads'
+}
+
+tasks.register("TestZipExtractor") {
+    application.mainClass = 'com.avrsandbox.snaploader.examples.TestZipExtractor'
+}
+
 dependencies {
     implementation project(path: ':snaploader')
 }

@@ -29,8 +29,31 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.avrsandbox.snaploader.file;
+
+import java.io.Closeable;
+import java.io.OutputStream;
 
 /**
- * Provides a loader api for the library, the loader extracts and loads the system specific binary on the runtime.
+ * Defines an interface for an output stream provider to locate and extract a file from a zip compression,
+ * the output stream provider object is associated with an input stream provider object that locates this file.
+ * 
+ * @author pavl_g
  */
-package com.avrsandbox.snaploader;
+public interface OutputStreamProvider extends Closeable {
+
+    /**
+     * Retrieves the input stream provider object (the file locator object).
+     * 
+     * @return an input stream provider object that is the file locator object
+     */
+    InputStreamProvider getFileLocator();
+
+    /**
+     * Retrieves the output stream object associated with this provider, the output stream is 
+     * associated with the 
+     * 
+     * @return an output stream provider object to extract the file
+     */
+    OutputStream getFileOutputStream();
+}

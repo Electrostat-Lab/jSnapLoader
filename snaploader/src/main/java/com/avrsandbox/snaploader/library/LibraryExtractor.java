@@ -32,38 +32,36 @@
 package com.avrsandbox.snaploader.library;
 
 import java.io.IOException;
-import java.util.jar.JarFile;
-import java.util.zip.ZipEntry;
-import com.avrsandbox.snaploader.file.ZipCompressionType;
-import com.avrsandbox.snaploader.file.FileLocator;
+import com.avrsandbox.snaploader.file.FileExtractor;
 
 /**
- * Locates a library inside a jar file, the probable source for the native dynamic libraries to extract and load.
+ * Represents a dynamic library (.so, .dll, .dylb) extractor based on the {@link FileExtractor}.
  * 
  * @author pavl_g
  */
-public class LibraryLocator extends FileLocator {
-    
-    /**
-     * Locates the library inside the stock jar file.
-     * 
-     * @param libraryPath the path to the dynamic native library inside that jar file
-     * @apiNote this object leaks an input stream.
-     */
-    public LibraryLocator(String libraryPath) {
-        this.fileInputStream = LibraryLocator.class.getClassLoader().getResourceAsStream(libraryPath);
-    } 
+public class LibraryExtractor extends FileExtractor {
 
     /**
-     * Locates a library inside an external jar, the external jar is defined by the means of a {@link JarFile} and 
-     * the native library is defined as a {@link ZipEntry}.
+     * Instantiates a native dynamic library extractor with a jar path, library path and extract destination file path.
      * 
-     * @param directory the absolute path for the external jar file
-     * @param libraryPath the path to the dynamic native library inside that jar file
-     * @throws IOException if the jar to be located is not found or an interrupt I/O operation has occured
-     * @apiNote this object leaks an input stream.
+     * @param jarPath an absolute path to the jar file containing the library
+     * @param libraryPath the path of the library inside the jar file
+     * @param destination the extraction destination file path
+     * @throws IOException if the jar file or the library file is not found or an interrupted I/O exception has occured
      */
-    public LibraryLocator(String directory, String libraryPath) throws IOException {
-        super(directory, libraryPath, ZipCompressionType.JAR);
+    public LibraryExtractor(String jarPath, String libraryPath, String destination) throws IOException {
+        super(new LibraryLocator(jarPath, libraryPath), destination);
+    }
+
+    /**
+     * Instantiates a native dynamic library extractor with a library path and an extract destination file path. This 
+     * object locates a dynmaic native library inside the stock jar file based on a classpath input stream.
+     * 
+     * @param libraryPath the path of the library inside the jar file 
+     * @param destination the extraction destination file path
+     * @throws IOException if the library file is not found or an interrupted I/O exception has occured
+     */
+    public LibraryExtractor(String libraryPath, String destination) throws IOException {
+        super(new LibraryLocator(libraryPath), destination);
     }
 }

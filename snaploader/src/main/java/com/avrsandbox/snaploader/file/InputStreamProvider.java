@@ -29,8 +29,23 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.avrsandbox.snaploader.file;
+
+import java.io.Closeable;
+import java.io.InputStream;
 
 /**
- * Provides a loader api for the library, the loader extracts and loads the system specific binary on the runtime.
+ * Defines an interface for an input stream provider that locates a file and provides 
+ * an {@link InputStream} object.
+ * 
+ * @author pavl_g
  */
-package com.avrsandbox.snaploader;
+public interface InputStreamProvider extends Closeable {
+    
+    /**
+     * Retrieves the input stream object associated with this file entry.
+     * 
+     * @return an input stream object for this located file
+     */
+    InputStream getFileInputStream();
+}

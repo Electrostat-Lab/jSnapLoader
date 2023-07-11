@@ -18,9 +18,19 @@ BUILD SUCCESSFUL in 1s
 4 actionable tasks: 1 executed, 3 up-to-date
 ```
 
+## Run specific example by name: 
+```bash
+┌─[pavl-machine@pavl-machine]─[/home/twisted/GradleProjects/jSnapLoader]
+└──╼ $./gradlew :snaploader-examples:TestZipExtractor \
+                :snaploader-examples:run
+
+BUILD SUCCESSFUL in 1s
+4 actionable tasks: 2 executed, 2 up-to-date
+```
+
 ## Appendix 
 Features:
-- [ ] Locate and load external dynamic libraries directly.
+- [x] Locate and load external dynamic libraries directly.
 - [x] Extract native libraries from the stock jar library (classpath).
 - [x] Locate external jars and extract native libraries from them.
 - [x] Define an extract directory.
@@ -28,11 +38,8 @@ Features:
 
 Wish-list:
 - [x] External jar locator: a utility to locate jar files to be able to extract native libraries from.
-- [ ] External library locator: a utility to locate dynamic libraries directly.
+- [x] External library locator: a utility to locate dynamic libraries directly.
 
 Documentation-list:
 - [ ] Architecture paradigm.
-- [x] Logo.
-
-Examples: 
-- [x] [TestBasicFeatures](https://github.com/Software-Hardware-Codesign/jSnapLoader/tree/master/snaploader-examples/src/main/java/com/avrsandbox/snaploader/examples)
+- [x] API documentation. 

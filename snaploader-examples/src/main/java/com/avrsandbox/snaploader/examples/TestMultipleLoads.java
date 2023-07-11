@@ -29,8 +29,26 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.avrsandbox.snaploader.examples;
+
+import com.avrsandbox.snaploader.LibraryInfo;
+import com.avrsandbox.snaploader.NativeBinaryLoader;
+import java.io.File;
 
 /**
- * Provides a loader api for the library, the loader extracts and loads the system specific binary on the runtime.
+ * Tests multiple loads inside the same thread.
+ * 
+ * @author pavl_g
  */
-package com.avrsandbox.snaploader;
+public final class TestMultipleLoads {
+    
+    public static void main(String[] args) throws InterruptedException {
+        TestBasicFeatures.main(args);
+        new File(TestBasicFeatures.finalAbsolutePath).delete();
+        Thread.sleep(5000);
+        TestBasicFeatures.main(args);
+        new File(TestBasicFeatures.finalAbsolutePath).delete();
+        Thread.sleep(5000);
+        TestBasicFeatures.main(args);
+    }
+}

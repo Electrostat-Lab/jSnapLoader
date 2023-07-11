@@ -29,8 +29,28 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.avrsandbox.snaploader.examples;
+
+import java.io.IOException;
+import com.avrsandbox.snaploader.file.FileExtractor;
+import com.avrsandbox.snaploader.file.FileLocator;
+import com.avrsandbox.snaploader.file.ZipCompressionType;
 
 /**
- * Provides a loader api for the library, the loader extracts and loads the system specific binary on the runtime.
+ * Tests extracting an image compression from a Zip compression type file using {@link FileExtractor} API.
+ * 
+ * @author pavl_g
  */
-package com.avrsandbox.snaploader;
+public class TestZipExtractor {
+    
+    protected static final String directory = TestBasicFeatures.libraryAbsolutePath + TestBasicFeatures.fileSeparator + "jmelogo700.zip";
+    protected static final String destination = TestBasicFeatures.libraryAbsolutePath + TestBasicFeatures.fileSeparator + "jmelogo700.png";
+
+    public static void main(String[] args) throws IOException {
+        /* Locates the image inside the Zip Compression */
+        final FileLocator fileLocator = new FileLocator(directory, "jmelogo700.png", ZipCompressionType.ZIP);
+        /* Extracts the image file from the Zip Compression */
+        final FileExtractor fileExtractor = new FileExtractor(fileLocator, destination);
+        fileExtractor.extract();
+    }
+}
