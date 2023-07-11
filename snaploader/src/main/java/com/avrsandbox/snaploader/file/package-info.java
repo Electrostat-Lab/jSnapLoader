@@ -31,6 +31,6 @@
  */
 
 /**
- * Provides a loader api for the library, the loader extracts and loads the system specific binary on the runtime.
+ * Provides I/O stream provider interfaces for {@link com.avrsandbox.snaploader.library.LibraryLocator} and {@link com.avrsandbox.snaploader.library.LibraryExtractor}.
  */
-package com.avrsandbox.snaploader;
+package com.avrsandbox.snaploader.file;

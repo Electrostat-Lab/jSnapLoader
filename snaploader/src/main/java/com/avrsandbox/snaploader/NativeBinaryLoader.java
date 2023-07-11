@@ -13,7 +13,7 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ * * Neither the name of 'AvrSandbox' nor the names of its contributors
  *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
@@ -31,14 +31,12 @@
  */
 package com.avrsandbox.snaploader;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.lang.UnsatisfiedLinkError;
-import com.avrsandbox.snaploader.library.LibraryLocator;
+import com.avrsandbox.snaploader.file.FileExtractor;
+import com.avrsandbox.snaploader.library.LibraryExtractor;
 
 /**
  * Helper utility for loading native binaries.
@@ -48,10 +46,10 @@ import com.avrsandbox.snaploader.library.LibraryLocator;
 public final class NativeBinaryLoader {
     
     private static final Logger logger = Logger.getLogger(NativeBinaryLoader.class.getName());
-    private final ReentrantLock lock = new ReentrantLock();
     private final LibraryInfo libraryInfo;
-    private final int EOF = -1;
-    private boolean enabled = true;
+    private FileExtractor libraryExtractor;
+    private boolean incrementalLoadEnabled;
+    private NativeDynamicLibrary nativeDynamicLibrary;
 
     public NativeBinaryLoader(LibraryInfo libraryInfo) {
         this.libraryInfo = libraryInfo;
@@ -62,13 +60,9 @@ public final class NativeBinaryLoader {
      * guarded by the {@link NativeBinaryLoader#isEnabled()}.
      */
     public void loadLibraryIfEnabled() {
-        if (!isEnabled()) {
-            logger.log(Level.WARNING, "Stock NativeBinaryLoader is not enabled!");
-            return;
-        }
         try {
-            /* extracts and loads the system specific library */
             NativeDynamicLibrary.initWithLibraryInfo(libraryInfo);
+            /* extracts and loads the system specific library */
             loadLibrary();
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Binary Not Found!", e);
@@ -92,26 +86,19 @@ public final class NativeBinaryLoader {
         }
     }
 
-    /**
-     * Adjusts the {@link NativeBinaryLoader#enabled} flag to enable/disable the {@link NativeBinaryLoader#loadLibraryIfEnabled()}.
-     * Default value is [true].
-     * 
-     * @param enabled true to enable the {@link NativeBinaryLoader#loadLibraryIfEnabled()}, false otherwise.
-     * @see NativeBinaryLoader#loadLibraryIfEnabled()
-     */
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+    public void setIncrementalLoadEnabled(boolean incrementalLoadEnabled) {
+        this.incrementalLoadEnabled = incrementalLoadEnabled;
     }
 
-    /**
-     * Tests whether the method {@link NativeBinaryLoader#loadLibraryIfEnabled()} can load the native binary. 
-     * Default value is [true].
-     * 
-     * @return true if the method {@link NativeBinaryLoader#loadLibraryIfEnabled()} is enabled to load the native binary.
-     * @see NativeBinaryLoader#loadLibraryIfEnabled()
-     */
-    public boolean isEnabled() {
-        return enabled;
+    public boolean isIncrementalLoadEnabled() {
+        return incrementalLoadEnabled;
+    }
+
+    public NativeDynamicLibrary getNativeDynamicLibrary() {
+        if (nativeDynamicLibrary == null) {
+            throw new IllegalStateException("Native Dynamic library hasn't been initialized, ensure running the loader first!");
+        }
+        return nativeDynamicLibrary;
     }
     
     /**
@@ -182,7 +169,7 @@ public final class NativeBinaryLoader {
      */
     private void loadBinary(final NativeDynamicLibrary library, final RetryCriteria criteria) throws IOException {
         try {
-            System.load(library.getAbsoluteLibraryDirectory());
+            System.load(library.getExtractedLibrary());
         } catch (final UnsatisfiedLinkError error) {
             switch (criteria) {
                 case RETRY_WITH_INCREMENTAL_EXTRACTION:
@@ -205,8 +192,9 @@ public final class NativeBinaryLoader {
      * @params library the native library to extract and load
      * @throws IOException in case the binary to be extracted is not found on the output jar
      */
-    private void incrementalExtractBinary(NativeDynamicLibrary library) throws IOException {        
-        if (library.isExtracted()) {
+    private void incrementalExtractBinary(NativeDynamicLibrary library) throws IOException {  
+        this.nativeDynamicLibrary = library;
+        if (isIncrementalLoadEnabled() && library.isExtracted()) {
             loadBinary(library, RetryCriteria.RETRY_WITH_CLEAN_EXTRACTION);
             return;
         }
@@ -217,43 +205,33 @@ public final class NativeBinaryLoader {
      * Cleanly extracts and loads the native binary to the current [user.dir].
      * 
      * @params library the library to extract and load
-     * @throws IOException in case the binary to be extracted is not found on the specified jar
+     * @throws IOException in case the binary to be extracted is not found on the specified jar or an 
+     *                     interrupted I/O operation has occured
      */
     private void cleanExtractBinary(NativeDynamicLibrary library) throws IOException {
-        /* CRITICAL SECTION STARTS */
-        lock.lock();
-        InputStream libraryStream = getLibraryInputStream(library);
-        FileOutputStream fos = getLibraryOutputStream(library);
         try {
-            /* Extracts the shipped native files */
-            final byte[] buffer = new byte[libraryStream.available()];
-            for (int bytes = 0; bytes != EOF; bytes = libraryStream.read(buffer)) {
-                /* use the bytes as the buffer length to write valid data */
-                fos.write(buffer, 0, bytes);
-            }
-        } finally {
-            /* Releases resources */
-            libraryStream.close();
-            fos.close();
-            libraryStream = null;
-            fos = null;
-            /* Loads native binaries */
+            libraryExtractor = initializeLibraryExtractor(library);
+            libraryExtractor.extract();
             loadBinary(library, RetryCriteria.RETRY_WITH_CLEAN_EXTRACTION);
-            lock.unlock();
-            /* CRITICAL SECTION ENDS */
+        } finally {
+            /* CLEAR RESOURCES AND RESET OBJECTS */
+            libraryExtractor.getFileLocator().close();
+            libraryExtractor.close();
+            libraryExtractor = null;
         }
     }
 
-    private InputStream getLibraryInputStream(NativeDynamicLibrary library) throws IOException {
-        /* Locates the library in an external jar file */
+    /**
+     * Initializes a file extrator object if the file extractor object associated with this loader isnot defined.
+     * 
+     * @param library the native dynamic library to load 
+     * @return
+     * @throws IOException
+     */
+    private FileExtractor initializeLibraryExtractor(NativeDynamicLibrary library) throws IOException {
         if (library.getJarPath() != null) {
-            return new LibraryLocator(library.getJarPath(), library.getAbsoluteLibraryLocation()).getLibraryInputStream();
-        } 
-        /* Defaulted to extract from stock jar file */
-        return new LibraryLocator(library.getAbsoluteLibraryLocation()).getLibraryInputStream();
-    }
-
-    private FileOutputStream getLibraryOutputStream(NativeDynamicLibrary library) throws IOException {
-        return new FileOutputStream(library.getAbsoluteLibraryDirectory());  
+            return new LibraryExtractor(library.getJarPath(), library.getCompressedLibrary(), library.getExtractedLibrary());
+        }
+        return new LibraryExtractor(library.getCompressedLibrary(), library.getExtractedLibrary());
     }
 }

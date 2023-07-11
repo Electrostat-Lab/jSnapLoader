@@ -13,7 +13,7 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ * * Neither the name of 'AvrSandbox' nor the names of its contributors
  *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
@@ -34,13 +34,13 @@ package com.avrsandbox.snaploader;
 import java.io.File;
 
 /**
- * Represents a native binary domain with a {@link NativeDynamicLibrary#directory} and a {@link NativeDynamicLibrary#library}.
+ * Represents a native binary domain with a {@link NativeDynamicLibrary#libraryDirectory} and a {@link NativeDynamicLibrary#library}.
  * 
  * @apiNote Internal use only.
  * 
  * @author pavl_g
  */
-enum NativeDynamicLibrary {
+public enum NativeDynamicLibrary {
     /**
      * Represents a linux x86 binary with 64-bit instruction set.
      */
@@ -72,118 +72,115 @@ enum NativeDynamicLibrary {
     WIN_x86(null, "lib/windows/x86", null, null);
 
     private String jarPath;
-    private String directory;
+    private String libraryDirectory;
     private String library;
     private String extractionDir;
+    protected static final String fileSeparator = System.getProperty("file.separator");
+    protected static final String userdir = System.getProperty("user.dir");
 
     /**
      * Creates a Native dynamic library from a relative directory and a library file.
      * 
-     * @param jarPath 
-     * @param directory the relative path inside the jar file.
-     * @param library the library filename.
+     * @param jarPath the absolute path to the jar compression
+     * @param libraryDirectory the library directory inside the jar compression, "null" for the default library directory.
+     * @param library the library filename
+     * @param extractionDir the absolute path to the extraction directory
      */
-    NativeDynamicLibrary(String jarPath, String directory, String library, String extractionDir) {
+    NativeDynamicLibrary(String jarPath, String libraryDirectory, String library, String extractionDir) {
         this.jarPath = jarPath;
-        this.directory = directory;
+        this.libraryDirectory = libraryDirectory;
         this.library = library;
         this.extractionDir = extractionDir;
     }
 
-    public static void initWithLibraryInfo(LibraryInfo libraryInfo) {
+    /**
+     * Initializes the native dynamic library with the library info.
+     * 
+     * @param libraryInfo wraps abstract data representing the native library
+     */
+    static void initWithLibraryInfo(LibraryInfo libraryInfo) {
         /* Initializes the library basename */
         if (libraryInfo.getBaseName() != null) {
-            NativeDynamicLibrary.LINUX_x86.setLibrary("lib" + libraryInfo.getBaseName() + ".so");
-            NativeDynamicLibrary.LINUX_x86_64.setLibrary("lib" + libraryInfo.getBaseName() + ".so");
-            NativeDynamicLibrary.MAC_x86.setLibrary("lib" + libraryInfo.getBaseName() + ".dylib");
-            NativeDynamicLibrary.MAC_x86_64.setLibrary("lib" + libraryInfo.getBaseName() + ".dylib");
-            NativeDynamicLibrary.WIN_x86.setLibrary("lib" + libraryInfo.getBaseName() + ".dll");
-            NativeDynamicLibrary.WIN_x86_64.setLibrary("lib" + libraryInfo.getBaseName() + ".dll");
+            NativeDynamicLibrary.LINUX_x86.library = "lib" + libraryInfo.getBaseName() + ".so";
+            NativeDynamicLibrary.LINUX_x86_64.library = "lib" + libraryInfo.getBaseName() + ".so";
+            NativeDynamicLibrary.MAC_x86.library = "lib" + libraryInfo.getBaseName() + ".dylib";
+            NativeDynamicLibrary.MAC_x86_64.library = "lib" + libraryInfo.getBaseName() + ".dylib";
+            NativeDynamicLibrary.WIN_x86.library = "lib" + libraryInfo.getBaseName() + ".dll";
+            NativeDynamicLibrary.WIN_x86_64.library = "lib" + libraryInfo.getBaseName() + ".dll";
         }
         
         /* Initializes the library jar path to locate before extracting, "null" to use the classpath */
-        NativeDynamicLibrary.LINUX_x86.setJarPath(libraryInfo.getJarPath());
-        NativeDynamicLibrary.LINUX_x86_64.setJarPath(libraryInfo.getJarPath());
-        NativeDynamicLibrary.MAC_x86.setJarPath(libraryInfo.getJarPath());
-        NativeDynamicLibrary.MAC_x86_64.setJarPath(libraryInfo.getJarPath());
-        NativeDynamicLibrary.WIN_x86.setJarPath(libraryInfo.getJarPath());
-        NativeDynamicLibrary.WIN_x86_64.setJarPath(libraryInfo.getJarPath());
+        NativeDynamicLibrary.LINUX_x86.jarPath = libraryInfo.getJarPath();
+        NativeDynamicLibrary.LINUX_x86_64.jarPath = libraryInfo.getJarPath();
+        NativeDynamicLibrary.MAC_x86.jarPath = libraryInfo.getJarPath();
+        NativeDynamicLibrary.MAC_x86_64.jarPath = libraryInfo.getJarPath();
+        NativeDynamicLibrary.WIN_x86.jarPath = libraryInfo.getJarPath();
+        NativeDynamicLibrary.WIN_x86_64.jarPath = libraryInfo.getJarPath();
 
         /* Initializes the library with an extraction path, "null" to extract to the current user directory */
-        NativeDynamicLibrary.LINUX_x86.setExtractionDir(libraryInfo.getExtractionDir());
-        NativeDynamicLibrary.LINUX_x86_64.setExtractionDir(libraryInfo.getExtractionDir());
-        NativeDynamicLibrary.MAC_x86.setExtractionDir(libraryInfo.getExtractionDir());
-        NativeDynamicLibrary.MAC_x86_64.setExtractionDir(libraryInfo.getExtractionDir());
-        NativeDynamicLibrary.WIN_x86.setExtractionDir(libraryInfo.getExtractionDir());
-        NativeDynamicLibrary.WIN_x86_64.setExtractionDir(libraryInfo.getExtractionDir());
+        NativeDynamicLibrary.LINUX_x86.extractionDir = libraryInfo.getExtractionDir();
+        NativeDynamicLibrary.LINUX_x86_64.extractionDir = libraryInfo.getExtractionDir();
+        NativeDynamicLibrary.MAC_x86.extractionDir = libraryInfo.getExtractionDir();
+        NativeDynamicLibrary.MAC_x86_64.extractionDir = libraryInfo.getExtractionDir();
+        NativeDynamicLibrary.WIN_x86.extractionDir = libraryInfo.getExtractionDir();
+        NativeDynamicLibrary.WIN_x86_64.extractionDir = libraryInfo.getExtractionDir();
 
         /* Initializes the library directory within the jar, "null" for the default library directory */
         if (libraryInfo.getDirectory() != null) {
-            NativeDynamicLibrary.LINUX_x86.setDirectory(libraryInfo.getDirectory());
-            NativeDynamicLibrary.LINUX_x86_64.setDirectory(libraryInfo.getDirectory());
-            NativeDynamicLibrary.MAC_x86.setDirectory(libraryInfo.getDirectory());
-            NativeDynamicLibrary.MAC_x86_64.setDirectory(libraryInfo.getDirectory());
-            NativeDynamicLibrary.WIN_x86.setDirectory(libraryInfo.getDirectory());
-            NativeDynamicLibrary.WIN_x86_64.setDirectory(libraryInfo.getDirectory());
+            NativeDynamicLibrary.LINUX_x86.libraryDirectory = libraryInfo.getDirectory();
+            NativeDynamicLibrary.LINUX_x86_64.libraryDirectory = libraryInfo.getDirectory();
+            NativeDynamicLibrary.MAC_x86.libraryDirectory = libraryInfo.getDirectory();
+            NativeDynamicLibrary.MAC_x86_64.libraryDirectory = libraryInfo.getDirectory();
+            NativeDynamicLibrary.WIN_x86.libraryDirectory = libraryInfo.getDirectory();
+            NativeDynamicLibrary.WIN_x86_64.libraryDirectory = libraryInfo.getDirectory();
         }
     } 
 
-    public void setExtractionDir(String extractionDir) {
-        this.extractionDir = extractionDir;
-    }
-
-    public void setJarPath(String jarPath) {
-        this.jarPath = jarPath;
-    }
-
+    /**
+     * Retrieves the absolute path for the jar compression as specified by the {@link LibraryInfo} API.
+     * 
+     * @return a string representing the absolute path to the jar compression containing the dynamic libraries
+     */
     public String getJarPath() {
         return jarPath;
     }
 
-    public String getExtractionDir() {
-        return extractionDir;
-    }
-
-    public String getDirectory() {
-        return directory;
-    }
-
-    public void setDirectory(String directory) {
-        this.directory = directory;
-    }
-
-    public void setLibrary(String library) {
-        this.library = library;
-    }
-
-    public String getLibrary() {
-        return library;
-    }
-
-    public String getAbsoluteLibraryLocation() {
-        return directory + "/" + library;
-    }
-
     /**
-     * Retrieves the absolute path for the native library as supposed to be on the current user dir.
+     * Retrieves the native library directory inside the jar compression.
      * 
-     * @param library the native library
-     * @return the absolute path composed of the current user directory and the library name and system specific extension
+     * @return a string representing the location of the native dynamic library to be loaded
      */
-    public String getAbsoluteLibraryDirectory() {
-        if (getExtractionDir() != null) {
-            return getExtractionDir() + System.getProperty("file.separator") + this.getLibrary();
-        }
-        return System.getProperty("user.dir") + System.getProperty("file.separator") + this.getLibrary();
+    public String getLibraryDirectory() {
+        return libraryDirectory;
+    }
+    
+    /**
+     * Retrieves the library path within the jar compression.
+     * 
+     * @return a string representing the library path within the jar compression
+     */
+    public String getCompressedLibrary() {
+        return libraryDirectory + fileSeparator + library;
     }
 
     /**
-     * Tests whether the native library is extracted to the current user dir.
+     * Retrieves the absolute path for the native library as supposed to be on the extraction directory.
      * 
-     * @param library the native library
+     * @return the absolute path composed of the extraction directory and the library name and system specific extension
+     */
+    public String getExtractedLibrary() {
+        if (extractionDir != null) {
+            return extractionDir + fileSeparator + library;
+        }
+        return userdir + fileSeparator + library;
+    }
+
+    /**
+     * Tests whether the native library is extracted to the specified extraction directory.
+     * 
      * @return true if the library has been extracted before, false otherwise
      */
     public boolean isExtracted() {
-        return new File(getAbsoluteLibraryDirectory()).exists();
+        return new File(getExtractedLibrary()).exists();
     }
 }

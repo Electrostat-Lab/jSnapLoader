@@ -13,7 +13,7 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ * * Neither the name of 'AvrSandbox' nor the names of its contributors
  *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
@@ -32,12 +32,16 @@
 package com.avrsandbox.snaploader;
 
 /**
- * A business error of type {@link UnsatisfiedLinkError} indicates an un-supported system.
+ * A business error of type {@link UnsatisfiedLinkError} to indicate an un-supported system.
+ * 
+ * <p>
+ * 
  * This error is thrown when the user tries to run the library on another operating system rather than the supported systems:
- * - Linux
- * - Windows
- * - Mac
- * - Android
+ * 
+ * <li> Linux - x86 - x86_64 </li>
+ * <li> Windows - x86 - x86_64 </li>
+ * <li> Mac - x86 - x86_64 </li>
+ * <li> Android - intel32 - intel64 - arm32 - arm64 </li>
  * 
  * @author pavl_g
  */

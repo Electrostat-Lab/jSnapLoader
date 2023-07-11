@@ -13,7 +13,7 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ * * Neither the name of 'AvrSandbox' nor the names of its contributors
  *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
@@ -34,18 +34,37 @@ package com.avrsandbox.snaploader.examples;
 import com.avrsandbox.snaploader.LibraryInfo;
 import com.avrsandbox.snaploader.NativeBinaryLoader;
 
+/**
+ * Tests basic features of the {@link NativeBinaryLoader} API.
+ * 
+ * @author pavl_g
+ */
 public final class TestBasicFeatures {
 
-    private static final String userdir = System.getProperty("user.dir");
-    private static final String fileSeparator = System.getProperty("file.separator");
-    private static final String jar = "jme3-alloc-desktop-1.0.0-pre-gamma-2.jar";
-    private static final String libraryBasename = "jmealloc";
+    protected static final String userdir = System.getProperty("user.dir");
+    protected static final String fileSeparator = System.getProperty("file.separator");
+    protected static final String jar = "jme3-alloc-desktop-1.0.0-pre-gamma-2.jar";
+    protected static final String libraryBasename = "jmealloc";
 
-    private static final String libraryAbsolutePath = userdir + fileSeparator + "libs";
-    private static final String jarFile = libraryAbsolutePath + fileSeparator + jar;
-    private static final LibraryInfo libraryInfo = new LibraryInfo(jarFile, null, libraryBasename, libraryAbsolutePath);
+    protected static final String libraryAbsolutePath = userdir + fileSeparator + "libs";
+    protected static final String jarFile = libraryAbsolutePath + fileSeparator + jar;
+    protected static final LibraryInfo libraryInfo = new LibraryInfo(jarFile, null, libraryBasename, libraryAbsolutePath);
+
+    protected static final String finalAbsolutePath = libraryAbsolutePath + fileSeparator + "libjmealloc.so";
+
+    protected static NativeBinaryLoader loader;
 
     public static void main(String[] args) {
-        new NativeBinaryLoader(libraryInfo).loadLibraryIfEnabled();
+        if (loader == null) {
+            loader = new NativeBinaryLoader(libraryInfo);
+        }
+        loader.setIncrementalLoadEnabled(true);
+        loader.loadLibraryIfEnabled();
+        /* Native dynamic library properties */
+        System.out.println("Jar Path: " + loader.getNativeDynamicLibrary().getJarPath());
+        System.out.println("Library Directory: " + loader.getNativeDynamicLibrary().getLibraryDirectory());
+        System.out.println("Compressed library path: " + loader.getNativeDynamicLibrary().getCompressedLibrary());
+        System.out.println("Extracted library absolute path: " + loader.getNativeDynamicLibrary().getExtractedLibrary());
+        System.out.println("Is Extracted: " + loader.getNativeDynamicLibrary().isExtracted());        
     }
 }
