@@ -35,13 +35,13 @@ package com.avrsandbox.snaploader;
  * A business error of type {@link UnsatisfiedLinkError} to indicate an un-supported system.
  * 
  * <p>
- * 
  * This error is thrown when the user tries to run the library on another operating system rather than the supported systems:
- * 
+ * <ul>
  * <li> Linux - x86 - x86_64 </li>
  * <li> Windows - x86 - x86_64 </li>
  * <li> Mac - x86 - x86_64 </li>
  * <li> Android - intel32 - intel64 - arm32 - arm64 </li>
+ * </ul>
  * 
  * @author pavl_g
  */

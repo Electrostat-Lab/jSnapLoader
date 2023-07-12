@@ -53,12 +53,13 @@ public class FileLocator implements InputStreamProvider {
      * Locates a file inside an external zip compression, the zip file is defined as a {@link ZipFile} object and 
      * the locatable file is defined as a {@link ZipEntry} object.
      * 
+     * This object leaks an input stream.
+     * 
      * @param directory the absolute path for the external jar file
      * @param filePath the path to the file to be extracted
      * @param compressionType the type of the zip compression, ZIP or JAR
      * 
      * @throws IOException if the jar to be located is not found or an interrupted I/O exception has occured
-     * @apiNote this object leaks an input stream
      */
     public FileLocator(String directory, String filePath, ZipCompressionType compressionType) throws IOException {
         ZipFile compression = compressionType.createNewCompressionObject(directory);

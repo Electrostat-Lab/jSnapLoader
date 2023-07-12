@@ -64,7 +64,7 @@ public class FileExtractor implements OutputStreamProvider {
      * 
      * @param fileLocator locates a file inside a zip compression
      * @param destination an absolute file path representing the extraction destination file
-     * @throws FileNotFoundException
+     * @throws FileNotFoundException if the destination file path is not found
      */
     public FileExtractor(FileLocator fileLocator, String destination) throws FileNotFoundException {
         this.fileLocator = fileLocator;

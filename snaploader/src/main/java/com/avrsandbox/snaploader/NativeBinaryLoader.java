@@ -56,8 +56,7 @@ public final class NativeBinaryLoader {
     }
 
     /**
-     * Extracts and loads the variant specific binary from the output jar, handling the error messages, 
-     * guarded by the {@link NativeBinaryLoader#isEnabled()}.
+     * Extracts and loads the variant specific binary from the output jar, handling the error messages.
      */
     public void loadLibraryIfEnabled() {
         try {

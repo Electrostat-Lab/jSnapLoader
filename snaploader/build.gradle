@@ -3,6 +3,25 @@ plugins {
     id 'java-library'
 }
 
+tasks.register("generateJavadocJar", Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+tasks.register("generateSourcesJar", Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+jar { // assemble jar options [java -jar]
+    manifest {
+        attributes 'Project': "jSnaploader",
+                   'Version': "${version}",
+                   'Automatic-Module-Name': "${project.name.replace("-", ".")}",
+                   'Compiled-by': JavaVersion.current()
+    }
+}
+
 dependencies {
 
 }
