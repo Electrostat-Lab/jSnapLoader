@@ -45,10 +45,10 @@ import com.avrsandbox.snaploader.file.FileLocator;
 public class LibraryLocator extends FileLocator {
     
     /**
-     * Locates the library inside the stock jar file.
+     * Locates the library inside the stock jar file. 
+     * This object leaks an input stream.
      * 
      * @param libraryPath the path to the dynamic native library inside that jar file
-     * @apiNote this object leaks an input stream.
      */
     public LibraryLocator(String libraryPath) {
         this.fileInputStream = LibraryLocator.class.getClassLoader().getResourceAsStream(libraryPath);
@@ -56,12 +56,12 @@ public class LibraryLocator extends FileLocator {
 
     /**
      * Locates a library inside an external jar, the external jar is defined by the means of a {@link JarFile} and 
-     * the native library is defined as a {@link ZipEntry}.
+     * the native library is defined as a {@link ZipEntry}. 
+     * This object leaks an input stream.
      * 
      * @param directory the absolute path for the external jar file
      * @param libraryPath the path to the dynamic native library inside that jar file
      * @throws IOException if the jar to be located is not found or an interrupt I/O operation has occured
-     * @apiNote this object leaks an input stream.
      */
     public LibraryLocator(String directory, String libraryPath) throws IOException {
         super(directory, libraryPath, ZipCompressionType.JAR);

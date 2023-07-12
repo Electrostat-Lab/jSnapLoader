@@ -36,7 +36,7 @@ import java.io.File;
 /**
  * Represents a native binary domain with a {@link NativeDynamicLibrary#libraryDirectory} and a {@link NativeDynamicLibrary#library}.
  * 
- * @apiNote Internal use only.
+ * Internal use only.
  * 
  * @author pavl_g
  */

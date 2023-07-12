@@ -31,8 +31,6 @@
  */
 package com.avrsandbox.snaploader.examples;
 
-import com.avrsandbox.snaploader.LibraryInfo;
-import com.avrsandbox.snaploader.NativeBinaryLoader;
 import java.io.File;
 
 /**
