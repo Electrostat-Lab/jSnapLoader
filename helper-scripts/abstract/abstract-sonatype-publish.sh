@@ -17,7 +17,7 @@ function generateGenericPom() {
     <url>https://github.com/Software-Hardware-Codesign/jSnapLoader</url> \
     <licenses>  \
       <license> \
-          <name>jMonkeyEngine BSD-3 Clause License</name> \
+          <name>The AvrSandbox Project, jSnapLoader BSD-3 Clause License</name> \
           <url>https://github.com/Software-Hardware-Codesign/jSnapLoader/blob/master/LICENSE</url> \
       </license> \
     </licenses> \
