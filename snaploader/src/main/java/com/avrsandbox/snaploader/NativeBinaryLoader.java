@@ -216,6 +216,7 @@ public final class NativeBinaryLoader {
             /* CLEAR RESOURCES AND RESET OBJECTS */
             libraryExtractor.getFileLocator().close();
             libraryExtractor.close();
+            libraryExtractor = null;
         }
     }
 
