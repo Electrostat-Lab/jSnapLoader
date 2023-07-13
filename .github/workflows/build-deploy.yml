@@ -1,0 +1,142 @@
+# This workflow builds the API and releases it to Maven-Sonatype-Central repository
+
+name: Build and deploy jSnapLoader
+
+# Runs this workflow [on-release] only
+on:
+  # Triggers the workflow on push or pull request events but only for the "master" branch
+  release:
+    types: [published]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+    compile-assemble:
+      # runner images with architectures (variants)
+      runs-on: ${{ matrix.os }}
+      strategy:
+        matrix:
+          os: [ 'ubuntu-latest' ]
+      name: Compile java and assemble jar
+
+      # Steps represent a sequence of tasks that will be executed as part of the job
+      steps:
+        - name: Checkout Job
+          uses: actions/checkout@v3
+
+        - name: Setup Temurin-OpenJDK-19
+          uses: actions/setup-java@v3
+          with:
+            distribution: 'temurin' 
+            java-version: '19'
+
+        - name: Compiling java
+          run: ./gradlew --console="verbose" -Pversion=${GITHUB_REF_NAME} :snaploader:build
+
+        - name: Archive build
+          uses: actions/upload-artifact@v3
+          with:
+            name: snaploader-build
+            path: snaploader/build/libs
+
+    deploy:
+          environment:
+            name: maven-central
+            url: https://repo.maven.apache.org/maven2/io/github/software-hardware-codesign/
+          runs-on: ${{ matrix.os }}
+          needs: [compile-assemble]
+          strategy:
+            matrix:
+              os: [ 'ubuntu-latest' ]
+          name: Deploying to Maven-Central repository
+
+          # Steps represent a sequence of tasks that will be executed as part of the job
+          steps:
+            - name: Checkout Job
+              uses: actions/checkout@v3
+
+            - name: Setup Temurin-OpenJDK-19
+              uses: actions/setup-java@v3
+              with:
+                distribution: 'temurin' 
+                java-version: '19'
+
+            - name: Setup maven-3.9
+              run: | 
+                # remove shipped maven-3.8 that causes the plexus plugin incompatibility behavior
+                sudo apt remove maven 
+                # installs maven-3.9 with the fixed plugins patch
+                chmod +rwx ./helper-scripts/project-impl/publishing/install-maven-latest.sh 
+                ./helper-scripts/project-impl/publishing/install-maven-latest.sh 
+
+            - name: Use Predefined PGP Keybox
+              run: gpg --import ./helper-scripts/project-impl/publishing/avrsandbox.pub
+
+            - name: Import secret-key
+              run: gpg --allow-secret-key-import --import --batch --yes --passphrase="avrsandbox" ./helper-scripts/project-impl/publishing/secret-key
+
+            - name: Import owner-trust
+              run: gpg --import-ownertrust ./helper-scripts/project-impl/publishing/owner-trust.txt 
+
+            - name: Send public key 'avrsandbox'
+              # sends the public key to a maven compatible host
+              run: gpg --keyserver keyserver.ubuntu.com --send-keys 85A57D4975B6EE2B6D0EA46903DE10B9F12F0B20
+              
+            - name: Generate sources jar
+              run: ./gradlew -Pversion=$GITHUB_REF_NAME :snaploader:generateSourcesJar
+              
+            - name: Generate javadoc jar
+              run: ./gradlew -Pversion=$GITHUB_REF_NAME :snaploader:generateJavadocJar
+                          
+            - name: Download build
+              uses: actions/download-artifact@v3
+              with:
+                name: snaploader-build
+                path: snaploader/build/libs/
+                
+            - name: Deploying snaploader binaries
+              env:
+                OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+                OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+              run: | 
+                chmod +rwx ./helper-scripts/project-impl/publishing/sonatype-publish-artifacts.sh 
+                # publish artifacts using the tag version
+                ./helper-scripts/project-impl/publishing/sonatype-publish-artifacts.sh $GITHUB_REF_NAME
+
+    # deploy-doc:
+    #       environment:
+    #         name: release-documentation
+    #         url: ${{ steps.deployment.outputs.page_url }}
+    #       runs-on: ubuntu-latest
+
+    #       steps:
+    #         - name: Checkout
+    #           uses: actions/checkout@v3
+
+    #         - name: Generate javadoc
+    #           run: chmod +rwx ./gradlew && ./gradlew :jme3-alloc:generateJavadocJar
+
+    #         - name: Move javadocs to the deployment folder 'website'
+    #           run: ./gradlew -Pversion=${GITHUB_REF_NAME} :jme3-alloc:manipulateJavadocForWebsite
+
+    #         - name: Setup Pages
+    #           uses: actions/configure-pages@v3
+
+    #         - name: Build with Jekyll
+    #           uses: actions/jekyll-build-pages@v1
+    #           with:
+    #             source: ./website
+    #             destination: ./_site
+
+    #         - name: Upload artifact
+    #           uses: actions/upload-pages-artifact@v1
+
+    #         - name: Deploy to GitHub Pages
+    #           id: deployment
+    #           uses: actions/deploy-pages@v1
