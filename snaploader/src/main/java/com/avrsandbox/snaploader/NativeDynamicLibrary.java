@@ -160,7 +160,7 @@ public enum NativeDynamicLibrary {
      * @return a string representing the library path within the jar compression
      */
     public String getCompressedLibrary() {
-        return libraryDirectory + fileSeparator + library;
+        return libraryDirectory + "/" + library;
     }
 
     /**
