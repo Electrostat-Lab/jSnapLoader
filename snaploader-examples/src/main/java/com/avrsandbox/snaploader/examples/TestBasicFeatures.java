@@ -66,5 +66,17 @@ public final class TestBasicFeatures {
         System.out.println("Compressed library path: " + loader.getNativeDynamicLibrary().getCompressedLibrary());
         System.out.println("Extracted library absolute path: " + loader.getNativeDynamicLibrary().getExtractedLibrary());
         System.out.println("Is Extracted: " + loader.getNativeDynamicLibrary().isExtracted());        
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(6000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            
+        }).start();
     }
 }
