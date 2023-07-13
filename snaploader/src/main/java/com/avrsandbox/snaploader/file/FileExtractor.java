@@ -52,6 +52,8 @@ public class FileExtractor implements OutputStreamProvider {
     
     protected OutputStream fileOutputStream;
 
+    protected ExtractionListener extractionListener;
+
     /**
      * An absolute path for the destination file of the extraction process.
      */
@@ -94,6 +96,9 @@ public class FileExtractor implements OutputStreamProvider {
                 fileOutputStream.write(buffer, 0, bytes);
             }
         } finally {
+            if (extractionListener != null) {
+                extractionListener.onExtractionCompleted();
+            }
             lock.unlock();
             /* CRITICAL SECTION ENDS */
         }
@@ -113,5 +118,9 @@ public class FileExtractor implements OutputStreamProvider {
     @Override
     public InputStreamProvider getFileLocator() {
         return fileLocator;
+    }
+
+    public void setExtractionListener(ExtractionListener extractionListener) {
+        this.extractionListener = extractionListener;
     }
 }

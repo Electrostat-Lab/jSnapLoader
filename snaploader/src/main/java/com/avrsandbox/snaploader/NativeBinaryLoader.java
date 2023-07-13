@@ -35,6 +35,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.lang.UnsatisfiedLinkError;
+
+import com.avrsandbox.snaploader.file.ExtractionListener;
 import com.avrsandbox.snaploader.file.FileExtractor;
 import com.avrsandbox.snaploader.library.LibraryExtractor;
 
@@ -208,16 +210,22 @@ public final class NativeBinaryLoader {
      *                     interrupted I/O operation has occured
      */
     private void cleanExtractBinary(NativeDynamicLibrary library) throws IOException {
-        try {
             libraryExtractor = initializeLibraryExtractor(library);
             libraryExtractor.extract();
             loadBinary(library, RetryCriteria.RETRY_WITH_CLEAN_EXTRACTION);
-        } finally {
             /* CLEAR RESOURCES AND RESET OBJECTS */
-            libraryExtractor.getFileLocator().close();
-            libraryExtractor.close();
-            libraryExtractor = null;
-        }
+            libraryExtractor.setExtractionListener(new ExtractionListener() {
+                @Override
+                public void onExtractionCompleted() {
+                    try {
+                        libraryExtractor.getFileLocator().close();
+                        libraryExtractor.close();
+                        libraryExtractor = null;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
     }
 
     /**
