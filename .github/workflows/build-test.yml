@@ -14,13 +14,13 @@ on:
   workflow_dispatch:
 
 jobs:
-    compile-java:
+    build-snaploader:
       # runner images with architectures (variants)
       runs-on: ${{ matrix.os }}
       strategy:
         matrix:
           os: [ 'ubuntu-latest' ]
-      name: Compile java 
+      name: Build jSnapLoader
 
       # Steps represent a sequence of tasks that will be executed as part of the job
       steps:
@@ -67,7 +67,7 @@ jobs:
     test:
         # runner images with architectures (variants)
         runs-on: ${{ matrix.os }}
-        needs: assemble-desktop
+        needs: build-snaploader
         strategy:
           matrix:
             os: [ 'ubuntu-latest', 'macos-latest', 'windows-latest' ]
@@ -84,7 +84,7 @@ jobs:
               distribution: 'temurin' 
               java-version: '19'
           
-          - name: Download snaploader.jar library
+          - name: Download snaploader-SNAPSHOT.jar library
             uses: actions/download-artifact@v3
             with:
               name: snaploader-snapshot
