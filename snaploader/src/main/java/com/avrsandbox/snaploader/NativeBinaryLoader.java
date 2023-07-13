@@ -35,8 +35,6 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.lang.UnsatisfiedLinkError;
-
-import com.avrsandbox.snaploader.file.ExtractionListener;
 import com.avrsandbox.snaploader.file.FileExtractor;
 import com.avrsandbox.snaploader.library.LibraryExtractor;
 
@@ -214,16 +212,13 @@ public final class NativeBinaryLoader {
             libraryExtractor.extract();
             loadBinary(library, RetryCriteria.RETRY_WITH_CLEAN_EXTRACTION);
             /* CLEAR RESOURCES AND RESET OBJECTS */
-            libraryExtractor.setExtractionListener(new ExtractionListener() {
-                @Override
-                public void onExtractionCompleted() {
-                    try {
-                        libraryExtractor.getFileLocator().close();
-                        libraryExtractor.close();
-                        libraryExtractor = null;
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+            libraryExtractor.setExtractionListener(() -> {
+                try{
+                    libraryExtractor.getFileLocator().close();
+                    libraryExtractor.close();
+                    libraryExtractor = null;
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             });
     }
