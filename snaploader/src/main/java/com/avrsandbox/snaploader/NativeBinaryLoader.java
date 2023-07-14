@@ -170,15 +170,7 @@ public final class NativeBinaryLoader {
         try {
             System.load(library.getExtractedLibrary());
         } catch (final UnsatisfiedLinkError error) {
-            switch (criteria) {
-                case RETRY_WITH_INCREMENTAL_EXTRACTION:
-                    incrementalExtractBinary(library);
-                    break;
-                
-                default:
-                    cleanExtractBinary(library);
-                    break;
-            }
+            error.printStackTrace();
         }
     }
     
