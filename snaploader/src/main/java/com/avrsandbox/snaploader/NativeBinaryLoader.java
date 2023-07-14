@@ -170,7 +170,15 @@ public final class NativeBinaryLoader {
         try {
             System.load(library.getExtractedLibrary());
         } catch (final UnsatisfiedLinkError error) {
-            error.printStackTrace();
+            switch (criteria) {
+                case RETRY_WITH_INCREMENTAL_EXTRACTION:
+                    incrementalExtractBinary(library);
+                    break;
+                
+                default:
+                    cleanExtractBinary(library);
+                    break;
+            }
         }
     }
     
@@ -202,10 +210,10 @@ public final class NativeBinaryLoader {
     private void cleanExtractBinary(NativeDynamicLibrary library) throws IOException {
             libraryExtractor = initializeLibraryExtractor(library);
             libraryExtractor.extract();
-            loadBinary(library, RetryCriteria.RETRY_WITH_CLEAN_EXTRACTION);
             /* CLEAR RESOURCES AND RESET OBJECTS */
             libraryExtractor.setExtractionListener(() -> {
                 try{
+                    loadBinary(library, RetryCriteria.RETRY_WITH_CLEAN_EXTRACTION);
                     libraryExtractor.getFileLocator().close();
                     libraryExtractor.close();
                     libraryExtractor = null;
