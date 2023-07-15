@@ -31,7 +31,6 @@
  */
 package com.avrsandbox.snaploader.file;
 
-import java.io.Closeable;
 import java.io.OutputStream;
 
 /**
@@ -40,7 +39,7 @@ import java.io.OutputStream;
  * 
  * @author pavl_g
  */
-public interface OutputStreamProvider extends Closeable {
+public interface OutputStreamProvider extends AutoCloseable {
 
     /**
      * Retrieves the input stream provider object (the file locator object).

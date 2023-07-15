@@ -39,83 +39,86 @@ import com.avrsandbox.snaploader.file.FileExtractor;
 import com.avrsandbox.snaploader.library.LibraryExtractor;
 
 /**
- * Helper utility for loading native binaries.
+ * A cross-platform utility for extracting and loading native binaries based on 
+ * the variant properties (OS + ARCH + VM).
  * 
  * @author pavl_g.
  */
-public final class NativeBinaryLoader {
-    
-    private static final Logger logger = Logger.getLogger(NativeBinaryLoader.class.getName());
-    private final LibraryInfo libraryInfo;
-    private FileExtractor libraryExtractor;
-    private boolean incrementalLoadEnabled;
-    private NativeDynamicLibrary nativeDynamicLibrary;
+public class NativeBinaryLoader {
 
-    public NativeBinaryLoader(LibraryInfo libraryInfo) {
-        this.libraryInfo = libraryInfo;
-    }
+    private static final Logger logger = Logger.getLogger(NativeBinaryLoader.class.getName());
+    
+    /**
+     * A data structure that wraps the general basic dynamic library info.
+     */
+    protected LibraryInfo libraryInfo;
 
     /**
-     * Extracts and loads the variant specific binary from the output jar, handling the error messages.
+     * An Output stream concrete provider for library extraction.
      */
-    public void loadLibraryIfEnabled() {
-        try {
-            NativeDynamicLibrary.initWithLibraryInfo(libraryInfo);
-            /* extracts and loads the system specific library */
-            loadLibrary();
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Binary Not Found!", e);
-        }
+    protected FileExtractor libraryExtractor;
+
+    /**
+     * The native dynamic library object representing the library to extract and load.
+     */
+    protected NativeDynamicLibrary nativeDynamicLibrary;
+
+    /**
+     * Instantiates a native dynamic library loader to extract and load a system specific native dynamic library.
+     * 
+     * @param libraryInfo a data structure object representing the basic dynamic library info
+     */
+    public NativeBinaryLoader(LibraryInfo libraryInfo) {
+        this.libraryInfo = libraryInfo;
+        NativeDynamicLibrary.initWithLibraryInfo(libraryInfo);
     }
 
     /**
      * Extracts and loads the system and the architecture specific library from the output jar to the [user.dir].
      * 
+     * @param criterion the loading criterion, either {@link LoadingCriterion#INCREMENTAL_LOADING} or {@link LoadingCriterion#CLEAN_EXTRACTION}
      * @throws IOException if the library to extract is not present in the jar file
+     * @throws UnSupportedSystemError if the OS is not supported by jSnapLoader
      */
-    public void loadLibrary() throws IOException {
+    public void loadLibrary(LoadingCriterion criterion) throws IOException, UnSupportedSystemError {
+        /* extracts and loads the system specific library */
         if (NativeVariant.isLinux()) {
-            loadLinux();
+            loadLinux(criterion);
         } else if (NativeVariant.isWindows()) {
-            loadWindows();
+            loadWindows(criterion);
         } else if (NativeVariant.isMac()) {
-            loadMac();
+            loadMac(criterion);
         } else {
             throw new UnSupportedSystemError(NativeVariant.NAME.getProperty(), NativeVariant.ARCH.getProperty());
         }
     }
-
-    public void setIncrementalLoadEnabled(boolean incrementalLoadEnabled) {
-        this.incrementalLoadEnabled = incrementalLoadEnabled;
-    }
-
-    public boolean isIncrementalLoadEnabled() {
-        return incrementalLoadEnabled;
-    }
-
+    
+    /**
+     * Retrieves the native dynamic library object representing the library to extract and load.
+     * 
+     * @return an object representing the native dynamic library
+     */
     public NativeDynamicLibrary getNativeDynamicLibrary() {
-        if (nativeDynamicLibrary == null) {
-            throw new IllegalStateException("Native Dynamic library hasn't been initialized, ensure running the loader first!");
-        }
         return nativeDynamicLibrary;
     }
     
     /**
      * Loads the android binary automatically by its variant.
      */
-    private void loadAndroid() {
+    protected void loadAndroid() {
         System.loadLibrary(libraryInfo.getBaseName());
     }
 
     /**
-     * Extracts and loads the architecture specific library from [libs/linux] from the output jar to the [user.dir].
+     * Extracts and loads the architecture specific library from [libs/linux] from the specified jar to the extraction directory.
      * If the system is an android system then load the library directly.
      * 
+     * @param criterion the loading criterion, either {@link LoadingCriterion#INCREMENTAL_LOADING} or {@link LoadingCriterion#CLEAN_EXTRACTION}
      * @throws IOException if the binary to extract is not present in the jar file
      * @see NativeDynamicLibrary#LINUX_x86
      * @see NativeDynamicLibrary#LINUX_x86_64
      */
-    private void loadLinux() throws IOException {
+    protected void loadLinux(LoadingCriterion criterion) throws IOException {
         /* sanity check for android java vm (the dalvik) */
         if (NativeVariant.isAndroid()) {
             loadAndroid();
@@ -123,62 +126,55 @@ public final class NativeBinaryLoader {
         }
 
         if (!NativeVariant.isX86()) {
-            incrementalExtractBinary(NativeDynamicLibrary.LINUX_x86_64);
+            incrementalExtractBinary(NativeDynamicLibrary.LINUX_x86_64, criterion);
         } else {
-            incrementalExtractBinary(NativeDynamicLibrary.LINUX_x86);
+            incrementalExtractBinary(NativeDynamicLibrary.LINUX_x86, criterion);
         }
     }
 
     /**
-     * Extracts and loads the architecture specific library from [libs/windows] from the output jar to the [user.dir].
+     * Extracts and loads the architecture specific library from [libs/windows] from the specified jar to the extraction directory.
      * 
+     * @param criterion the loading criterion, either {@link LoadingCriterion#INCREMENTAL_LOADING} or {@link LoadingCriterion#CLEAN_EXTRACTION}
      * @throws IOException if the binary to extract is not present in the jar file
      * @see NativeDynamicLibrary#WIN_x86
      * @see NativeDynamicLibrary#WIN_x86_64
      */
-    private void loadWindows() throws IOException {
+    protected void loadWindows(LoadingCriterion criterion) throws IOException {
         if (!NativeVariant.isX86()) {
-            incrementalExtractBinary(NativeDynamicLibrary.WIN_x86_64);
+            incrementalExtractBinary(NativeDynamicLibrary.WIN_x86_64, criterion);
         } else {
-            incrementalExtractBinary(NativeDynamicLibrary.WIN_x86);
+            incrementalExtractBinary(NativeDynamicLibrary.WIN_x86, criterion);
         }
     }
 
     /**
-     * Extracts and loads the architecture specific library from [libs/macos] from the output jar to the [user.dir].
+     * Extracts and loads the architecture specific library from [libs/macos] from the specified jar to the extraction directory.
      * 
+     * @param criterion the loading criterion, either {@link LoadingCriterion#INCREMENTAL_LOADING} or {@link LoadingCriterion#CLEAN_EXTRACTION}
      * @throws IOException if the binary to extract is not present in the jar file
      * @see NativeDynamicLibrary#MAC_x86
      * @see NativeDynamicLibrary#MAC_x86_64
      */
-    private void loadMac() throws IOException {
+    protected void loadMac(LoadingCriterion criterion) throws IOException {
         if (!NativeVariant.isX86()) {
-            incrementalExtractBinary(NativeDynamicLibrary.MAC_x86_64);
+            incrementalExtractBinary(NativeDynamicLibrary.MAC_x86_64, criterion);
         } else {
-            incrementalExtractBinary(NativeDynamicLibrary.MAC_x86);
+            incrementalExtractBinary(NativeDynamicLibrary.MAC_x86, criterion);
         }
     }
 
     /**
-     * Loads a binary with a retry criteria.
+     * Loads a binary with a criterion.
      * 
-     * @params library the native library to load
-     * @params criteria a retry criteria, default is {@link RetryCriteria#RETRY_WITH_CLEAN_EXTRACTION}
+     * @param library the native library to load
      * @throws IOException in case the binary to be extracted is not found on the output jar
      */
-    private void loadBinary(final NativeDynamicLibrary library, final RetryCriteria criteria) throws IOException {
+    protected void loadBinary(final NativeDynamicLibrary library) throws IOException {
         try {
             System.load(library.getExtractedLibrary());
         } catch (final UnsatisfiedLinkError error) {
-            switch (criteria) {
-                case RETRY_WITH_INCREMENTAL_EXTRACTION:
-                    incrementalExtractBinary(library);
-                    break;
-                
-                default:
-                    cleanExtractBinary(library);
-                    break;
-            }
+            logger.log(Level.SEVERE, "Cannot load the dynamic library: " + library.getExtractedLibrary(), error);
         }
     }
     
@@ -188,13 +184,14 @@ public final class NativeBinaryLoader {
      * The retry criteria utilizes the {@link java.lang.UnsatisfiedLinkError} to cleanly re-extract and re-load the binary in case of 
      * broken binaries.
      * 
-     * @params library the native library to extract and load
+     * @param library the native library to extract and load
+     * @param criterion the dynamic loading criterion, either {@link LoadingCriterion#INCREMENTAL_LOADING} or {@link LoadingCriterion#CLEAN_EXTRACTION}
      * @throws IOException in case the binary to be extracted is not found on the output jar
      */
-    private void incrementalExtractBinary(NativeDynamicLibrary library) throws IOException {  
+    protected void incrementalExtractBinary(NativeDynamicLibrary library, LoadingCriterion criterion) throws IOException {  
         this.nativeDynamicLibrary = library;
-        if (isIncrementalLoadEnabled() && library.isExtracted()) {
-            loadBinary(library, RetryCriteria.RETRY_WITH_CLEAN_EXTRACTION);
+        if (criterion == LoadingCriterion.INCREMENTAL_LOADING && library.isExtracted()) {
+            loadBinary(library);
             return;
         }
         cleanExtractBinary(library);
@@ -207,18 +204,18 @@ public final class NativeBinaryLoader {
      * @throws IOException in case the binary to be extracted is not found on the specified jar or an 
      *                     interrupted I/O operation has occured
      */
-    private void cleanExtractBinary(NativeDynamicLibrary library) throws IOException {
+    protected void cleanExtractBinary(NativeDynamicLibrary library) throws IOException {
             libraryExtractor = initializeLibraryExtractor(library);
             libraryExtractor.extract();
             /* CLEAR RESOURCES AND RESET OBJECTS */
             libraryExtractor.setExtractionListener(() -> {
                 try{
-                    loadBinary(library, RetryCriteria.RETRY_WITH_CLEAN_EXTRACTION);
+                    loadBinary(library);
                     libraryExtractor.getFileLocator().close();
                     libraryExtractor.close();
                     libraryExtractor = null;
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    logger.log(Level.SEVERE, "Error while closing the resources!", e);
                 }
             });
     }
@@ -227,10 +224,10 @@ public final class NativeBinaryLoader {
      * Initializes a file extrator object if the file extractor object associated with this loader isnot defined.
      * 
      * @param library the native dynamic library to load 
-     * @return
-     * @throws IOException
+     * @return a new FileExtractor object that represents an output stream provider
+     * @throws IOException if the jar file to be located is not found, or if the extraction destination is not found
      */
-    private FileExtractor initializeLibraryExtractor(NativeDynamicLibrary library) throws IOException {
+    protected FileExtractor initializeLibraryExtractor(NativeDynamicLibrary library) throws IOException {
         if (library.getJarPath() != null) {
             return new LibraryExtractor(library.getJarPath(), library.getCompressedLibrary(), library.getExtractedLibrary());
         }

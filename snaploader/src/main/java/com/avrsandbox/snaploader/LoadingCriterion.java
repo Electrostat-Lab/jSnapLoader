@@ -32,19 +32,19 @@
 package com.avrsandbox.snaploader;
 
 /**
- * Represents an extraction retry criterion type.
+ * Represents an extraction/loading criterion type.
  * 
  * @author pavl_g
  */
-enum RetryCriteria {
+public enum LoadingCriterion {
     
     /**
-     * Extracts the native binary, ignoring its existence (the newly extracted binary will replace the current file).
+     * Extracts the native binary to the extraction directory, ignoring its existence (the newly extracted binary will replace the current file).
      */
-    RETRY_WITH_CLEAN_EXTRACTION, 
+    CLEAN_EXTRACTION, 
     
     /**
-     * Extracts the native binary only if the current binary isn't present on the [user.dir].
+     * Extracts the native binary only if the current binary isn't present on the extraction directory.
      */
-    RETRY_WITH_INCREMENTAL_EXTRACTION;
+    INCREMENTAL_LOADING;
 }

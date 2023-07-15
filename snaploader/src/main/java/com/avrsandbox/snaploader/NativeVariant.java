@@ -37,14 +37,17 @@ package com.avrsandbox.snaploader;
  * @author pavl_g
  */
 enum NativeVariant {
+    
     /**
      * The Operating system name property for this variant.
      */
     NAME(System.getProperty("os.name")),
+    
     /**
      * The Operating system architecture.
      */
     ARCH(System.getProperty("os.arch")),
+    
     /**
      * The current java virtual machine.
      */

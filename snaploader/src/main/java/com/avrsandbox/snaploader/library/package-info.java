@@ -31,6 +31,6 @@
  */
 
 /**
- * Provides specialized implementation for {@link com.avrsandbox.snaploader.library.LibraryLocator} and {@link com.avrsandbox.snaploader.library.LibraryExtractor}.
+ * Provides specialized implementation for {@link com.avrsandbox.snaploader.file.FileLocator} and {@link com.avrsandbox.snaploader.file.LibraryExtractor}.
  */
 package com.avrsandbox.snaploader.library;

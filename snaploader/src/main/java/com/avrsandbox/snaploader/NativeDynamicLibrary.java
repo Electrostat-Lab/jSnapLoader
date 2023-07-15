@@ -75,8 +75,8 @@ public enum NativeDynamicLibrary {
     private String libraryDirectory;
     private String library;
     private String extractionDir;
-    protected static final String fileSeparator = System.getProperty("file.separator");
-    protected static final String userdir = System.getProperty("user.dir");
+    private static final String fileSeparator = System.getProperty("file.separator");
+    private static final String userdir = System.getProperty("user.dir");
 
     /**
      * Creates a Native dynamic library from a relative directory and a library file.
