@@ -32,6 +32,7 @@
 package com.avrsandbox.snaploader.examples;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Tests multiple loads inside the same thread.
@@ -40,7 +41,7 @@ import java.io.File;
  */
 public final class TestMultipleLoads {
     
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, IOException {
         TestBasicFeatures.main(args);
         new File(TestBasicFeatures.finalAbsolutePath).delete();
         Thread.sleep(5000);
