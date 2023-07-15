@@ -200,7 +200,7 @@ public class NativeBinaryLoader {
     /**
      * Cleanly extracts and loads the native binary to the current [user.dir].
      * 
-     * @params library the library to extract and load
+     * @param library the library to extract and load
      * @throws IOException in case the binary to be extracted is not found on the specified jar or an 
      *                     interrupted I/O operation has occured
      */

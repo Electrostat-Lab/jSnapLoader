@@ -47,7 +47,11 @@ public final class LibraryInfo {
      * Instantiates a library info data structure pointing to a library in an external jar with jarPath.
      * 
      * @param jarPath a path to an external jar to locate the library inside, "null" to use the project jar (classpath).
+     * @param directory  the directory inside the compression used for locating the native dynamic library, "null" to use 
+     *                   the default directory defined by {@link NativeDynamicLibrary}.
      * @param baseName the library basename, for example: 'lib-basename.so'.
+     * @param extractionDir the extraction destination in absolute string format, "null" if the current [user.dir] is 
+     *                      specified as the extraction directory
      */
     public LibraryInfo(String jarPath, String directory, String baseName, String extractionDir) {
         this.jarPath = jarPath;
