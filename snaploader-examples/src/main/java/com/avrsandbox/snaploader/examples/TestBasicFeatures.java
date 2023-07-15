@@ -31,8 +31,10 @@
  */
 package com.avrsandbox.snaploader.examples;
 
+import java.io.IOException;
 import com.avrsandbox.snaploader.LibraryInfo;
 import com.avrsandbox.snaploader.NativeBinaryLoader;
+import com.avrsandbox.snaploader.LoadingCriterion;
 
 /**
  * Tests basic features of the {@link NativeBinaryLoader} API.
@@ -54,12 +56,11 @@ public final class TestBasicFeatures {
 
     protected static NativeBinaryLoader loader;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         if (loader == null) {
             loader = new NativeBinaryLoader(libraryInfo);
         }
-        loader.setIncrementalLoadEnabled(true);
-        loader.loadLibraryIfEnabled();
+        loader.loadLibrary(LoadingCriterion.INCREMENTAL_LOADING);
         /* Native dynamic library properties */
         System.out.println("Jar Path: " + loader.getNativeDynamicLibrary().getJarPath());
         System.out.println("Library Directory: " + loader.getNativeDynamicLibrary().getLibraryDirectory());
