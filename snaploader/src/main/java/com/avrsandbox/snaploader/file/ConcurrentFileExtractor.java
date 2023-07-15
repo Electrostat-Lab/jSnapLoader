@@ -29,40 +29,51 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.avrsandbox.snaploader.library;
+package com.avrsandbox.snaploader.file;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import com.avrsandbox.snaploader.file.ConcurrentFileExtractor;
-import com.avrsandbox.snaploader.file.FileExtractor;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Represents a thread-safe dynamic library (.so, .dll, .dylib) extractor based on the {@link FileExtractor}.
+ * A thread-safe implementation of the file extractor API.
  * 
  * @author pavl_g
  */
-public class LibraryExtractor extends ConcurrentFileExtractor {
+public class ConcurrentFileExtractor extends FileExtractor {
+    
+    /**
+     * An Object that controls the monitor.
+     */
+    protected final ReentrantLock lock = new ReentrantLock();
 
     /**
-     * Instantiates a native dynamic library extractor with a jar path, library path and extract destination file path.
+     * Instantiates a thread-safe file extractor instance.
      * 
-     * @param jarPath an absolute path to the jar file containing the library
-     * @param libraryPath the path of the library inside the jar file
-     * @param destination the extraction destination file path
-     * @throws IOException if the jar file to be located is not found, or if the extraction destination is not found
+     * @param fileLocator locates a file inside a zip compression
+     * @param destination an absolute file path representing the extraction destination file
+     * @throws FileNotFoundException if the destination file path is not found
      */
-    public LibraryExtractor(String jarPath, String libraryPath, String destination) throws IOException {
-        super(new LibraryLocator(jarPath, libraryPath), destination);
+    public ConcurrentFileExtractor(FileLocator fileLocator, String destination) throws FileNotFoundException {
+        super(fileLocator, destination);
     }
 
     /**
-     * Instantiates a native dynamic library extractor with a library path and an extract destination file path. This 
-     * object locates a dynmaic native library inside the stock jar file based on a classpath input stream.
-     * 
-     * @param libraryPath the path of the library inside the jar file 
-     * @param destination the extraction destination file path
-     * @throws IOException if the jar file to be located is not found, or if the extraction destination is not found
+     * Instantiates an empty file extractor instance.
      */
-    public LibraryExtractor(String libraryPath, String destination) throws IOException {
-        super(new LibraryLocator(libraryPath), destination);
+    protected ConcurrentFileExtractor() { 
+        super();
+    }
+
+    @Override
+    public void extract() throws IOException {
+        try {
+            /* CRITICAL SECTION STARTS */
+            lock.lock();
+            super.extract();
+        } finally {
+            lock.unlock();
+            /* CRITICAL SECTION ENDS */
+        }
     }
 }

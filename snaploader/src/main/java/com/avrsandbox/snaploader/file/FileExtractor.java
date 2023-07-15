@@ -36,7 +36,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Extracts a file from a zip compression to a destination file.
@@ -50,15 +49,20 @@ public class FileExtractor implements OutputStreamProvider {
      */
     protected FileLocator fileLocator;
     
+    /**
+     * Provides an output byte stream for this FileExtractor object.
+     */
     protected OutputStream fileOutputStream;
 
+    /**
+     * An interface object to provide the extraction process with a command-state pattern.
+     */
     protected ExtractionListener extractionListener;
 
     /**
      * An absolute path for the destination file of the extraction process.
      */
     protected String destination;
-    private final ReentrantLock lock = new ReentrantLock();
     private static final int EOF = -1; /* End-of-file */
 
     /**
@@ -86,8 +90,6 @@ public class FileExtractor implements OutputStreamProvider {
      */
     public void extract() throws IOException {
         try {
-            /* CRITICAL SECTION STARTS */
-            lock.lock();
             InputStream libraryStream = fileLocator.getFileInputStream();
             /* Extracts the shipped native files */
             final byte[] buffer = new byte[libraryStream.available()];
@@ -99,8 +101,6 @@ public class FileExtractor implements OutputStreamProvider {
             if (extractionListener != null) {
                 extractionListener.onExtractionCompleted();
             }
-            lock.unlock();
-            /* CRITICAL SECTION ENDS */
         }
     }
 
@@ -120,6 +120,13 @@ public class FileExtractor implements OutputStreamProvider {
         return fileLocator;
     }
 
+    /**
+     * Sets the extraction listener action to dispatch the {@link ExtractionListener#onExtractionCompleted()}
+     * when the extraction task is completed.
+     * 
+     * @param extractionListener an implementation object of the extraction listener dispatched when the 
+     *                           extraction is completed
+     */
     public void setExtractionListener(ExtractionListener extractionListener) {
         this.extractionListener = extractionListener;
     }

@@ -59,28 +59,61 @@ public final class LibraryInfo {
     /**
      * Retrieves the dynamic library basename.
      * 
-     * @return the library base-name in string
+     * @return the library base-name in string (non-null)
      */
     public String getBaseName() {
         return baseName;
     }
 
+    /**
+     * Retrieves the jar file path, the jar is the compression used to locate the native dynamic library to
+     * be extracted and loaded by {@link NativeBinaryLoader}.
+     * 
+     * @return the jar absolute file path in a string format, "null" if the classpath is specified instead of 
+     *         an external jar compression
+     */
     public String getJarPath() {
         return jarPath;
     }
 
+    /**
+     * Retrieves the directory inside the compression used for locating the native dynamic library.
+     * 
+     * @return the path to the dynamic library file inside the compression, "null" if the 
+     *         default variant-based directories are set to be used
+     */
     public String getDirectory() {
         return directory;
     }
 
+    /**
+     * Retrieves the extraction absolute directory.
+     * 
+     * @return the extraction destination in absolute string format, "null" if the current [user.dir] is 
+     *         specified as the extraction directory
+     */
     public String getExtractionDir() {
         return extractionDir;
     }
 
+    /**
+     * Sets the absolute path to the jar file to locate the native dynamic library to be 
+     * extracted and loaded, "null" to use the "classpath (the stock jar)"" to load the library file.
+     * 
+     * @param jarPath the absolute path to the jar file to locate the library to be extracted, "null" to 
+     *                use the "classpath" (aka. the stock jar)
+     */
     public void setJarPath(String jarPath) {
         this.jarPath = jarPath;
     }
 
+    /**
+     * Sets the directory to the native dynamic library inside the jar compression, "null" to use
+     * the default directories specified for each variant by {@link NativeBinaryLoader}.
+     * 
+     * @param directory the location to the native dynamic library inside the jar compression, "null"
+     *                  to use the default variant-based directories
+     */
     public void setDirectory(String directory) {
         this.directory = directory;
     }
@@ -88,12 +121,19 @@ public final class LibraryInfo {
     /**
      * Adjusts the library base name in a dynamic library name (lib-[basename]).
      * 
-     * @param baseName a new base-name to assign
+     * @param baseName a new base-name to assign (non-null)
      */
     public void setBaseName(final String baseName) {
         this.baseName = baseName;
     }
 
+    /**
+     * Sets the extraction directory used for extracting the native dynamic library in the 
+     * form of an absolute directory, "null" to use the current [user.dir].
+     * 
+     * @param extractionDir the absolute extraction directory to which the located library
+     *                      will be extracted to, "null" to set the extraction to the current [user.dir]
+     */
     public void setExtractionDir(String extractionDir) {
         this.extractionDir = extractionDir;
     }
