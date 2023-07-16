@@ -46,7 +46,10 @@ import com.avrsandbox.snaploader.library.LibraryExtractor;
  */
 public class NativeBinaryLoader {
 
-    private static final Logger logger = Logger.getLogger(NativeBinaryLoader.class.getName());
+    /**
+     * NativeBinaryLoader logger object.
+     */
+    protected static final Logger logger = Logger.getLogger(NativeBinaryLoader.class.getName());
     
     /**
      * A data structure that wraps the general basic dynamic library info.
@@ -205,19 +208,19 @@ public class NativeBinaryLoader {
      *                     interrupted I/O operation has occured
      */
     protected void cleanExtractBinary(NativeDynamicLibrary library) throws IOException {
-            libraryExtractor = initializeLibraryExtractor(library);
-            libraryExtractor.extract();
-            /* CLEAR RESOURCES AND RESET OBJECTS */
-            libraryExtractor.setExtractionListener(() -> {
-                try{
-                    loadBinary(library);
-                    libraryExtractor.getFileLocator().close();
-                    libraryExtractor.close();
-                    libraryExtractor = null;
-                } catch (Exception e) {
-                    logger.log(Level.SEVERE, "Error while closing the resources!", e);
-                }
-            });
+        libraryExtractor = initializeLibraryExtractor(library);
+        libraryExtractor.extract();
+        /* CLEAR RESOURCES AND RESET OBJECTS */
+        libraryExtractor.setExtractionListener(() -> {
+            try{
+                loadBinary(library);
+                libraryExtractor.getFileLocator().close();
+                libraryExtractor.close();
+                libraryExtractor = null;
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "Error while closing the resources!", e);
+            }
+        });
     }
 
     /**
