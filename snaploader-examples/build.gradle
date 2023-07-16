@@ -19,6 +19,10 @@ tasks.register("TestZipExtractor") {
     application.mainClass = 'com.avrsandbox.snaploader.examples.TestZipExtractor'
 }
 
+tasks.register("TestMultiThreading") {
+    application.mainClass = 'com.avrsandbox.snaploader.examples.TestMultiThreading'
+}
+
 dependencies {
     implementation project(path: ':snaploader')
 }
