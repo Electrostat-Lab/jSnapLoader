@@ -34,6 +34,7 @@ package com.avrsandbox.snaploader.examples;
 import java.io.IOException;
 import com.avrsandbox.snaploader.LibraryInfo;
 import com.avrsandbox.snaploader.NativeBinaryLoader;
+import com.avrsandbox.snaploader.platform.NativeVariant;
 import com.avrsandbox.snaploader.LoadingCriterion;
 
 /**
@@ -58,14 +59,26 @@ public final class TestBasicFeatures {
 
     public static void main(String[] args) throws IOException {
         if (loader == null) {
-            loader = new NativeBinaryLoader(libraryInfo);
+            loader = new NativeBinaryLoader(libraryInfo).initPlatformLibrary();
         }
-        loader.loadLibrary(LoadingCriterion.INCREMENTAL_LOADING);
+        loader.setLoggingEnabled(true);
+        loader.setRetryWithCleanExtraction(true);
         /* Native dynamic library properties */
+        printDetails(loader);
+        loader.loadLibrary(LoadingCriterion.INCREMENTAL_LOADING);
+    }
+
+    protected static void printDetails(NativeBinaryLoader loader) {
+        System.out.println("--------------------------------------------------------------");
+        System.out.println("OS: " + NativeVariant.NAME.getProperty());
+        System.out.println("ARCH: " + NativeVariant.ARCH.getProperty());
+        System.out.println("VM: " + NativeVariant.VM.getProperty());
+        System.out.println("--------------------------------------------------------------");
         System.out.println("Jar Path: " + loader.getNativeDynamicLibrary().getJarPath());
         System.out.println("Library Directory: " + loader.getNativeDynamicLibrary().getLibraryDirectory());
         System.out.println("Compressed library path: " + loader.getNativeDynamicLibrary().getCompressedLibrary());
         System.out.println("Extracted library absolute path: " + loader.getNativeDynamicLibrary().getExtractedLibrary());
-        System.out.println("Is Extracted: " + loader.getNativeDynamicLibrary().isExtracted());        
+        System.out.println("Is Extracted: " + loader.getNativeDynamicLibrary().isExtracted()); 
+        System.out.println("--------------------------------------------------------------");
     }
 }
