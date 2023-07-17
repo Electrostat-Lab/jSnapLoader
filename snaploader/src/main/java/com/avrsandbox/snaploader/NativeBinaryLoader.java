@@ -277,6 +277,7 @@ public class NativeBinaryLoader {
      * Log data with a level and a throwable (optional).
      * 
      * @param level the logger level
+     * @param sourceMethod the source of this call
      * @param msg a string formatted message to display 
      * @param throwable optional param for error messages
      */
