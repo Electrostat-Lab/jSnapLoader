@@ -65,7 +65,7 @@ public final class TestBasicFeatures {
         loader.setRetryWithCleanExtraction(true);
         /* Native dynamic library properties */
         printDetails(loader);
-        loader.loadLibrary(LoadingCriterion.CLEAN_EXTRACTION);
+        loader.loadLibrary(LoadingCriterion.INCREMENTAL_LOADING);
     }
 
     protected static void printDetails(NativeBinaryLoader loader) {

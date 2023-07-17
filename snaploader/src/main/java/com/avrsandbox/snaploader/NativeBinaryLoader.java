@@ -226,6 +226,7 @@ public class NativeBinaryLoader {
                 return;
             }
             System.load(library.getExtractedLibrary());
+            log(Level.INFO, "loadBinary", "Successfully loaded library: " + library.getExtractedLibrary(), null);
         } catch (final UnsatisfiedLinkError error) {
             log(Level.SEVERE, "loadBinary", "Cannot load the dynamic library: " + library.getExtractedLibrary(), error);
             /* Retry with clean extract */
@@ -247,11 +248,11 @@ public class NativeBinaryLoader {
         /* CLEAR RESOURCES AND RESET OBJECTS ON-EXTRACTION */
         libraryExtractor.setExtractionListener(() -> {
             try{
-                loadBinary(library);
                 libraryExtractor.getFileLocator().close();
                 libraryExtractor.close();
                 libraryExtractor = null;
                 log(Level.INFO, "cleanExtractBinary", "Extracted successfully to " + library.getExtractedLibrary(), null);
+                loadBinary(library);
             } catch (Exception e) {
                 log(Level.SEVERE, "cleanExtractBinary", "Error while closing the resources!", e);
             }
