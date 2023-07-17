@@ -31,6 +31,8 @@
  */
 package com.avrsandbox.snaploader;
 
+import com.avrsandbox.snaploader.platform.NativeDynamicLibrary;
+
 /**
  * Provides a library placeholder with an adjustable baseName {@link LibraryInfo#baseName}.
  * 
