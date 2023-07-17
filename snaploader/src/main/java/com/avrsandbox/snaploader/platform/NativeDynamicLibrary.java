@@ -29,9 +29,10 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.avrsandbox.snaploader;
+package com.avrsandbox.snaploader.platform;
 
 import java.io.File;
+import com.avrsandbox.snaploader.LibraryInfo;
 
 /**
  * Represents a native binary domain with a {@link NativeDynamicLibrary#libraryDirectory} and a {@link NativeDynamicLibrary#library}.
@@ -41,6 +42,7 @@ import java.io.File;
  * @author pavl_g
  */
 public enum NativeDynamicLibrary {
+    
     /**
      * Represents a linux x86 binary with 64-bit instruction set.
      */
@@ -98,7 +100,7 @@ public enum NativeDynamicLibrary {
      * 
      * @param libraryInfo wraps abstract data representing the native library
      */
-    static void initWithLibraryInfo(LibraryInfo libraryInfo) {
+    public static void initWithLibraryInfo(LibraryInfo libraryInfo) {
         /* Initializes the library basename */
         if (libraryInfo.getBaseName() != null) {
             NativeDynamicLibrary.LINUX_x86.library = "lib" + libraryInfo.getBaseName() + ".so";

@@ -29,14 +29,14 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.avrsandbox.snaploader;
+package com.avrsandbox.snaploader.platform;
 
 /**
  * Represents a native variant (OS + ARCH + VM), each of which is represented as an object of a property.
  * 
  * @author pavl_g
  */
-enum NativeVariant {
+public enum NativeVariant {
     
     /**
      * The Operating system name property for this variant.

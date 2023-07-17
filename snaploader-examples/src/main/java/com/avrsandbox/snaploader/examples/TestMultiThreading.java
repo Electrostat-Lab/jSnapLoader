@@ -34,7 +34,6 @@ package com.avrsandbox.snaploader.examples;
 import java.io.IOException;
 import com.avrsandbox.snaploader.LoadingCriterion;
 import com.avrsandbox.snaploader.ConcurrentNativeBinaryLoader;
-import com.avrsandbox.snaploader.NativeDynamicLibrary;
 import com.avrsandbox.snaploader.UnSupportedSystemError;
 
 /**
@@ -86,13 +85,10 @@ public final class TestMultiThreading {
         }
     }, "Thread-Three");
 
-    public static void main(String[] args) {
-        TestBasicFeatures.loader = new ConcurrentNativeBinaryLoader(TestBasicFeatures.libraryInfo);
-        final NativeDynamicLibrary nativeDynamicLibrary = TestBasicFeatures.loader.getNativeDynamicLibrary();
-        // System.out.println("Jar file path: " + nativeDynamicLibrary.getJarPath());
-        // System.out.println("Library directory: " + nativeDynamicLibrary.getLibraryDirectory());
-        // System.out.println("Compressed library: " + nativeDynamicLibrary.getCompressedLibrary());
-        // System.out.println("Proposed extracted library: " + nativeDynamicLibrary.getExtractedLibrary());
+    public static void main(String[] args) throws UnSupportedSystemError, IOException {
+        TestBasicFeatures.loader = new ConcurrentNativeBinaryLoader(TestBasicFeatures.libraryInfo).initPlatformLibrary();
+        TestBasicFeatures.loader.setLoggingEnabled(true);
+        TestBasicFeatures.printDetails(TestBasicFeatures.loader);
         
         thread0.start();
         thread1.start();

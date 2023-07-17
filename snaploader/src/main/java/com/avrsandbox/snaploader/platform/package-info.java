@@ -29,42 +29,8 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.avrsandbox.snaploader;
-
-import java.io.IOException;
-import java.util.concurrent.locks.ReentrantLock;
-import com.avrsandbox.snaploader.platform.NativeDynamicLibrary;
 
 /**
- * A thread-safe implementation for the NativeBinaryLoader.
- * 
- * @author pavl_g
+ * Provides platform-dependent specifications to handle the abstract interface for the jSnapLoader.
  */
-public class ConcurrentNativeBinaryLoader extends NativeBinaryLoader {
-
-    /**
-     * The monitor object.
-     */
-    protected final ReentrantLock lock = new ReentrantLock();
-
-    /**
-     * Instantiates a thread-safe {@link NativeBinaryLoader} object.
-     * 
-     * @param libraryInfo a data structure object holding the platform independent data for the library to load
-     */
-    public ConcurrentNativeBinaryLoader(LibraryInfo libraryInfo) {
-        super(libraryInfo);
-    }
-    
-    @Override
-    protected void cleanExtractBinary(NativeDynamicLibrary library) throws IOException {
-        try {
-            /* CRITICAL SECTION STARTS */
-            lock.lock();
-            super.cleanExtractBinary(library);
-        } finally {
-            lock.unlock();
-            /* CRITICAL SECTION ENDS */
-        }
-    }
-}
+package com.avrsandbox.snaploader.platform;
