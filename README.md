@@ -36,11 +36,10 @@ Features:
 - [x] Extract native libraries from the stock jar library (classpath).
 - [x] Locate external jars and extract native libraries from them.
 - [x] Define an extract directory.
+- [x] Retry Criterion with clean extraction (NEW).
+- [x] Exposed the platform-dependent library `NativeDynamicLibrary` (NEW).
+- [x] Exposed the `NativeVariant` providing system properties.
 - [ ] Extract automatically based on the application name and version.
-
-Wish-list:
-- [x] External jar locator: a utility to locate jar files to be able to extract native libraries from.
-- [x] External library locator: a utility to locate dynamic libraries directly.
 
 Documentation-list:
 - [ ] Architecture paradigm.
