@@ -35,6 +35,7 @@ import java.io.IOException;
 import com.avrsandbox.snaploader.LibraryInfo;
 import com.avrsandbox.snaploader.NativeBinaryLoader;
 import com.avrsandbox.snaploader.platform.NativeVariant;
+import com.avrsandbox.snaploader.platform.PropertiesProvider;
 import com.avrsandbox.snaploader.LoadingCriterion;
 
 /**
@@ -43,17 +44,11 @@ import com.avrsandbox.snaploader.LoadingCriterion;
  * @author pavl_g
  */
 public final class TestBasicFeatures {
-
-    protected static final String userdir = System.getProperty("user.dir");
-    protected static final String fileSeparator = System.getProperty("file.separator");
-    protected static final String jar = "jme3-alloc-desktop-1.0.0-pre-gamma-2.jar";
-    protected static final String libraryBasename = "jmealloc";
-
-    protected static final String libraryAbsolutePath = userdir + fileSeparator + "libs";
-    protected static final String jarFile = libraryAbsolutePath + fileSeparator + jar;
-    protected static final LibraryInfo libraryInfo = new LibraryInfo(jarFile, null, libraryBasename, libraryAbsolutePath);
-
-    protected static final String finalAbsolutePath = libraryAbsolutePath + fileSeparator + "libjmealloc.so";
+                                                     
+    protected static final LibraryInfo libraryInfo = new LibraryInfo(getJarFile(), 
+                                                                     null, 
+                                                                     getLibraryBaseName(), 
+                                                                     getLibrariesAbsolutePath());
 
     protected static NativeBinaryLoader loader;
 
@@ -80,5 +75,29 @@ public final class TestBasicFeatures {
         System.out.println("Extracted library absolute path: " + loader.getNativeDynamicLibrary().getExtractedLibrary());
         System.out.println("Is Extracted: " + loader.getNativeDynamicLibrary().isExtracted()); 
         System.out.println("--------------------------------------------------------------");
+    }
+
+    protected static String getLibrariesAbsolutePath() {
+        return PropertiesProvider.USER_DIR.getSystemProperty() + 
+                    PropertiesProvider.FILE_SEPARATOR.getSystemProperty() + "libs";
+    }
+
+    protected static String getJarFilePath() {
+        return getLibrariesAbsolutePath() + 
+                    PropertiesProvider.FILE_SEPARATOR.getSystemProperty() + getJarFile();
+    }
+
+    protected static String getNativeDynamicLibraryPath() {
+        return getLibrariesAbsolutePath() + 
+                    PropertiesProvider.FILE_SEPARATOR.getSystemProperty() + 
+                    "lib" + getLibraryBaseName() + ".so";
+    }
+
+    protected static String getJarFile() {
+        return "jme3-alloc-desktop-1.0.0-pre-gamma-2.jar";
+    }
+
+    protected static String getLibraryBaseName() {
+        return "jmealloc";
     }
 }

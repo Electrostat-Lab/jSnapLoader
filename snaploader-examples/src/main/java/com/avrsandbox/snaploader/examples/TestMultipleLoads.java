@@ -43,10 +43,10 @@ public final class TestMultipleLoads {
     
     public static void main(String[] args) throws InterruptedException, IOException {
         TestBasicFeatures.main(args);
-        new File(TestBasicFeatures.finalAbsolutePath).delete();
+        new File(TestBasicFeatures.getNativeDynamicLibraryPath()).delete();
         Thread.sleep(5000);
         TestBasicFeatures.main(args);
-        new File(TestBasicFeatures.finalAbsolutePath).delete();
+        new File(TestBasicFeatures.getNativeDynamicLibraryPath()).delete();
         Thread.sleep(5000);
         TestBasicFeatures.main(args);
     }
