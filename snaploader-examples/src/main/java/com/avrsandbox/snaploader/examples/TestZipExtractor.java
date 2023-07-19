@@ -35,6 +35,7 @@ import java.io.IOException;
 import com.avrsandbox.snaploader.file.FileExtractor;
 import com.avrsandbox.snaploader.file.FileLocator;
 import com.avrsandbox.snaploader.file.ZipCompressionType;
+import com.avrsandbox.snaploader.platform.PropertiesProvider;
 
 /**
  * Tests extracting an image compression from a Zip compression type file using {@link FileExtractor} API.
@@ -42,15 +43,37 @@ import com.avrsandbox.snaploader.file.ZipCompressionType;
  * @author pavl_g
  */
 public class TestZipExtractor {
-    
-    protected static final String directory = TestBasicFeatures.libraryAbsolutePath + TestBasicFeatures.fileSeparator + "jmelogo700.zip";
-    protected static final String destination = TestBasicFeatures.libraryAbsolutePath + TestBasicFeatures.fileSeparator + "jmelogo700.png";
-
+     
     public static void main(String[] args) throws IOException {
         /* Locates the image inside the Zip Compression */
-        final FileLocator fileLocator = new FileLocator(directory, "jmelogo700.png", ZipCompressionType.ZIP);
+        final FileLocator fileLocator = new FileLocator(getZipAbsolutePath(), getFilePath(), ZipCompressionType.ZIP);
         /* Extracts the image file from the Zip Compression */
-        final FileExtractor fileExtractor = new FileExtractor(fileLocator, destination);
+        final FileExtractor fileExtractor = new FileExtractor(fileLocator, getExtractionPath());
+        /* CLOSE/CLEAR I/O Resources */
+        fileExtractor.setExtractionListener(() -> clearResources(fileExtractor));
         fileExtractor.extract();
+    }
+
+    protected static String getZipAbsolutePath() {
+        return TestBasicFeatures.getLibrariesAbsolutePath() + 
+                PropertiesProvider.FILE_SEPARATOR.getSystemProperty() + "jmelogo700.zip";
+    }
+
+    protected static String getExtractionPath() {
+        return TestBasicFeatures.getLibrariesAbsolutePath() + 
+                PropertiesProvider.FILE_SEPARATOR.getSystemProperty() + getFilePath();
+    }
+
+    protected static String getFilePath() {
+        return "jmelogo700.png";
+    }
+
+    private static void clearResources(FileExtractor fileExtractor) {
+        try {
+            fileExtractor.getFileLocator().close();
+            fileExtractor.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }    
     }
 }
