@@ -1,4 +1,5 @@
 # <img src="https://github.com/Software-Hardware-Codesign/jSnapLoader/assets/60224159/85ac90d0-7d10-4d7c-a57e-390246ac5dee" width=60 height=60/> jSnapLoader
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/ae403570e5dc453e9e88bbeeddbb261a)](https://app.codacy.com/gh/Software-Hardware-Codesign/jSnapLoader?utm_source=github.com&utm_medium=referral&utm_content=Software-Hardware-Codesign/jSnapLoader&utm_campaign=Badge_Grade)
 [![](https://github.com/Software-Hardware-Codesign/jSnapLoader/actions/workflows/build-test.yml/badge.svg)]() [![](https://github.com/Software-Hardware-Codesign/jSnapLoader/actions/workflows/build-deploy.yml/badge.svg)]()
 
 A high-performance cross-platform dynamic library loader API for JVM Applications.
