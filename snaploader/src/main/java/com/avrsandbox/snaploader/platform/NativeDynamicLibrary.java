@@ -77,8 +77,6 @@ public enum NativeDynamicLibrary {
     private String libraryDirectory;
     private String library;
     private String extractionDir;
-    private static final String fileSeparator = System.getProperty("file.separator");
-    private static final String userdir = System.getProperty("user.dir");
 
     /**
      * Creates a Native dynamic library from a relative directory and a library file.
@@ -162,7 +160,7 @@ public enum NativeDynamicLibrary {
      * @return a string representing the library path within the jar compression
      */
     public String getCompressedLibrary() {
-        return libraryDirectory + "/" + library;
+        return libraryDirectory + PropertiesProvider.ZIP_FILE_SEPARATOR.getSystemProperty() + library;
     }
 
     /**
@@ -172,9 +170,10 @@ public enum NativeDynamicLibrary {
      */
     public String getExtractedLibrary() {
         if (extractionDir != null) {
-            return extractionDir + fileSeparator + library;
+            return extractionDir + PropertiesProvider.FILE_SEPARATOR.getSystemProperty() + library;
         }
-        return userdir + fileSeparator + library;
+        return PropertiesProvider.USER_DIR.getSystemProperty() + 
+                    PropertiesProvider.FILE_SEPARATOR.getSystemProperty() + library;
     }
 
     /**
