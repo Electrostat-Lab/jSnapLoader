@@ -45,7 +45,7 @@ import com.avrsandbox.snaploader.LoadingCriterion;
  */
 public final class TestBasicFeatures {
                                                      
-    protected static final LibraryInfo libraryInfo = new LibraryInfo(getJarFile(), 
+    protected static final LibraryInfo libraryInfo = new LibraryInfo(getJarFilePath(), 
                                                                      null, 
                                                                      getLibraryBaseName(), 
                                                                      getLibrariesAbsolutePath());
