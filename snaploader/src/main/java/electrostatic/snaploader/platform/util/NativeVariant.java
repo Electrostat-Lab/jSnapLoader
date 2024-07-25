@@ -116,16 +116,16 @@ public enum NativeVariant {
      * @return true if the current OS architecture is of an x86 chipset, false otherwise.
      */
     public static boolean isX86() {
-        return OS_ARCH.getProperty().contains("x86") | OS_ARCH.getProperty().contains("amd");
+        return OS_ARCH.getProperty().contains("x86") || OS_ARCH.getProperty().contains("i386");
     }
 
     /**
-     * Tests whether the current system architecture is a 32-bit chipset.
+     * Tests whether the current CPU vendor is an AMD vendor (e.g., x86_64 Intel Chipset).
      *
-     * @return true if the current OS architecture is a 32-bit chipset, false otherwise.
+     * @return true if the current CPU vendor is an AMD vendor.
      */
-    public static boolean is32() {
-        return OS_ARCH.getProperty().contains("32");
+    public static boolean isAMD() {
+        return OS_ARCH.getProperty().contains("amd");
     }
 
     /**
@@ -134,8 +134,7 @@ public enum NativeVariant {
      * @return true if the current CPU vendor is an ARM vendor.
      */
     public static boolean isARM() {
-        return OS_ARCH.getProperty().contains("arm") ||
-                OS_ARCH.getProperty().contains("aarch");
+        return OS_ARCH.getProperty().contains("arm") || OS_ARCH.getProperty().contains("aarch");
     }
 
     /**

@@ -42,16 +42,16 @@ package electrostatic.snaploader.platform.util;
 public final class PlatformPredicate {
 
     public static final PlatformPredicate LINUX_X86 = new PlatformPredicate(NativeVariant.isLinux() && NativeVariant.isX86());
-    public static final PlatformPredicate LINUX_X86_64 = new PlatformPredicate(NativeVariant.isLinux() && NativeVariant.isX86() && NativeVariant.is64());
-    public static final PlatformPredicate LINUX_ARM_32 = new PlatformPredicate(NativeVariant.isLinux() && NativeVariant.isARM() && NativeVariant.is32());
+    public static final PlatformPredicate LINUX_X86_64 = new PlatformPredicate(NativeVariant.isLinux() && NativeVariant.isAMD() && NativeVariant.is64());
+    public static final PlatformPredicate LINUX_ARM_32 = new PlatformPredicate(NativeVariant.isLinux() && NativeVariant.isARM());
     public static final PlatformPredicate LINUX_ARM_64 = new PlatformPredicate(NativeVariant.isLinux() && NativeVariant.isARM() && NativeVariant.is64());
     public static final PlatformPredicate MACOS_X86 = new PlatformPredicate(NativeVariant.isMac() && NativeVariant.isX86());
-    public static final PlatformPredicate MACOS_X86_64 = new PlatformPredicate(NativeVariant.isMac() && NativeVariant.isX86() && NativeVariant.is64());
-    public static final PlatformPredicate MACOS_ARM_32 = new PlatformPredicate(NativeVariant.isMac() && NativeVariant.isARM() && NativeVariant.is32());
+    public static final PlatformPredicate MACOS_X86_64 = new PlatformPredicate(NativeVariant.isMac() && NativeVariant.isAMD() && NativeVariant.is64());
+    public static final PlatformPredicate MACOS_ARM_32 = new PlatformPredicate(NativeVariant.isMac() && NativeVariant.isARM());
     public static final PlatformPredicate MACOS_ARM_64 = new PlatformPredicate(NativeVariant.isMac() && NativeVariant.isARM() && NativeVariant.is64());
     public static final PlatformPredicate WIN_X86 = new PlatformPredicate(NativeVariant.isWindows() && NativeVariant.isX86());
-    public static final PlatformPredicate WIN_X86_64 = new PlatformPredicate(NativeVariant.isWindows() && NativeVariant.isX86() && NativeVariant.is64());
-    public static final PlatformPredicate WIN_ARM_32 = new PlatformPredicate(NativeVariant.isWindows() && NativeVariant.isARM() && NativeVariant.is32());
+    public static final PlatformPredicate WIN_X86_64 = new PlatformPredicate(NativeVariant.isWindows() && NativeVariant.isAMD() && NativeVariant.is64());
+    public static final PlatformPredicate WIN_ARM_32 = new PlatformPredicate(NativeVariant.isWindows() && NativeVariant.isARM());
     public static final PlatformPredicate WIN_ARM_64 = new PlatformPredicate(NativeVariant.isWindows() && NativeVariant.isARM() && NativeVariant.is64());
 
     private final boolean predicate;
