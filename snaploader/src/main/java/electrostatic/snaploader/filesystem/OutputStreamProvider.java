@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, AvrSandbox, jSnapLoader
+ * Copyright (c) 2023-2024, The Electrostatic-Sandbox Distributed Simulation Framework, jSnapLoader
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,12 +29,13 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.avrsandbox.snaploader.filesystem;
+
+package electrostatic.snaploader.filesystem;
 
 import java.io.OutputStream;
 
 /**
- * Defines an interface for an output stream provider to locate and extract a filesystem from a zip compression,
+ * Defines an interface for an output stream provider to locate and extract a filesystem from a zip compression;
  * the output stream provider object is associated with an input stream provider object that locates this filesystem.
  * 
  * @author pavl_g
@@ -49,8 +50,7 @@ public interface OutputStreamProvider extends AutoCloseable {
     InputStreamProvider getFileLocator();
 
     /**
-     * Retrieves the output stream object associated with this provider, the output stream is 
-     * associated with the 
+     * Retrieves the output stream object associated with this provider.
      * 
      * @return an output stream provider object to extract the filesystem
      */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, AvrSandbox, jSnapLoader
+ * Copyright (c) 2023-2024, The Electrostatic-Sandbox Distributed Simulation Framework, jSnapLoader
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,6 @@
  */
 
 /**
- * Provides I/O stream provider interfaces for {@link com.avrsandbox.snaploader.library.LibraryLocator} and {@link com.avrsandbox.snaploader.library.LibraryExtractor}.
+ * Provides I/O stream provider interfaces for {@link electrostatic.snaploader.library.LibraryLocator} and {@link electrostatic.snaploader.library.LibraryExtractor}.
  */
-package com.avrsandbox.snaploader.filesystem;
+package electrostatic.snaploader.filesystem;

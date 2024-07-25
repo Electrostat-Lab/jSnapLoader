@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, AvrSandbox, jSnapLoader
+ * Copyright (c) 2023-2024, The Electrostatic-Sandbox Distributed Simulation Framework, jSnapLoader
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,8 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.avrsandbox.snaploader.filesystem;
+
+package electrostatic.snaploader.filesystem;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,7 +54,8 @@ public class FileLocator implements InputStreamProvider {
      * Locates a filesystem inside an external zip compression, the zip filesystem is defined as a {@link ZipFile} object and
      * the locatable filesystem is defined as a {@link ZipEntry} object.
      * <p>
-     * Warning: This object leaks an input stream.
+     * Warning: This object leaks a buffered stream, either use try-with-resources, or handle your
+     * memory manually!
      * 
      * @param directory the absolute path for the external jar filesystem
      * @param filePath the path to the filesystem to be extracted
