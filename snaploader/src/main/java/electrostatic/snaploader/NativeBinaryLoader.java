@@ -131,15 +131,18 @@ public class NativeBinaryLoader {
         });
 
         // execute a system found listeners
-        if (systemDetectionListener != null) {
-            if (isSystemFound[0]) {
+        if (isSystemFound[0]) {
+            if (systemDetectionListener != null) {
                 systemDetectionListener.onSystemFound(this, nativeDynamicLibrary);
-            } else {
-                systemDetectionListener.onSystemNotFound(this);
-                throw new UnSupportedSystemError(NativeVariant.OS_NAME.getProperty(),
-                        NativeVariant.OS_ARCH.getProperty());
             }
+        } else {
+            if (systemDetectionListener != null) {
+                systemDetectionListener.onSystemNotFound(this);
+            }
+            throw new UnSupportedSystemError(NativeVariant.OS_NAME.getProperty(),
+                    NativeVariant.OS_ARCH.getProperty());
         }
+
         return this;
     }
 
