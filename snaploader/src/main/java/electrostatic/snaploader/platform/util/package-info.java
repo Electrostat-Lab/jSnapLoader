@@ -30,60 +30,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package electrostatic.snaploader.platform.util;
-
 /**
- * Provides platform-dependent system properties for the current running machine.
- * 
- * @author pavl_g
+ * Provides utilities to handle platform-specific binaries.
  */
-public enum PropertiesProvider {
-    
-    /**
-     * Provides a string representation for the absolute directory
-     * of the current user directory.
-     */
-    USER_DIR(System.getProperty("user.dir")), 
-
-    /**
-     * Provides a string representation for the absolute directory 
-     * of the user home.
-     */
-    USER_HOME(System.getProperty("user.home")),
-
-    /**
-     * Provides a string representation for the platform-dependent filesystem separator.
-     */
-    FILE_SEPARATOR(System.getProperty("file.separator")),
-
-    /**
-     * Provides a string representation for the filesystem separator of the Zip specification.
-     */
-    ZIP_FILE_SEPARATOR("/"),
-
-    /**
-     * Provides a string representation for the absolute path of the 
-     * java interpreter binary.
-     */
-    JAVA_HOME(System.getProperty("java.home"));
-    
-    private final String systemProperty;
-
-    /**
-     * Instantiates a platform-dependent property object.
-     * 
-     * @param systemProperty the string representation of the platform-dependent property
-     */
-    PropertiesProvider(String systemProperty) {
-        this.systemProperty = systemProperty;
-    }
-
-    /**
-     * Retrieves the platform-dependent property.
-     * 
-     * @return a string representation for the platform-dependent property
-     */
-    public String getSystemProperty() {
-        return systemProperty;
-    }
-}
+package electrostatic.snaploader.platform.util;
