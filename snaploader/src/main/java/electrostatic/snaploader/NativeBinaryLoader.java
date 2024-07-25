@@ -275,10 +275,13 @@ public class NativeBinaryLoader {
         libraryExtractor.setExtractionListener(new ExtractionListener() {
             @Override
             public void onExtractionCompleted(FileExtractor fileExtractor) {
-                log(Level.INFO, "cleanExtractBinary", "Extracted successfully to " + library.getExtractedLibrary(), null);
                 try {
+                    libraryExtractor.getFileLocator().close();
+                    libraryExtractor.close();
+                    libraryExtractor = null;
+                    log(Level.INFO, "cleanExtractBinary", "Extracted successfully to " + library.getExtractedLibrary(), null);
                     loadBinary(library);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     log(Level.SEVERE, "cleanExtractBinary", "Error while loading the binary!", e);
                 }
             }
@@ -291,15 +294,20 @@ public class NativeBinaryLoader {
             @Override
             public void onExtractionFinalization(FileExtractor fileExtractor, FileLocator fileLocator) {
                 try {
-                    fileLocator.close();
-                    fileExtractor.close();
+                    if (fileLocator != null &&
+                            fileLocator.getFileInputStream() != null) {
+                        fileLocator.close();
+                    }
+                    if (fileExtractor != null &&
+                            fileExtractor.getFileOutputStream() != null) {
+                        fileExtractor.close();
+                    }
                 } catch (IOException e) {
                     log(Level.SEVERE, "cleanExtractBinary", "Error while closing the resources!", e);
                 }
             }
         });
         libraryExtractor.extract();
-        libraryExtractor = null;
     }
 
     /**
