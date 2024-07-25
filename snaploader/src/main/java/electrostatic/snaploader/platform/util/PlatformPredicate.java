@@ -41,23 +41,84 @@ package electrostatic.snaploader.platform.util;
  */
 public final class PlatformPredicate {
 
+    /**
+     * Alias object for Linux on X86 Chipset.
+     */
     public static final PlatformPredicate LINUX_X86 = new PlatformPredicate(NativeVariant.Os.isLinux() && NativeVariant.Cpu.isX86());
+
+    /**
+     * Alias object for Linux on X86-64 Chipset.
+     */
     public static final PlatformPredicate LINUX_X86_64 = new PlatformPredicate(NativeVariant.Os.isLinux() && NativeVariant.Cpu.isAMD() && NativeVariant.Cpu.is64());
+
+    /**
+     * Alias object for Linux on arm-32 Chipset.
+     */
     public static final PlatformPredicate LINUX_ARM_32 = new PlatformPredicate(NativeVariant.Os.isLinux() && NativeVariant.Cpu.isARM());
+
+    /**
+     * Alias object for Linux on arm-64 Chipset.
+     */
     public static final PlatformPredicate LINUX_ARM_64 = new PlatformPredicate(NativeVariant.Os.isLinux() && NativeVariant.Cpu.isARM() && NativeVariant.Cpu.is64());
+
+    /**
+     * Alias object for Linux on RiscV-32 Chipset.
+     */
     public static final PlatformPredicate LINUX_RISC_V_32 = new PlatformPredicate(NativeVariant.Os.isLinux() && NativeVariant.Cpu.isRiscV());
+
+    /**
+     * Alias object for Linux on RiscV-64 Chipset.
+     */
     public static final PlatformPredicate LINUX_RISC_V_64 = new PlatformPredicate(NativeVariant.Os.isLinux() && NativeVariant.Cpu.isRiscV() && NativeVariant.Cpu.is64());
 
+    /**
+     * Alias object for MacOSX on X86 Chipset.
+     */
     public static final PlatformPredicate MACOS_X86 = new PlatformPredicate(NativeVariant.Os.isMac() && NativeVariant.Cpu.isX86());
+
+    /**
+     * Alias object for MacOSX on X86-64 Chipset.
+     */
     public static final PlatformPredicate MACOS_X86_64 = new PlatformPredicate(NativeVariant.Os.isMac() && NativeVariant.Cpu.isAMD() && NativeVariant.Cpu.is64());
+
+    /**
+     * Alias object for MacOSX on arm-32 Chipset.
+     */
     public static final PlatformPredicate MACOS_ARM_32 = new PlatformPredicate(NativeVariant.Os.isMac() && NativeVariant.Cpu.isARM());
+
+    /**
+     * Alias object for MacOSX on arm-64 Chipset.
+     */
     public static final PlatformPredicate MACOS_ARM_64 = new PlatformPredicate(NativeVariant.Os.isMac() && NativeVariant.Cpu.isARM() && NativeVariant.Cpu.is64());
 
+    /**
+     * Alias object for Windows on X86 Chipset.
+     */
     public static final PlatformPredicate WIN_X86 = new PlatformPredicate(NativeVariant.Os.isWindows() && NativeVariant.Cpu.isX86());
+
+    /**
+     * Alias object for Windows on X86-64 Chipset.
+     */
     public static final PlatformPredicate WIN_X86_64 = new PlatformPredicate(NativeVariant.Os.isWindows() && NativeVariant.Cpu.isAMD() && NativeVariant.Cpu.is64());
+
+    /**
+     * Alias object for Windows on arm-32 Chipset.
+     */
     public static final PlatformPredicate WIN_ARM_32 = new PlatformPredicate(NativeVariant.Os.isWindows() && NativeVariant.Cpu.isARM());
+
+    /**
+     * Alias object for Windows on arm-64 Chipset.
+     */
     public static final PlatformPredicate WIN_ARM_64 = new PlatformPredicate(NativeVariant.Os.isWindows() && NativeVariant.Cpu.isARM() && NativeVariant.Cpu.is64());
+
+    /**
+     * Alias object for Windows on RiscV-32 Chipset.
+     */
     public static final PlatformPredicate WIN_RISC_V_32 = new PlatformPredicate(NativeVariant.Os.isWindows() && NativeVariant.Cpu.isRiscV());
+
+    /**
+     * Alias object for Windows on RiscV-64 Chipset.
+     */
     public static final PlatformPredicate WIN_RISC_V_64 = new PlatformPredicate(NativeVariant.Os.isWindows() && NativeVariant.Cpu.isRiscV());
 
     private final boolean predicate;
