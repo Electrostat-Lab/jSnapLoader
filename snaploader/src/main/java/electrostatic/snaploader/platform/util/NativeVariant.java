@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, AvrSandbox, jSnapLoader
+ * Copyright (c) 2023-2024, The Electrostatic-Sandbox Distributed Simulation Framework, jSnapLoader
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,8 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.avrsandbox.snaploader.platform.util;
+
+package electrostatic.snaploader.platform.util;
 
 /**
  * Wraps objects for native variant constituents (OS + ARCH={CPU + INSTRUCT_SET} + VM).
@@ -102,17 +103,17 @@ public enum NativeVariant {
 
     /**
      * Tests whether the current system architecture is a 64-bit chipset.
-     * 
+     *
      * @return true if the current OS architecture is a 64-bit chipset, false otherwise.
      */
-    public static boolean isX86_64() {
+    public static boolean is64() {
         return OS_ARCH.getProperty().contains("64");
     }
 
     /**
-     * Tests whether the current system architecture is a plain x86 chipset.
-     * 
-     * @return true if the current OS architecture is a plain x86 chipset, false otherwise.
+     * Tests whether the current system architecture is of an x86 chipset, typically 32-bit intel chipsets.
+     *
+     * @return true if the current OS architecture is of an x86 chipset, false otherwise.
      */
     public static boolean isX86() {
         return OS_ARCH.getProperty().contains("x86");
