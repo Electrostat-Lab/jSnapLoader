@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, AvrSandbox, jSnapLoader
+ * Copyright (c) 2023-2024, The Electrostatic-Sandbox Distributed Simulation Framework, jSnapLoader
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,4 +33,4 @@
 /**
  * Provides a loader api for the library, the loader extracts and loads the system specific binary on the runtime.
  */
-package com.avrsandbox.snaploader;
+package electrostatic.snaploader;
