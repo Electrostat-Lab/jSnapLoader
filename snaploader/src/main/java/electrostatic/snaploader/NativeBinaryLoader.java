@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, AvrSandbox, jSnapLoader
+ * Copyright (c) 2023-2024, The Electrostatic-Sandbox Distributed Simulation Framework, jSnapLoader
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,20 +29,20 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.avrsandbox.snaploader;
+
+package electrostatic.snaploader;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.lang.UnsatisfiedLinkError;
-
-import com.avrsandbox.snaploader.filesystem.ExtractionListener;
-import com.avrsandbox.snaploader.filesystem.FileExtractor;
-import com.avrsandbox.snaploader.filesystem.FileLocator;
-import com.avrsandbox.snaploader.library.LibraryExtractor;
-import com.avrsandbox.snaploader.platform.NativeDynamicLibrary;
-import com.avrsandbox.snaploader.platform.util.NativeVariant;
+import electrostatic.snaploader.filesystem.ExtractionListener;
+import electrostatic.snaploader.filesystem.FileExtractor;
+import electrostatic.snaploader.filesystem.FileLocator;
+import electrostatic.snaploader.library.LibraryExtractor;
+import electrostatic.snaploader.platform.NativeDynamicLibrary;
+import electrostatic.snaploader.platform.util.NativeVariant;
 
 /**
  * A cross-platform utility for extracting and loading native binaries based on 
@@ -63,7 +63,7 @@ public class NativeBinaryLoader {
 
     protected NativeBinaryLoadingListener nativeBinaryLoadingListener;
 
-    protected SystemFoundListener systemFoundListener;
+    protected SystemDetectionListener systemDetectionListener;
 
     /**
      * An Output stream concrete provider for library extraction.
@@ -105,26 +105,6 @@ public class NativeBinaryLoader {
         return this;
     }
 
-    public List<NativeDynamicLibrary> getRegisteredLibraries() {
-        return registeredLibraries;
-    }
-
-    public void setNativeBinaryLoadingListener(NativeBinaryLoadingListener nativeBinaryLoadingListener) {
-        this.nativeBinaryLoadingListener = nativeBinaryLoadingListener;
-    }
-
-    public NativeBinaryLoadingListener getNativeBinaryLoadingListener() {
-        return nativeBinaryLoadingListener;
-    }
-
-    public void setSystemFoundListener(SystemFoundListener systemFoundListener) {
-        this.systemFoundListener = systemFoundListener;
-    }
-
-    public SystemFoundListener getSystemFoundListener() {
-        return systemFoundListener;
-    }
-
     /**
      * Initializes the platform-dependent native dynamic library.
      * 
@@ -144,18 +124,18 @@ public class NativeBinaryLoader {
             if (libraryInfo != null) {
                 nativeDynamicLibrary.initWithLibraryInfo(libraryInfo);
             }
-            if (nativeDynamicLibrary.getPredicate()) {
+            if (nativeDynamicLibrary.getPlatformPredicate().evaluatePredicate()) {
                 this.nativeDynamicLibrary = nativeDynamicLibrary;
                 isSystemFound[0] = true;
             }
         });
 
-        // execute system found listeners
-        if (systemFoundListener != null) {
+        // execute a system found listeners
+        if (systemDetectionListener != null) {
             if (isSystemFound[0]) {
-                systemFoundListener.onSystemFound(this, nativeDynamicLibrary);
+                systemDetectionListener.onSystemFound(this, nativeDynamicLibrary);
             } else {
-                systemFoundListener.onSystemNotFound(this);
+                systemDetectionListener.onSystemNotFound(this);
                 throw new UnSupportedSystemError(NativeVariant.OS_NAME.getProperty(),
                         NativeVariant.OS_ARCH.getProperty());
             }
@@ -164,7 +144,7 @@ public class NativeBinaryLoader {
     }
 
     /**
-     * Extracts and loads the system and the architecture-specific library from the output jar to the [user.dir]
+     * Extracts and load the system and the architecture-specific library from the output jar to the [user.dir]
      * according to a loading criterion (incremental-load or clean-extract).
      * 
      * @param criterion the initial loading criterion, either {@link LoadingCriterion#INCREMENTAL_LOADING} or {@link LoadingCriterion#CLEAN_EXTRACTION}
@@ -223,6 +203,26 @@ public class NativeBinaryLoader {
      */
     public boolean isRetryWithCleanExtraction() {
         return retryWithCleanExtraction;
+    }
+
+    public List<NativeDynamicLibrary> getRegisteredLibraries() {
+        return registeredLibraries;
+    }
+
+    public void setNativeBinaryLoadingListener(NativeBinaryLoadingListener nativeBinaryLoadingListener) {
+        this.nativeBinaryLoadingListener = nativeBinaryLoadingListener;
+    }
+
+    public NativeBinaryLoadingListener getNativeBinaryLoadingListener() {
+        return nativeBinaryLoadingListener;
+    }
+
+    public void setSystemFoundListener(SystemDetectionListener systemDetectionListener) {
+        this.systemDetectionListener = systemDetectionListener;
+    }
+
+    public SystemDetectionListener getSystemFoundListener() {
+        return systemDetectionListener;
     }
 
     /**
