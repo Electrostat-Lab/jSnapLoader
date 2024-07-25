@@ -1,0 +1,100 @@
+@startuml
+'https://plantuml.com/component-diagram
+
+'Structural composition
+package platform {
+    package util {
+        component NativeVariant {
+        }
+        component PropertiesProvider {
+        }
+        component PlatformPredicate {
+        }
+    }
+    component NativeDynamicLibrary <<platform-dependent>> {
+    }
+    note top of [NativeDynamicLibrary]: // PlatformDirectory
+    note top of [NativeDynamicLibrary]: // Predicate
+    note top of [NativeDynamicLibrary]: // LibraryInfo
+}
+
+node List<NativeDynamicLibrary> <<Object>> {
+}
+
+package snaploader {
+    component LoadingCriterion <<Object>> {
+    }
+    interface LoadingListeners {
+    }
+    component LibraryInfo <<platform-independent>> {
+    }
+
+    object NativeBinaryLoader {
+        // Platform Detection
+        // NativeVariant Object Instantiation
+        // LibraryLocator
+        // LibraryExtractor
+    }
+}
+
+package filesystem {
+    component FileExtractor {
+    }
+
+    component FileLocator {
+    }
+
+    object LibraryExtractor {
+        // from StockJar
+        // from ExternalJar
+    }
+
+    object LibraryLocator {
+        // StockJar
+        // ExternalJar
+    }
+
+    component ZipCompressionType {
+    }
+
+    interface StreamProvider {
+    }
+
+    interface ExtractionListener {
+    }
+
+    component InputStreamProvider {
+    }
+
+    component OutputStreamProvider {
+    }
+}
+
+'Relations
+NativeDynamicLibrary ..-> NativeVariant : Depends-on
+NativeDynamicLibrary ..-> PropertiesProvider : Depends-on
+NativeDynamicLibrary ..-> PlatformPredicate : Depends-on
+NativeDynamicLibrary  ...> LibraryInfo : Depends-on
+
+
+StreamProvider <-. InputStreamProvider : Realized-from
+StreamProvider <-. OutputStreamProvider : Realized-from
+
+FileExtractor <-. LibraryExtractor : Realized-from
+FileExtractor -(0- ExtractionListener : Assembled-by
+FileLocator <-. LibraryLocator : Realized-from
+ZipCompressionType <-. FileLocator : Depends-on
+LibraryLocator <.. LibraryExtractor : Depends-on
+
+NativeBinaryLoader --(0-- LibraryExtractor : Assembled-by
+NativeBinaryLoader --(0-- LoadingListeners : Assembled-by
+NativeBinaryLoader --(0-- "List<NativeDynamicLibrary>" : Assembled-by
+NativeBinaryLoader --(0-- LibraryInfo : Indirect-assembly
+NativeBinaryLoader --(0-- LoadingCriterion : Assembled-by
+
+'Notes
+note top of "List<NativeDynamicLibrary>": // List of libraries to check against their predicates
+note top of "LibraryInfo": // Provides the Jar path for the locator, and the library extraction path
+
+
+@enduml
