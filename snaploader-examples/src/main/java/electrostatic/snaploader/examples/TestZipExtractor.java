@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, AvrSandbox, jSnapLoader
+ * Copyright (c) 2023-2024, The Electrostatic-Sandbox Distributed Simulation Framework, jSnapLoader
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,15 +29,16 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.avrsandbox.snaploader.examples;
+
+package electrostatic.snaploader.examples;
 
 import java.io.IOException;
 
-import com.avrsandbox.snaploader.filesystem.ExtractionListener;
-import com.avrsandbox.snaploader.filesystem.FileExtractor;
-import com.avrsandbox.snaploader.filesystem.FileLocator;
-import com.avrsandbox.snaploader.filesystem.ZipCompressionType;
-import com.avrsandbox.snaploader.platform.util.PropertiesProvider;
+import electrostatic.snaploader.filesystem.ExtractionListener;
+import electrostatic.snaploader.filesystem.FileExtractor;
+import electrostatic.snaploader.filesystem.FileLocator;
+import electrostatic.snaploader.filesystem.ZipCompressionType;
+import electrostatic.snaploader.platform.util.PropertiesProvider;
 
 /**
  * Tests extracting an image compression from a Zip compression type filesystem using {@link FileExtractor} API.

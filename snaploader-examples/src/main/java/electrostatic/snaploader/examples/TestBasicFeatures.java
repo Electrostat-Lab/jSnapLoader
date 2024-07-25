@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, AvrSandbox, jSnapLoader
+ * Copyright (c) 2023-2024, The Electrostatic-Sandbox Distributed Simulation Framework, jSnapLoader
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,17 +29,18 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.avrsandbox.snaploader.examples;
+
+package electrostatic.snaploader.examples;
 
 import java.io.IOException;
 
-import com.avrsandbox.snaploader.LibraryInfo;
-import com.avrsandbox.snaploader.NativeBinaryLoader;
-import com.avrsandbox.snaploader.platform.util.DefaultDynamicLibraries;
-import com.avrsandbox.snaploader.platform.NativeDynamicLibrary;
-import com.avrsandbox.snaploader.platform.util.NativeVariant;
-import com.avrsandbox.snaploader.platform.util.PropertiesProvider;
-import com.avrsandbox.snaploader.LoadingCriterion;
+import electrostatic.snaploader.LibraryInfo;
+import electrostatic.snaploader.NativeBinaryLoader;
+import electrostatic.snaploader.platform.util.DefaultDynamicLibraries;
+import electrostatic.snaploader.platform.NativeDynamicLibrary;
+import electrostatic.snaploader.platform.util.NativeVariant;
+import electrostatic.snaploader.platform.util.PropertiesProvider;
+import electrostatic.snaploader.LoadingCriterion;
 
 /**
  * Tests basic features of the {@link NativeBinaryLoader} API.
