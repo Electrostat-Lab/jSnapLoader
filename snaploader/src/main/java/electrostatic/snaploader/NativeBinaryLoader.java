@@ -238,7 +238,7 @@ public class NativeBinaryLoader {
     protected void loadBinary(NativeDynamicLibrary library) throws IOException {
         try {
             /* sanity check for android java vm (the dalvik) */
-            if (NativeVariant.isAndroid()) {
+            if (NativeVariant.Os.isAndroid()) {
                 System.loadLibrary(libraryInfo.getBaseName());
                 return;
             }

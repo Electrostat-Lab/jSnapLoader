@@ -100,9 +100,9 @@ public class NativeDynamicLibrary {
     public void initWithLibraryInfo(LibraryInfo libraryInfo) {
         String ext = ".so";
 
-        if (NativeVariant.isMac()) {
+        if (NativeVariant.Os.isMac()) {
             ext = ".dylib";
-        } else if (NativeVariant.isWindows()) {
+        } else if (NativeVariant.Os.isWindows()) {
             ext = ".dll";
         }
 
