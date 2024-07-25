@@ -29,8 +29,22 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.avrsandbox.snaploader.filesystem;
+
+import java.io.InputStream;
 
 /**
- * Provides specialized implementation for {@link com.avrsandbox.snaploader.file.FileLocator} and {@link com.avrsandbox.snaploader.file.FileExtractor}.
+ * Defines an interface for an input stream provider that locates a filesystem and provides
+ * an {@link InputStream} object.
+ * 
+ * @author pavl_g
  */
-package com.avrsandbox.snaploader.library;
+public interface InputStreamProvider extends AutoCloseable {
+    
+    /**
+     * Retrieves the input stream object associated with this filesystem entry.
+     * 
+     * @return an input stream object for this located filesystem
+     */
+    InputStream getFileInputStream();
+}

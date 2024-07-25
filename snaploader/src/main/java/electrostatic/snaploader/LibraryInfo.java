@@ -72,10 +72,10 @@ public final class LibraryInfo {
     }
 
     /**
-     * Retrieves the jar file path, the jar is the compression used to locate the native dynamic library to
+     * Retrieves the jar filesystem path, the jar is the compression used to locate the native dynamic library to
      * be extracted and loaded by {@link NativeBinaryLoader}.
      * 
-     * @return the jar absolute file path in a string format, "null" if the classpath is specified instead of 
+     * @return the jar absolute filesystem path in a string format, "null" if the classpath is specified instead of
      *         an external jar compression
      */
     public String getJarPath() {
@@ -85,7 +85,7 @@ public final class LibraryInfo {
     /**
      * Retrieves the directory inside the compression used for locating the native dynamic library.
      * 
-     * @return the path to the dynamic library file inside the compression, "null" if the 
+     * @return the path to the dynamic library filesystem inside the compression, "null" if the
      *         default variant-based directories are set to be used
      */
     public String getDirectory() {
@@ -103,10 +103,10 @@ public final class LibraryInfo {
     }
 
     /**
-     * Sets the absolute path to the jar file to locate the native dynamic library to be 
-     * extracted and loaded, "null" to use the "classpath (the stock jar)"" to load the library file.
+     * Sets the absolute path to the jar filesystem to locate the native dynamic library to be
+     * extracted and loaded, "null" to use the "classpath (the stock jar)"" to load the library filesystem.
      * 
-     * @param jarPath the absolute path to the jar file to locate the library to be extracted, "null" to 
+     * @param jarPath the absolute path to the jar filesystem to locate the library to be extracted, "null" to
      *                use the "classpath" (aka. the stock jar)
      */
     public void setJarPath(String jarPath) {

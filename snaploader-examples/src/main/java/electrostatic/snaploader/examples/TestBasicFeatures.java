@@ -32,10 +32,13 @@
 package com.avrsandbox.snaploader.examples;
 
 import java.io.IOException;
+
 import com.avrsandbox.snaploader.LibraryInfo;
 import com.avrsandbox.snaploader.NativeBinaryLoader;
-import com.avrsandbox.snaploader.platform.NativeVariant;
-import com.avrsandbox.snaploader.platform.PropertiesProvider;
+import com.avrsandbox.snaploader.platform.util.DefaultDynamicLibraries;
+import com.avrsandbox.snaploader.platform.NativeDynamicLibrary;
+import com.avrsandbox.snaploader.platform.util.NativeVariant;
+import com.avrsandbox.snaploader.platform.util.PropertiesProvider;
 import com.avrsandbox.snaploader.LoadingCriterion;
 
 /**
@@ -52,10 +55,20 @@ public final class TestBasicFeatures {
 
     protected static NativeBinaryLoader loader;
 
+    public static final NativeDynamicLibrary[] libraries = new NativeDynamicLibrary[] {
+            DefaultDynamicLibraries.LINUX_X86,
+            DefaultDynamicLibraries.LINUX_X86_64,
+            DefaultDynamicLibraries.WIN_X86,
+            DefaultDynamicLibraries.WIN_X86_64,
+            DefaultDynamicLibraries.MAC_X86,
+            DefaultDynamicLibraries.MAC_X86_64,
+    };
+
     public static void main(String[] args) throws IOException {
         if (loader == null) {
-            loader = new NativeBinaryLoader(libraryInfo).initPlatformLibrary();
+            loader = new NativeBinaryLoader(libraryInfo);
         }
+        loader.registerNativeLibraries(libraries).initPlatformLibrary();
         loader.setLoggingEnabled(true);
         loader.setRetryWithCleanExtraction(true);
         /* Native dynamic library properties */
@@ -65,9 +78,9 @@ public final class TestBasicFeatures {
 
     protected static void printDetails(NativeBinaryLoader loader) {
         System.out.println("--------------------------------------------------------------");
-        System.out.println("OS: " + NativeVariant.NAME.getProperty());
-        System.out.println("ARCH: " + NativeVariant.ARCH.getProperty());
-        System.out.println("VM: " + NativeVariant.VM.getProperty());
+        System.out.println("OS: " + NativeVariant.OS_NAME.getProperty());
+        System.out.println("ARCH: " + NativeVariant.OS_ARCH.getProperty());
+        System.out.println("VM: " + NativeVariant.JVM.getProperty());
         System.out.println("--------------------------------------------------------------");
         System.out.println("Jar Path: " + loader.getNativeDynamicLibrary().getJarPath());
         System.out.println("Library Directory: " + loader.getNativeDynamicLibrary().getLibraryDirectory());

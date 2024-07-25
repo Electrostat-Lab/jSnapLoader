@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.avrsandbox.snaploader.file;
+package com.avrsandbox.snaploader.filesystem;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -38,14 +38,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Extracts a file from a zip compression to a destination file.
+ * Extracts a filesystem from a zip compression to a destination filesystem.
  * 
  * @author pavl_g
  */
 public class FileExtractor implements OutputStreamProvider {
     
     /**
-     * Locates a file inside a zip compression.
+     * Locates a filesystem inside a zip compression.
      */
     protected FileLocator fileLocator;
     
@@ -60,17 +60,17 @@ public class FileExtractor implements OutputStreamProvider {
     protected ExtractionListener extractionListener;
 
     /**
-     * An absolute path for the destination file of the extraction process.
+     * An absolute path for the destination filesystem of the extraction process.
      */
     protected String destination;
-    private static final int EOF = -1; /* End-of-file */
+    private static final int EOF = -1; /* End-of-filesystem */
 
     /**
-     * Instantiates a file extractor object with a file locator and a destination file.
+     * Instantiates a filesystem extractor object with a filesystem locator and a destination filesystem.
      * 
-     * @param fileLocator locates a file inside a zip compression
-     * @param destination an absolute file path representing the extraction destination file
-     * @throws FileNotFoundException if the destination file path is not found
+     * @param fileLocator locates a filesystem inside a zip compression
+     * @param destination an absolute filesystem path representing the extraction destination filesystem
+     * @throws FileNotFoundException if the destination filesystem path is not found
      */
     public FileExtractor(FileLocator fileLocator, String destination) throws FileNotFoundException {
         this.fileLocator = fileLocator;
@@ -78,13 +78,13 @@ public class FileExtractor implements OutputStreamProvider {
     }
 
     /**
-     * Instantiates an empty file extractor.
+     * Instantiates an empty filesystem extractor.
      */
     protected FileExtractor() {
     }
 
     /**
-     * Commands and Extracts the specified file to the specified destination file. 
+     * Commands and Extract the specified filesystem to the specified destination filesystem.
      * 
      * @throws IOException if the input/output streams has failed or an interrupted I/O operation has occured
      */
@@ -97,9 +97,17 @@ public class FileExtractor implements OutputStreamProvider {
                 /* use the bytes as the buffer length to write valid data */
                 fileOutputStream.write(buffer, 0, bytes);
             }
+            if (extractionListener != null) {
+                extractionListener.onExtractionCompleted(this);
+            }
+        } catch (Exception e) {
+            if (extractionListener != null) {
+                extractionListener.onExtractionFailure(this, e);
+            }
+        // release the native resources anyway!
         } finally {
             if (extractionListener != null) {
-                extractionListener.onExtractionCompleted();
+                extractionListener.onExtractionFinalization(this, fileLocator);
             }
         }
     }
@@ -121,7 +129,7 @@ public class FileExtractor implements OutputStreamProvider {
     }
 
     /**
-     * Sets the extraction listener action to dispatch the {@link ExtractionListener#onExtractionCompleted()}
+     * Sets the extraction listener action to dispatch the {@link ExtractionListener#onExtractionCompleted(FileExtractor)}
      * when the extraction task is completed.
      * 
      * @param extractionListener an implementation object of the extraction listener dispatched when the 

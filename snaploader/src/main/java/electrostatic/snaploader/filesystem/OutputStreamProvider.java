@@ -29,60 +29,30 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.avrsandbox.snaploader.platform;
+package com.avrsandbox.snaploader.filesystem;
+
+import java.io.OutputStream;
 
 /**
- * Provides platform-dependent system properties for the current running machine.
+ * Defines an interface for an output stream provider to locate and extract a filesystem from a zip compression,
+ * the output stream provider object is associated with an input stream provider object that locates this filesystem.
  * 
  * @author pavl_g
  */
-public enum PropertiesProvider {
-    
-    /**
-     * Provides a string representation for the absolute directory
-     * of the current user directory.
-     */
-    USER_DIR(System.getProperty("user.dir")), 
+public interface OutputStreamProvider extends AutoCloseable {
 
     /**
-     * Provides a string representation for the absolute directory 
-     * of the user home.
-     */
-    USER_HOME(System.getProperty("user.home")),
-
-    /**
-     * Provides a string representation for the platform-dependent file separator.
-     */
-    FILE_SEPARATOR(System.getProperty("file.separator")),
-
-    /**
-     * Provides a string representation for the file separator of the Zip specification.
-     */
-    ZIP_FILE_SEPARATOR("/"),
-
-    /**
-     * Provides a string representation for the absolute path of the 
-     * java interpreter binary.
-     */
-    JAVA_HOME(System.getProperty("java.home"));
-    
-    private final String systemProperty;
-
-    /**
-     * Instantiates a platform-dependent property object.
+     * Retrieves the input stream provider object (the filesystem locator object).
      * 
-     * @param systemProperty the string representation of the platform-dependent property
+     * @return an input stream provider object that is the filesystem locator object
      */
-    PropertiesProvider(String systemProperty) {
-        this.systemProperty = systemProperty;
-    }
+    InputStreamProvider getFileLocator();
 
     /**
-     * Retrieves the platform-dependent property.
+     * Retrieves the output stream object associated with this provider, the output stream is 
+     * associated with the 
      * 
-     * @return a string representation for the platform-dependent property
+     * @return an output stream provider object to extract the filesystem
      */
-    public String getSystemProperty() {
-        return systemProperty;
-    }
+    OutputStream getFileOutputStream();
 }

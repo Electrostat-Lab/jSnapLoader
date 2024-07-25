@@ -29,41 +29,31 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.avrsandbox.snaploader.library;
-
-import java.io.IOException;
-import java.util.jar.JarFile;
-import java.util.zip.ZipEntry;
-import com.avrsandbox.snaploader.file.ZipCompressionType;
-import com.avrsandbox.snaploader.file.FileLocator;
+package com.avrsandbox.snaploader;
 
 /**
- * Locates a library inside a jar file, the probable source for the native dynamic libraries to extract and load.
+ * A business error of type {@link UnsatisfiedLinkError} to indicate an un-supported system.
+ * 
+ * <p>
+ * This error is thrown when the user tries to run the library on another operating system rather than the supported systems:
+ * <ul>
+ * <li> Linux - x86 - x86_64 </li>
+ * <li> Windows - x86 - x86_64 </li>
+ * <li> Mac - x86 - x86_64 </li>
+ * <li> Android - intel32 - intel64 - arm32 - arm64 </li>
+ * </ul>
  * 
  * @author pavl_g
  */
-public class LibraryLocator extends FileLocator {
+public class UnSupportedSystemError extends UnsatisfiedLinkError {
     
     /**
-     * Locates the library inside the stock jar file. 
-     * This object leaks an input stream.
+     * Thrown if the system detects an unsupported system binaries of the current OS.
      * 
-     * @param libraryPath the path to the dynamic native library inside that jar file
+     * @param os the current operating system (os) name
+     * @param arch the current operating system (os) processor architecture 
      */
-    public LibraryLocator(String libraryPath) {
-        this.fileInputStream = LibraryLocator.class.getClassLoader().getResourceAsStream(libraryPath);
-    } 
-
-    /**
-     * Locates a library inside an external jar, the external jar is defined by the means of a {@link JarFile} and 
-     * the native library is defined as a {@link ZipEntry}. 
-     * This object leaks an input stream.
-     * 
-     * @param directory the absolute path for the external jar file
-     * @param libraryPath the path to the dynamic native library inside that jar file
-     * @throws IOException if the jar to be located is not found or an interrupt I/O operation has occured
-     */
-    public LibraryLocator(String directory, String libraryPath) throws IOException {
-        super(directory, libraryPath, ZipCompressionType.JAR);
+    public UnSupportedSystemError(final String os, final String arch) {
+        super("System " + os + "_" + arch + " isn't supported yet !");
     }
 }

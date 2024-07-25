@@ -29,18 +29,8 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.avrsandbox.snaploader.file;
 
 /**
- * A thread safe listener for the extraction process.
- * 
- * @see FileExtractor#extract()
- * @author pavl_g
+ * Provides specialized implementation for {@link com.avrsandbox.snaploader.filesystem.FileLocator} and {@link com.avrsandbox.snaploader.filesystem.FileExtractor}.
  */
-public interface ExtractionListener {
-
-    /**
-     * Dispatched by the {@link FileExtractor#extract()} when the extraction process is completed.
-     */
-    void onExtractionCompleted();
-}
+package com.avrsandbox.snaploader.library;

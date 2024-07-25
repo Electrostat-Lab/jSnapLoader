@@ -29,42 +29,40 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.avrsandbox.snaploader;
+package com.avrsandbox.snaploader.library;
 
 import java.io.IOException;
-import java.util.concurrent.locks.ReentrantLock;
-import com.avrsandbox.snaploader.platform.NativeDynamicLibrary;
+import com.avrsandbox.snaploader.filesystem.ConcurrentFileExtractor;
+import com.avrsandbox.snaploader.filesystem.FileExtractor;
 
 /**
- * A thread-safe implementation for the NativeBinaryLoader.
+ * Represents a thread-safe dynamic library (.so, .dll, .dylib) extractor based on the {@link FileExtractor}.
  * 
  * @author pavl_g
  */
-public class ConcurrentNativeBinaryLoader extends NativeBinaryLoader {
+public class LibraryExtractor extends ConcurrentFileExtractor {
 
     /**
-     * The monitor object.
-     */
-    protected final ReentrantLock lock = new ReentrantLock();
-
-    /**
-     * Instantiates a thread-safe {@link NativeBinaryLoader} object.
+     * Instantiates a native dynamic library extractor with a jar path, library path and extract destination filesystem path.
      * 
-     * @param libraryInfo a data structure object holding the platform independent data for the library to load
+     * @param jarPath an absolute path to the jar filesystem containing the library
+     * @param libraryPath the path of the library inside the jar filesystem
+     * @param destination the extraction destination filesystem path
+     * @throws IOException if the jar filesystem to be located is not found, or if the extraction destination is not found
      */
-    public ConcurrentNativeBinaryLoader(LibraryInfo libraryInfo) {
-        super(libraryInfo);
+    public LibraryExtractor(String jarPath, String libraryPath, String destination) throws IOException {
+        super(new LibraryLocator(jarPath, libraryPath), destination);
     }
-    
-    @Override
-    protected void cleanExtractBinary(NativeDynamicLibrary library) throws IOException {
-        try {
-            /* CRITICAL SECTION STARTS */
-            lock.lock();
-            super.cleanExtractBinary(library);
-        } finally {
-            lock.unlock();
-            /* CRITICAL SECTION ENDS */
-        }
+
+    /**
+     * Instantiates a native dynamic library extractor with a library path and an extract destination filesystem path. This
+     * object locates a dynamic native library inside the stock jar filesystem based on a classpath input stream.
+     * 
+     * @param libraryPath the path of the library inside the jar filesystem
+     * @param destination the extraction destination filesystem path
+     * @throws IOException if the jar filesystem to be located is not found, or if the extraction destination is not found
+     */
+    public LibraryExtractor(String libraryPath, String destination) throws IOException {
+        super(new LibraryLocator(libraryPath), destination);
     }
 }

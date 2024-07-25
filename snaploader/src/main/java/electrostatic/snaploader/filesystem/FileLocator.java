@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.avrsandbox.snaploader.file;
+package com.avrsandbox.snaploader.filesystem;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,26 +37,26 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 /**
- * An Input Stream Provider that locates a file inside a zip compression and provides an 
- * input stream object for the located file entry.
+ * An Input Stream Provider that locates a filesystem inside a zip compression and provides an
+ * input stream object for the located filesystem entry.
  * 
  * @author pavl_g
  */
 public class FileLocator implements InputStreamProvider {
     
     /**
-     * The input stream associated with the located file.
+     * The input stream associated with the located filesystem.
      */
     protected InputStream fileInputStream;
 
     /**
-     * Locates a file inside an external zip compression, the zip file is defined as a {@link ZipFile} object and 
-     * the locatable file is defined as a {@link ZipEntry} object.
+     * Locates a filesystem inside an external zip compression, the zip filesystem is defined as a {@link ZipFile} object and
+     * the locatable filesystem is defined as a {@link ZipEntry} object.
+     * <p>
+     * Warning: This object leaks an input stream.
      * 
-     * This object leaks an input stream.
-     * 
-     * @param directory the absolute path for the external jar file
-     * @param filePath the path to the file to be extracted
+     * @param directory the absolute path for the external jar filesystem
+     * @param filePath the path to the filesystem to be extracted
      * @param compressionType the type of the zip compression, ZIP or JAR
      * 
      * @throws IOException if the jar to be located is not found or an interrupted I/O exception has occured
@@ -68,7 +68,7 @@ public class FileLocator implements InputStreamProvider {
     }
 
     /**
-     * Instantiates an empty file locator object.
+     * Instantiates an empty filesystem locator object.
      */
     protected FileLocator() {   
     }

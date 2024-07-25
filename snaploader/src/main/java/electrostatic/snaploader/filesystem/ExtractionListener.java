@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, AvrSandbox, jSnapLoader
+ * Copyright (c) 2023-2024, The Electrostatic-Sandbox Distributed Simulation Framework, jSnapLoader
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,22 +29,23 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.avrsandbox.snaploader.file;
 
-import java.io.InputStream;
+package electrostatic.snaploader.filesystem;
 
 /**
- * Defines an interface for an input stream provider that locates a file and provides 
- * an {@link InputStream} object.
+ * A listener for the extraction process.
  * 
+ * @see FileExtractor#extract()
  * @author pavl_g
  */
-public interface InputStreamProvider extends AutoCloseable {
-    
+public interface ExtractionListener {
+
     /**
-     * Retrieves the input stream object associated with this file entry.
-     * 
-     * @return an input stream object for this located file
+     * Dispatched by the {@link FileExtractor#extract()} when the extraction process is completed.
      */
-    InputStream getFileInputStream();
+    void onExtractionCompleted(FileExtractor fileExtractor);
+
+    void onExtractionFailure(FileExtractor fileExtractor, Throwable throwable);
+
+    void onExtractionFinalization(FileExtractor fileExtractor, FileLocator fileLocator);
 }

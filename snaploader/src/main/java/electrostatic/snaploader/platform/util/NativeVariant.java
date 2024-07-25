@@ -29,10 +29,10 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.avrsandbox.snaploader.platform;
+package com.avrsandbox.snaploader.platform.util;
 
 /**
- * Represents a native variant (OS + ARCH + VM), each of which is represented as an object of a property.
+ * Wraps objects for native variant constituents (OS + ARCH={CPU + INSTRUCT_SET} + VM).
  * 
  * @author pavl_g
  */
@@ -41,17 +41,17 @@ public enum NativeVariant {
     /**
      * The Operating system name property for this variant.
      */
-    NAME(System.getProperty("os.name")),
+    OS_NAME(System.getProperty("os.name")),
     
     /**
      * The Operating system architecture.
      */
-    ARCH(System.getProperty("os.arch")),
+    OS_ARCH(System.getProperty("os.arch")),
     
     /**
      * The current java virtual machine.
      */
-    VM(System.getProperty("java.vm.name"));
+    JVM(System.getProperty("java.vm.name"));
     
     private static final String Linux = "Linux";
     private static final String Windows = "Windows";
@@ -70,7 +70,7 @@ public enum NativeVariant {
      * @return true if the current OS is a Linux, false otherwise.
      */
     public static boolean isLinux() {
-        return NativeVariant.NAME.getProperty().contains(NativeVariant.Linux);
+        return NativeVariant.OS_NAME.getProperty().contains(NativeVariant.Linux);
     }
 
     /**
@@ -79,7 +79,7 @@ public enum NativeVariant {
      * @return true if the current OS is a Windows, false otherwise.
      */
     public static boolean isWindows() {
-        return NativeVariant.NAME.getProperty().contains(NativeVariant.Windows);
+        return NativeVariant.OS_NAME.getProperty().contains(NativeVariant.Windows);
     }
 
     /**
@@ -88,7 +88,7 @@ public enum NativeVariant {
      * @return true if the current OS is a Mac, false otherwise.
      */
     public static boolean isMac() {
-        return NativeVariant.NAME.getProperty().contains(NativeVariant.Mac);
+        return NativeVariant.OS_NAME.getProperty().contains(NativeVariant.Mac);
     }
 
     /**
@@ -97,25 +97,52 @@ public enum NativeVariant {
      * @return true if the current OS is an Android, false otherwise.
      */
     public static boolean isAndroid() {
-        return VM.getProperty().contains(NativeVariant.Dalvik);
+        return JVM.getProperty().contains(NativeVariant.Dalvik);
     }
 
     /**
-     * Tests whether the current system architecture is a 64-bit intel chipset.
+     * Tests whether the current system architecture is a 64-bit chipset.
      * 
-     * @return true if the current OS architecture is a 64-bit intel chipset, false otherwise.
+     * @return true if the current OS architecture is a 64-bit chipset, false otherwise.
      */
     public static boolean isX86_64() {
-        return ARCH.getProperty().contains("64");
+        return OS_ARCH.getProperty().contains("64");
     }
 
     /**
-     * Tests whether the current system architecture is a 32-bit intel chipset.
+     * Tests whether the current system architecture is a plain x86 chipset.
      * 
-     * @return true if the current OS architecture is a 32-bit intel chipset, false otherwise.
+     * @return true if the current OS architecture is a plain x86 chipset, false otherwise.
      */
     public static boolean isX86() {
-        return ARCH.getProperty().equals("x86");
+        return OS_ARCH.getProperty().contains("x86");
+    }
+
+    /**
+     * Tests whether the current system architecture is a 32-bit chipset.
+     *
+     * @return true if the current OS architecture is a 32-bit chipset, false otherwise.
+     */
+    public static boolean is32() {
+        return OS_ARCH.getProperty().contains("32");
+    }
+
+    /**
+     * Tests whether the current CPU vendor is an AMD vendor (e.g., Intel Chipset).
+     *
+     * @return true if the current CPU vendor is an AMD vendor.
+     */
+    public static boolean isAMD() {
+        return OS_ARCH.getProperty().contains("amd");
+    }
+
+    /**
+     * Tests whether the current CPU vendor is an ARM vendor (e.g., Broadcom Chipset).
+     *
+     * @return true if the current CPU vendor is an ARM vendor.
+     */
+    public static boolean isARM() {
+        return OS_ARCH.getProperty().contains("arm");
     }
 
     /**

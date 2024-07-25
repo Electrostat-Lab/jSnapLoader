@@ -29,48 +29,40 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.avrsandbox.snaploader.file;
+package com.avrsandbox.snaploader;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
+import com.avrsandbox.snaploader.platform.NativeDynamicLibrary;
 
 /**
- * A thread-safe implementation of the file extractor API.
+ * A thread-safe implementation for the NativeBinaryLoader.
  * 
  * @author pavl_g
  */
-public class ConcurrentFileExtractor extends FileExtractor {
-    
+public class ConcurrentNativeBinaryLoader extends NativeBinaryLoader {
+
     /**
-     * An Object that controls the monitor.
+     * The monitor object.
      */
     protected final ReentrantLock lock = new ReentrantLock();
 
     /**
-     * Instantiates a thread-safe file extractor instance.
+     * Instantiates a thread-safe {@link NativeBinaryLoader} object.
      * 
-     * @param fileLocator locates a file inside a zip compression
-     * @param destination an absolute file path representing the extraction destination file
-     * @throws FileNotFoundException if the destination file path is not found
+     * @param libraryInfo a data structure object holding the platform independent data for the library to load
      */
-    public ConcurrentFileExtractor(FileLocator fileLocator, String destination) throws FileNotFoundException {
-        super(fileLocator, destination);
+    public ConcurrentNativeBinaryLoader(final List<NativeDynamicLibrary> registeredLibraries, final LibraryInfo libraryInfo) {
+        super(registeredLibraries, libraryInfo);
     }
-
-    /**
-     * Instantiates an empty file extractor instance.
-     */
-    protected ConcurrentFileExtractor() { 
-        super();
-    }
-
+    
     @Override
-    public void extract() throws IOException {
+    protected void cleanExtractBinary(NativeDynamicLibrary library) throws IOException {
         try {
             /* CRITICAL SECTION STARTS */
             lock.lock();
-            super.extract();
+            super.cleanExtractBinary(library);
         } finally {
             lock.unlock();
             /* CRITICAL SECTION ENDS */

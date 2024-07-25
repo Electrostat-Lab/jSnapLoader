@@ -32,9 +32,13 @@
 package com.avrsandbox.snaploader.examples;
 
 import java.io.IOException;
+import java.util.Arrays;
+
 import com.avrsandbox.snaploader.LoadingCriterion;
 import com.avrsandbox.snaploader.ConcurrentNativeBinaryLoader;
 import com.avrsandbox.snaploader.UnSupportedSystemError;
+import com.avrsandbox.snaploader.platform.util.DefaultDynamicLibraries;
+import com.avrsandbox.snaploader.platform.NativeDynamicLibrary;
 
 /**
  * Tests multi-threading and thread locks.
@@ -86,7 +90,16 @@ public final class TestMultiThreading {
     }, "Thread-Three");
 
     public static void main(String[] args) throws UnSupportedSystemError, IOException {
-        TestBasicFeatures.loader = new ConcurrentNativeBinaryLoader(TestBasicFeatures.libraryInfo).initPlatformLibrary();
+        final NativeDynamicLibrary[] libraries = new NativeDynamicLibrary[] {
+                DefaultDynamicLibraries.LINUX_X86,
+                DefaultDynamicLibraries.LINUX_X86_64,
+                DefaultDynamicLibraries.WIN_X86,
+                DefaultDynamicLibraries.WIN_X86_64,
+                DefaultDynamicLibraries.MAC_X86,
+                DefaultDynamicLibraries.MAC_X86_64,
+        };
+        TestBasicFeatures.loader = new ConcurrentNativeBinaryLoader(Arrays.asList(libraries),
+                TestBasicFeatures.libraryInfo).initPlatformLibrary();
         TestBasicFeatures.loader.setLoggingEnabled(true);
         TestBasicFeatures.printDetails(TestBasicFeatures.loader);
         

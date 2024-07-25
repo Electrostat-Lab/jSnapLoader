@@ -32,13 +32,15 @@
 package com.avrsandbox.snaploader.examples;
 
 import java.io.IOException;
-import com.avrsandbox.snaploader.file.FileExtractor;
-import com.avrsandbox.snaploader.file.FileLocator;
-import com.avrsandbox.snaploader.file.ZipCompressionType;
-import com.avrsandbox.snaploader.platform.PropertiesProvider;
+
+import com.avrsandbox.snaploader.filesystem.ExtractionListener;
+import com.avrsandbox.snaploader.filesystem.FileExtractor;
+import com.avrsandbox.snaploader.filesystem.FileLocator;
+import com.avrsandbox.snaploader.filesystem.ZipCompressionType;
+import com.avrsandbox.snaploader.platform.util.PropertiesProvider;
 
 /**
- * Tests extracting an image compression from a Zip compression type file using {@link FileExtractor} API.
+ * Tests extracting an image compression from a Zip compression type filesystem using {@link FileExtractor} API.
  * 
  * @author pavl_g
  */
@@ -47,10 +49,30 @@ public class TestZipExtractor {
     public static void main(String[] args) throws IOException {
         /* Locates the image inside the Zip Compression */
         final FileLocator fileLocator = new FileLocator(getZipAbsolutePath(), getFilePath(), ZipCompressionType.ZIP);
-        /* Extracts the image file from the Zip Compression */
+        /* Extracts the image filesystem from the Zip Compression */
         final FileExtractor fileExtractor = new FileExtractor(fileLocator, getExtractionPath());
         /* CLOSE/CLEAR I/O Resources */
-        fileExtractor.setExtractionListener(() -> clearResources(fileExtractor));
+        fileExtractor.setExtractionListener(new ExtractionListener() {
+            @Override
+            public void onExtractionCompleted(FileExtractor fileExtractor) {
+
+            }
+
+            @Override
+            public void onExtractionFailure(FileExtractor fileExtractor, Throwable throwable) {
+
+            }
+
+            @Override
+            public void onExtractionFinalization(FileExtractor fileExtractor, FileLocator fileLocator) {
+                try {
+                    fileExtractor.close();
+                    fileLocator.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
         fileExtractor.extract();
     }
 

@@ -29,31 +29,8 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.avrsandbox.snaploader;
 
 /**
- * A business error of type {@link UnsatisfiedLinkError} to indicate an un-supported system.
- * 
- * <p>
- * This error is thrown when the user tries to run the library on another operating system rather than the supported systems:
- * <ul>
- * <li> Linux - x86 - x86_64 </li>
- * <li> Windows - x86 - x86_64 </li>
- * <li> Mac - x86 - x86_64 </li>
- * <li> Android - intel32 - intel64 - arm32 - arm64 </li>
- * </ul>
- * 
- * @author pavl_g
+ * Provides I/O stream provider interfaces for {@link com.avrsandbox.snaploader.library.LibraryLocator} and {@link com.avrsandbox.snaploader.library.LibraryExtractor}.
  */
-public class UnSupportedSystemError extends UnsatisfiedLinkError {
-    
-    /**
-     * Thrown if the system detects an un-supported system binaries of the current OS.
-     * 
-     * @param os the current operating system (os) name
-     * @param arch the current operating system (os) processor architecture 
-     */
-    public UnSupportedSystemError(final String os, final String arch) {
-        super("System " + os + "_" + arch + " isn't supported yet !");
-    }
-}
+package com.avrsandbox.snaploader.filesystem;

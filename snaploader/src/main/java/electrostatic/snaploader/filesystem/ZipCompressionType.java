@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.avrsandbox.snaploader.file;
+package com.avrsandbox.snaploader.filesystem;
 
 import java.io.IOException;
 import java.util.jar.JarFile;
@@ -71,9 +71,9 @@ public enum ZipCompressionType {
     /**
      * Creates a new zip compression object by its path based on the compression symbol.
      * 
-     * @param directory the zip-file absolute path
+     * @param directory the zip-filesystem absolute path
      * @return a new zip compression object based on the compression type specified by the compression symbol
-     * @throws IOException if the zip file is not found, or an interrupted I/O operation has occured
+     * @throws IOException if the zip filesystem is not found, or an interrupted I/O operation has occured
      */
     protected ZipFile createNewCompressionObject(String directory) throws IOException {
         if (compressionObject == null) {
