@@ -33,19 +33,43 @@
 package electrostatic.snaploader.filesystem;
 
 /**
- * A listener for the extraction process.
- * 
- * @see FileExtractor#extract()
+ * Provides executable functions ensuring tight binding the user applications to
+ * the extraction lifecycle.
+ * <p>
+ * Note: All the functions on this interface are dispatched
+ * by the {@link FileExtractor#extract()}.
+ * <p>
+ * Warning: this listener interface is an essential component of
+ * developing custom system loaders; as it requires freeing the native stream resources
+ * manually through the {@link ExtractionListener#onExtractionFinalization(FileExtractor, FileLocator)}.
+ * If not freeing the resources with this interface was attained, then a try-with resources could be used.
+ *
  * @author pavl_g
  */
 public interface ExtractionListener {
 
     /**
-     * Dispatched by the {@link FileExtractor#extract()} when the extraction process is completed.
+     * Dispatched when the extraction process is completed.
+     *
+     * @param fileExtractor the extractor in-command.
      */
     void onExtractionCompleted(FileExtractor fileExtractor);
 
+    /**
+     * Dispatched when the extraction process has failed with a throwable
+     * component.
+     *
+     * @param fileExtractor the extractor in-command.
+     * @param throwable the throwable captured from the FileExtractor API.
+     */
     void onExtractionFailure(FileExtractor fileExtractor, Throwable throwable);
 
+    /**
+     * Dispatched when the extraction process is finalized, at this point, manually
+     * freeing active resources should be attained.
+     *
+     * @param fileExtractor the extractor in-command.
+     * @param fileLocator the file locator used by the extractor to locate files inside compressions.
+     */
     void onExtractionFinalization(FileExtractor fileExtractor, FileLocator fileLocator);
 }
