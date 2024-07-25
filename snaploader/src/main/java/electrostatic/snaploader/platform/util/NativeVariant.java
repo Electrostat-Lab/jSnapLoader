@@ -35,8 +35,9 @@ package electrostatic.snaploader.platform.util;
 /**
  * Wraps objects for native variant constituents (OS + ARCH={CPU + INSTRUCT_SET} + VM).
  *
- * <ul>
+ * <p>
  * Use the following list to build your platform predicates:
+ * <ul>
  * <li> x86: 32-bit x86 architecture </li>
  * <li> x86_64: 64-bit x86 architecture, often referred to as amd64 </li>
  * <li> amd64: Another name for x86_64 </li>
