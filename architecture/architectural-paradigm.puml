@@ -4,7 +4,11 @@
 'Structural composition
 package platform {
     package util {
-        component NativeVariant {
+        component NativeVariant #22AADD {
+            component [Os] {
+            }
+            component [Cpu] {
+            }
         }
         component PropertiesProvider {
         }
