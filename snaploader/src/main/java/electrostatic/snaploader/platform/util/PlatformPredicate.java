@@ -41,18 +41,24 @@ package electrostatic.snaploader.platform.util;
  */
 public final class PlatformPredicate {
 
-    public static final PlatformPredicate LINUX_X86 = new PlatformPredicate(NativeVariant.isLinux() && NativeVariant.isX86());
-    public static final PlatformPredicate LINUX_X86_64 = new PlatformPredicate(NativeVariant.isLinux() && NativeVariant.isAMD() && NativeVariant.is64());
-    public static final PlatformPredicate LINUX_ARM_32 = new PlatformPredicate(NativeVariant.isLinux() && NativeVariant.isARM());
-    public static final PlatformPredicate LINUX_ARM_64 = new PlatformPredicate(NativeVariant.isLinux() && NativeVariant.isARM() && NativeVariant.is64());
-    public static final PlatformPredicate MACOS_X86 = new PlatformPredicate(NativeVariant.isMac() && NativeVariant.isX86());
-    public static final PlatformPredicate MACOS_X86_64 = new PlatformPredicate(NativeVariant.isMac() && NativeVariant.isAMD() && NativeVariant.is64());
-    public static final PlatformPredicate MACOS_ARM_32 = new PlatformPredicate(NativeVariant.isMac() && NativeVariant.isARM());
-    public static final PlatformPredicate MACOS_ARM_64 = new PlatformPredicate(NativeVariant.isMac() && NativeVariant.isARM() && NativeVariant.is64());
-    public static final PlatformPredicate WIN_X86 = new PlatformPredicate(NativeVariant.isWindows() && NativeVariant.isX86());
-    public static final PlatformPredicate WIN_X86_64 = new PlatformPredicate(NativeVariant.isWindows() && NativeVariant.isAMD() && NativeVariant.is64());
-    public static final PlatformPredicate WIN_ARM_32 = new PlatformPredicate(NativeVariant.isWindows() && NativeVariant.isARM());
-    public static final PlatformPredicate WIN_ARM_64 = new PlatformPredicate(NativeVariant.isWindows() && NativeVariant.isARM() && NativeVariant.is64());
+    public static final PlatformPredicate LINUX_X86 = new PlatformPredicate(NativeVariant.Os.isLinux() && NativeVariant.Cpu.isX86());
+    public static final PlatformPredicate LINUX_X86_64 = new PlatformPredicate(NativeVariant.Os.isLinux() && NativeVariant.Cpu.isAMD() && NativeVariant.Cpu.is64());
+    public static final PlatformPredicate LINUX_ARM_32 = new PlatformPredicate(NativeVariant.Os.isLinux() && NativeVariant.Cpu.isARM());
+    public static final PlatformPredicate LINUX_ARM_64 = new PlatformPredicate(NativeVariant.Os.isLinux() && NativeVariant.Cpu.isARM() && NativeVariant.Cpu.is64());
+    public static final PlatformPredicate LINUX_RISC_V_32 = new PlatformPredicate(NativeVariant.Os.isLinux() && NativeVariant.Cpu.isRiscV());
+    public static final PlatformPredicate LINUX_RISC_V_64 = new PlatformPredicate(NativeVariant.Os.isLinux() && NativeVariant.Cpu.isRiscV() && NativeVariant.Cpu.is64());
+
+    public static final PlatformPredicate MACOS_X86 = new PlatformPredicate(NativeVariant.Os.isMac() && NativeVariant.Cpu.isX86());
+    public static final PlatformPredicate MACOS_X86_64 = new PlatformPredicate(NativeVariant.Os.isMac() && NativeVariant.Cpu.isAMD() && NativeVariant.Cpu.is64());
+    public static final PlatformPredicate MACOS_ARM_32 = new PlatformPredicate(NativeVariant.Os.isMac() && NativeVariant.Cpu.isARM());
+    public static final PlatformPredicate MACOS_ARM_64 = new PlatformPredicate(NativeVariant.Os.isMac() && NativeVariant.Cpu.isARM() && NativeVariant.Cpu.is64());
+
+    public static final PlatformPredicate WIN_X86 = new PlatformPredicate(NativeVariant.Os.isWindows() && NativeVariant.Cpu.isX86());
+    public static final PlatformPredicate WIN_X86_64 = new PlatformPredicate(NativeVariant.Os.isWindows() && NativeVariant.Cpu.isAMD() && NativeVariant.Cpu.is64());
+    public static final PlatformPredicate WIN_ARM_32 = new PlatformPredicate(NativeVariant.Os.isWindows() && NativeVariant.Cpu.isARM());
+    public static final PlatformPredicate WIN_ARM_64 = new PlatformPredicate(NativeVariant.Os.isWindows() && NativeVariant.Cpu.isARM() && NativeVariant.Cpu.is64());
+    public static final PlatformPredicate WIN_RISC_V_32 = new PlatformPredicate(NativeVariant.Os.isWindows() && NativeVariant.Cpu.isRiscV());
+    public static final PlatformPredicate WIN_RISC_V_64 = new PlatformPredicate(NativeVariant.Os.isWindows() && NativeVariant.Cpu.isRiscV());
 
     private final boolean predicate;
 
