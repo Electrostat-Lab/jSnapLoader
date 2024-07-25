@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, AvrSandbox, jSnapLoader
+ * Copyright (c) 2023-2024, The Electrostatic-Sandbox Distributed Simulation Framework, jSnapLoader
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,11 +29,12 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.avrsandbox.snaploader.library;
+
+package electrostatic.snaploader.library;
 
 import java.io.IOException;
-import com.avrsandbox.snaploader.filesystem.ConcurrentFileExtractor;
-import com.avrsandbox.snaploader.filesystem.FileExtractor;
+import electrostatic.snaploader.filesystem.ConcurrentFileExtractor;
+import electrostatic.snaploader.filesystem.FileExtractor;
 
 /**
  * Represents a thread-safe dynamic library (.so, .dll, .dylib) extractor based on the {@link FileExtractor}.

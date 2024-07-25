@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, AvrSandbox, jSnapLoader
+ * Copyright (c) 2023-2024, The Electrostatic-Sandbox Distributed Simulation Framework, jSnapLoader
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,13 +29,14 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.avrsandbox.snaploader.library;
+
+package electrostatic.snaploader.library;
 
 import java.io.IOException;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
-import com.avrsandbox.snaploader.filesystem.ZipCompressionType;
-import com.avrsandbox.snaploader.filesystem.FileLocator;
+import electrostatic.snaploader.filesystem.ZipCompressionType;
+import electrostatic.snaploader.filesystem.FileLocator;
 
 /**
  * Locates a library inside a jar filesystem, the probable source for the native dynamic libraries to extract and load.
