@@ -39,6 +39,7 @@ import electrostatic.snaploader.NativeBinaryLoader;
 import electrostatic.snaploader.platform.util.DefaultDynamicLibraries;
 import electrostatic.snaploader.platform.NativeDynamicLibrary;
 import electrostatic.snaploader.platform.util.NativeVariant;
+import electrostatic.snaploader.platform.util.PlatformPredicate;
 import electrostatic.snaploader.platform.util.PropertiesProvider;
 import electrostatic.snaploader.LoadingCriterion;
 
@@ -49,8 +50,8 @@ import electrostatic.snaploader.LoadingCriterion;
  */
 public final class TestBasicFeatures {
                                                      
-    protected static final LibraryInfo libraryInfo = new LibraryInfo(getJarFilePath(), 
-                                                                     null, 
+    protected static final LibraryInfo libraryInfo = new LibraryInfo(getJarFilePath(),
+                                                                     "lib/placeholder",
                                                                      getLibraryBaseName(), 
                                                                      getLibrariesAbsolutePath());
 
@@ -59,8 +60,8 @@ public final class TestBasicFeatures {
     public static final NativeDynamicLibrary[] libraries = new NativeDynamicLibrary[] {
             DefaultDynamicLibraries.LINUX_X86,
             DefaultDynamicLibraries.LINUX_X86_64,
-            DefaultDynamicLibraries.WIN_X86,
-            DefaultDynamicLibraries.WIN_X86_64,
+            new NativeDynamicLibrary("lib/windows/x86", "jmealloc.dll", PlatformPredicate.WIN_X86),
+            new NativeDynamicLibrary("lib/windows/x86", "jmealloc.dll", PlatformPredicate.WIN_X86),
             DefaultDynamicLibraries.MAC_X86,
             DefaultDynamicLibraries.MAC_X86_64,
     };
@@ -84,7 +85,7 @@ public final class TestBasicFeatures {
         System.out.println("VM: " + NativeVariant.JVM.getProperty());
         System.out.println("--------------------------------------------------------------");
         System.out.println("Jar Path: " + loader.getNativeDynamicLibrary().getJarPath());
-        System.out.println("Library Directory: " + loader.getNativeDynamicLibrary().getLibraryDirectory());
+        System.out.println("Library Directory: " + loader.getNativeDynamicLibrary().getPlatformDirectory());
         System.out.println("Compressed library path: " + loader.getNativeDynamicLibrary().getCompressedLibrary());
         System.out.println("Extracted library absolute path: " + loader.getNativeDynamicLibrary().getExtractedLibrary());
         System.out.println("Is Extracted: " + loader.getNativeDynamicLibrary().isExtracted()); 
