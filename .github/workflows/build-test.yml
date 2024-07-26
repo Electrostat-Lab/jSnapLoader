@@ -69,7 +69,7 @@ jobs:
         strategy:
           matrix:
             os: [ 'ubuntu-latest', 'windows-latest' ]
-            jdk: ['8', '17', '20']
+            jdk: ['17', '20']
             architecture: ['x86_64']
 
         # Steps represent a sequence of tasks that will be executed as part of the job
