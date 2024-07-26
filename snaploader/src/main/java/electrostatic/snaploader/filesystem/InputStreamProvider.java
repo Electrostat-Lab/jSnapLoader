@@ -48,4 +48,12 @@ public interface InputStreamProvider extends AutoCloseable {
      * @return an input stream object for this located filesystem
      */
     InputStream getFileInputStream();
+
+    /**
+     * Sets the file localizing listener interface object to bind the user application
+     * to the file localizing lifecycle.
+     *
+     * @param fileLocalizingListener an implementation object of the file localizing listener
+     */
+    void setFileLocalizingListener(FileLocalizingListener fileLocalizingListener);
 }
