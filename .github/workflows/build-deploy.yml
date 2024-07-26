@@ -48,7 +48,7 @@ jobs:
     deploy:
           environment:
             name: maven-central
-            url: https://repo.maven.apache.org/maven2/io/github/software-hardware-codesign/
+            url: https://repo.maven.apache.org/maven2/io/github/electrostat-lab
           runs-on: ${{ matrix.os }}
           needs: [compile-assemble]
           strategy:

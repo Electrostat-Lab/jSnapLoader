@@ -16,10 +16,7 @@ on:
 jobs:
     build-snaploader:
       # runner images with architectures (variants)
-      runs-on: ${{ matrix.os }}
-      strategy:
-        matrix:
-          os: [ 'ubuntu-latest' ]
+      runs-on: 'ubuntu-latest'
       name: Build jSnapLoader
 
       # Steps represent a sequence of tasks that will be executed as part of the job
@@ -27,7 +24,7 @@ jobs:
         - name: Checkout Job
           uses: actions/checkout@v3
 
-        - name: Setup Temurin-JDK-19
+        - name: Setup temurin JDK
           uses: actions/setup-java@v3
           with:
             distribution: 'temurin' 
@@ -55,7 +52,7 @@ jobs:
           - name: Checkout Job
             uses: actions/checkout@v3
           
-          - name: Setup Oracle-JDK-19
+          - name: Setup temurin JDK
             uses: actions/setup-java@v3
             with:
               distribution: 'temurin' 
@@ -68,21 +65,23 @@ jobs:
         # runner images with architectures (variants)
         runs-on: ${{ matrix.os }}
         needs: build-snaploader
+        name: Testing snaploader on ${{ matrix.os }}-${{ matrix.jdk }}
         strategy:
           matrix:
-            os: [ 'ubuntu-latest', 'macos-latest', 'windows-latest' ]
-        name: Testing snaploader on ${{ matrix.os }} for x86-64
+            os: [ 'ubuntu-latest', 'windows-latest' ]
+            jdk: ['17', '19']
+            architecture: ['x86_64']
 
         # Steps represent a sequence of tasks that will be executed as part of the job
         steps:
           - name: Checkout Job
             uses: actions/checkout@v3
           
-          - name: Setup Temurin-JDK-19
+          - name: Setup temurin JDK
             uses: actions/setup-java@v3
             with:
               distribution: 'temurin' 
-              java-version: '19'
+              java-version: ${{ matrix.jdk }}
           
           - name: Download snaploader-SNAPSHOT.jar library
             uses: actions/download-artifact@v3

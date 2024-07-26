@@ -4,23 +4,23 @@ plugins {
 }
 
 application {
-    mainClass = 'com.avrsandbox.snaploader.examples.TestBasicFeatures'
+    mainClass = 'electrostatic.snaploader.examples.TestBasicFeatures'
 }
 
 tasks.register("TestBasicFeatures") {
-    application.mainClass = 'com.avrsandbox.snaploader.examples.TestBasicFeatures'
+    application.mainClass = 'electrostatic.snaploader.examples.TestBasicFeatures'
 }
 
 tasks.register("TestMultipleLoads") {
-    application.mainClass = 'com.avrsandbox.snaploader.examples.TestMultipleLoads'
+    application.mainClass = 'electrostatic.snaploader.examples.TestMultipleLoads'
 }
 
 tasks.register("TestZipExtractor") {
-    application.mainClass = 'com.avrsandbox.snaploader.examples.TestZipExtractor'
+    application.mainClass = 'electrostatic.snaploader.examples.TestZipExtractor'
 }
 
 tasks.register("TestMultiThreading") {
-    application.mainClass = 'com.avrsandbox.snaploader.examples.TestMultiThreading'
+    application.mainClass = 'electrostatic.snaploader.examples.TestMultiThreading'
 }
 
 dependencies {
