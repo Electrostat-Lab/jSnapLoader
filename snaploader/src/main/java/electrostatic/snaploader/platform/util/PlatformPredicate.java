@@ -79,7 +79,7 @@ public final class PlatformPredicate {
     /**
      * Alias object for MacOSX on X86-64 Chipset.
      */
-    public static final PlatformPredicate MACOS_X86_64 = new PlatformPredicate(NativeVariant.Os.isMac() && NativeVariant.Cpu.isAMD() && NativeVariant.Cpu.is64());
+    public static final PlatformPredicate MACOS_X86_64 = new PlatformPredicate(NativeVariant.Os.isMac() && NativeVariant.Cpu.isX86() && NativeVariant.Cpu.is64());
 
     /**
      * Alias object for MacOSX on arm-32 Chipset.
