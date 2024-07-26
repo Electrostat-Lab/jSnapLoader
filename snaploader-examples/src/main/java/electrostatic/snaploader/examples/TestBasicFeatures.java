@@ -61,7 +61,7 @@ public final class TestBasicFeatures {
             DefaultDynamicLibraries.LINUX_X86,
             DefaultDynamicLibraries.LINUX_X86_64,
             new NativeDynamicLibrary("lib/windows/x86", "jmealloc.dll", PlatformPredicate.WIN_X86),
-            new NativeDynamicLibrary("lib/windows/x86", "jmealloc.dll", PlatformPredicate.WIN_X86),
+            new NativeDynamicLibrary("lib/windows/x86-64", "jmealloc.dll", PlatformPredicate.WIN_X86_64),
             DefaultDynamicLibraries.MAC_X86,
             DefaultDynamicLibraries.MAC_X86_64,
     };
