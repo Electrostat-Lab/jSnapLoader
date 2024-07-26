@@ -87,10 +87,17 @@ public class FileExtractor implements OutputStreamProvider {
 
     /**
      * Commands and Extract the specified filesystem to the specified destination filesystem.
-     * 
-     * @throws IOException if the input/output streams has failed or an interrupted I/O operation has occured
+     * <p>
+     * Warning: this function leaks buffered streams; this vision was attained for freedom of use,
+     * but the user application must keep in mind that stream closure and resources release must be
+     * attained either through the extraction completed and failure listeners, or through a try-with
+     * resources.
+     *
+     * @throws IOException if the input/output streams has failed or an interrupted I/O operation has occurred.
+     * @throws FileNotFoundException if the file locator has failed to locate the file inside the compression
+     *                               for the extraction process.
      */
-    public void extract() throws IOException {
+    public void extract() throws IOException, FileNotFoundException {
         try {
             /* uses buffered streams */
             /* buffered byte streams provide a constant memory allocation
@@ -100,9 +107,13 @@ public class FileExtractor implements OutputStreamProvider {
              * unlike the unbuffered streams, which polls byte streams from an online
              * pipe, and allocate memory according to the active bytes manipulated
              * by the pipeline. */
+            fileLocator.validateFileLocalization();
             InputStream libraryStream = fileLocator.getFileInputStream();
+
             /* Extracts the shipped native files */
+            /* Allocate a byte buffer for the buffered streams */
             final byte[] buffer = new byte[libraryStream.available()];
+
             for (int bytes = 0; bytes != EOF; bytes = libraryStream.read(buffer)) {
                 /* use the bytes as the buffer length to write valid data */
                 fileOutputStream.write(buffer, 0, bytes);
