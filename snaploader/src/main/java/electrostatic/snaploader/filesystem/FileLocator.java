@@ -32,6 +32,7 @@
 
 package electrostatic.snaploader.filesystem;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipEntry;
@@ -49,6 +50,12 @@ public class FileLocator implements InputStreamProvider {
      * The input stream associated with the located filesystem.
      */
     protected InputStream fileInputStream;
+
+    /**
+     * An interface object to provide the file-localizing process with a command-state pattern;
+     * binding the user application interface with the file localizing lifecycle.
+     */
+    protected FileLocalizingListener fileLocalizingListener;
 
     /**
      * Locates a filesystem inside an external zip compression, the zip filesystem is defined as a {@link ZipFile} object and
@@ -75,6 +82,28 @@ public class FileLocator implements InputStreamProvider {
     protected FileLocator() {   
     }
 
+    /**
+     * Validates the file localization process inside the compression.
+     *
+     * @throws FileNotFoundException if the localization of the file inside
+     *                               the specified compression has failed.
+     */
+    public void validateFileLocalization() throws FileNotFoundException {
+        if (fileInputStream != null) {
+            if (fileLocalizingListener != null) {
+                fileLocalizingListener.onFileLocalizationSuccess(this);
+            }
+        } else {
+            final FileNotFoundException fileNotFoundException =
+                    new FileNotFoundException("File locator has failed to locate the file inside the compression!");
+
+            if (fileLocalizingListener != null) {
+                fileLocalizingListener.onFileLocalizationFailure(this, fileNotFoundException);
+            }
+            throw fileNotFoundException;
+        }
+    }
+
     @Override
     public InputStream getFileInputStream() {
         return fileInputStream;
@@ -84,5 +113,10 @@ public class FileLocator implements InputStreamProvider {
     public void close() throws IOException {
         fileInputStream.close();
         fileInputStream = null;
+    }
+
+    @Override
+    public void setFileLocalizingListener(FileLocalizingListener fileLocalizingListener) {
+        this.fileLocalizingListener = fileLocalizingListener;
     }
 }
