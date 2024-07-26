@@ -33,6 +33,7 @@
 package electrostatic.snaploader;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -101,7 +102,7 @@ public class NativeBinaryLoader {
     }
 
     public NativeBinaryLoader registerNativeLibraries(NativeDynamicLibrary[] nativeDynamicLibraries) {
-        this.registeredLibraries = List.of(nativeDynamicLibraries);
+        this.registeredLibraries = Arrays.asList(nativeDynamicLibraries);
         return this;
     }
 
