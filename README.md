@@ -16,7 +16,7 @@ with highly modifiable system-specific registration using platform predicates.
 | _Credits for other systems_     |             |                    |
 
 ## Software Architectural Paradigm: 
-<img src="https://github.com/Electrostat-Lab/jSnapLoader/architecture/architectural-paradigm.png" alt="Architectural-Paradigm-Placement"/>
+<img src="https://github.com/Electrostat-Lab/jSnapLoader/blob/master/architecture/architectural-paradigm.png" alt="Architectural-Paradigm-Placement"/>
 
 ## Quick Building and running examples: 
 ```bash
