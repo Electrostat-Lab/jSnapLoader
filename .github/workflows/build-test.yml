@@ -56,7 +56,7 @@ jobs:
             uses: actions/setup-java@v3
             with:
               distribution: 'oracle' 
-              java-version: '20'
+              java-version: '19'
 
           - name: Generate javadoc
             run: chmod +rwx ./gradlew && ./gradlew :snaploader:generateJavadocJar
@@ -69,7 +69,7 @@ jobs:
         strategy:
           matrix:
             os: [ 'ubuntu-latest', 'windows-latest' ]
-            jdk: ['17', '20']
+            jdk: ['17', '19']
             architecture: ['x86_64']
 
         # Steps represent a sequence of tasks that will be executed as part of the job
