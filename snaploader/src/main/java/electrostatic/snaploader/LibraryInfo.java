@@ -35,8 +35,26 @@ package electrostatic.snaploader;
 import electrostatic.snaploader.platform.NativeDynamicLibrary;
 
 /**
- * Provides a library placeholder with an adjustable baseName {@link LibraryInfo#baseName}.
- * 
+ * Provides a platform-independent library placeholder with an adjustable baseName {@link LibraryInfo#baseName}
+ * grouping the common components among all platforms.
+ * <p>
+ * <b> Understand the API vision: </b>
+ * The native dynamic API is composed of {@link NativeDynamicLibrary} which represents the
+ * platform-dependent entity and the {@link LibraryInfo} which represents the abstract
+ * platform-independent entity; the common components among them represent a backup
+ * on the LibraryInfo side that the API will fall back to in case the platform directory
+ * path is invalid.
+ * <p>
+ * <ul>
+ * <li> ------------------------------
+ * <li> (2).Abstract: LibraryInfo (Grouping common components among all platforms; thus platform-independent).
+ * <li> ------------------------------
+ * <li> (1).Concrete: NativeDynamicLibrary (Grouping platform-dependent components).
+ * <li> ------------------------------
+ * </ul>
+ * <p>
+ * where (1).(2) designates the runtime order.
+ *
  * @author pavl_g
  */
 public final class LibraryInfo {
@@ -47,38 +65,14 @@ public final class LibraryInfo {
     private String extractionDir;
 
     /**
-     * Instantiates a library info object with a basename,
-     * together with the current classpath, the platform directory
-     * as the path to locate the native library, and the current
-     * working directory as an extraction path.
+     * Instantiates a library info data structure pointing to a library in the classpath.
      *
-     * @param baseName the library basename without the extension
-     */
-    public LibraryInfo(String baseName) {
-        this(null, null, baseName, null);
-    }
-
-    /**
-     * Instantiates a library info object with a basename,
-     * together with the current classpath, the platform directory
-     * as the path to locate the native library, and a custom
-     * user extraction path.
-     *
-     * @param baseName the library basename without the extension
-     * @param extractionDir the path to a user-defined extraction directory
-     */
-    public LibraryInfo(String baseName, String extractionDir) {
-        this(null, null, baseName, extractionDir);
-    }
-
-    /**
-     * Instantiates a library info object with a basename,
-     * together with the current classpath, a user-defined platform-independent
-     * directory, and a custom user extraction path.
-     *
-     * @param directory the directory path to the binary inside the Jar file
-     * @param baseName the library basename without the extension
-     * @param extractionDir the path to a user-defined extraction directory
+     * @param directory the platform-independent directory inside the compression used for locating the native dynamic library,
+     *                  this is used as a backup directory path
+     *                  in case the {@link NativeDynamicLibrary#getPlatformDirectory()} is not valid.
+     * @param baseName the library basename, for example, 'lib-basename.so'.
+     * @param extractionDir the extraction destination in absolute string format, "null" if the current [user.dir] is
+     *                      specified as the extraction directory
      */
     public LibraryInfo(String directory, String baseName, String extractionDir) {
         this(null, directory, baseName, extractionDir);
@@ -88,8 +82,9 @@ public final class LibraryInfo {
      * Instantiates a library info data structure pointing to a library in an external jar with jarPath.
      * 
      * @param jarPath a path to an external jar to locate the library inside, "null" to use the project jar (classpath).
-     * @param directory  the directory inside the compression used for locating the native dynamic library, "null" to use 
-     *                   the default directory defined by {@link NativeDynamicLibrary}.
+     * @param directory the platform-independent directory inside the compression used for locating the native dynamic library,
+     *                  this is used as a backup directory path
+     *                  in case the {@link NativeDynamicLibrary#getPlatformDirectory()} is not valid.
      * @param baseName the library basename, for example, 'lib-basename.so'.
      * @param extractionDir the extraction destination in absolute string format, "null" if the current [user.dir] is 
      *                      specified as the extraction directory
