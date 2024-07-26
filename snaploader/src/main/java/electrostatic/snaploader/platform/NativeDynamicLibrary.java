@@ -57,13 +57,13 @@ public class NativeDynamicLibrary {
     /**
      * The library path inside the compression (i.e., Jar file).
      */
-    protected String libraryDirectory;
+    protected String platformDirectory;
 
     /**
      * A designator for the library name with the platform extension
      * (basename + extension).
      */
-    protected String library;
+    protected String libraryFile;
 
     /**
      * A designator for the extraction directory of the
@@ -81,6 +81,22 @@ public class NativeDynamicLibrary {
 
     /**
      * Creates a Native dynamic library from a relative directory and a library filesystem.
+     *
+     * @param platformDirectory the library directory inside the jar compression, "null" for the default library directory.
+     * @param libraryFile the full library name including the platform extension which if assigned
+     *                    as "null", it will make the loader rely on the library info to obtain
+     *                    the full library name.
+     * @param platformPredicate the predicate to test against; that if evaluated as true, the native library will be selected
+     *                  to be loaded by the native loader
+     */
+    public NativeDynamicLibrary(String platformDirectory, String libraryFile,
+                                PlatformPredicate platformPredicate) {
+        this(platformDirectory, platformPredicate);
+        this.libraryFile = libraryFile;
+    }
+
+    /**
+     * Creates a Native dynamic library from a relative directory and a library filesystem.
      * 
      * @param platformDirectory the library directory inside the jar compression, "null" for the default library directory.
      * @param platformPredicate the predicate to test against; that if evaluated as true, the native library will be selected
@@ -88,7 +104,7 @@ public class NativeDynamicLibrary {
      */
     public NativeDynamicLibrary(String platformDirectory,
                                 PlatformPredicate platformPredicate) {
-        this.libraryDirectory = platformDirectory;
+        this.platformDirectory = platformDirectory;
         this.platformPredicate = platformPredicate;
     }
 
@@ -98,17 +114,23 @@ public class NativeDynamicLibrary {
      * @param libraryInfo wraps abstract data representing the native library
      */
     public void initWithLibraryInfo(LibraryInfo libraryInfo) {
-        String ext = ".so";
 
-        if (NativeVariant.Os.isMac()) {
-            ext = ".dylib";
-        } else if (NativeVariant.Os.isWindows()) {
-            ext = ".dll";
-        }
+        /* Initializes the library file if it's not initialized by the user */
+        if (libraryFile == null) {
+            // default values for library prefix
+            // and library extensions
+            String libraryPrefix = "lib";
+            String libraryExtension = ".so";
 
-        /* Initializes the library basename */
-        if (libraryInfo.getBaseName() != null) {
-            library = "lib" + libraryInfo.getBaseName() + ext;
+            // reassign according to the operating system environment
+            if (NativeVariant.Os.isMac()) {
+                libraryExtension = ".dylib";
+            } else if (NativeVariant.Os.isWindows()) {
+                libraryExtension = ".dll";
+                libraryPrefix = ""; // selectively remove the prefixed value on Windows
+            }
+
+            libraryFile = libraryPrefix + libraryInfo.getBaseName() + libraryExtension;
         }
 
         /* Initializes the library jar path to locate before extracting, "null" to use the classpath */
@@ -117,9 +139,9 @@ public class NativeDynamicLibrary {
         /* Initializes the library with an extraction path, "null" to extract to the current user directory */
         extractionDir = libraryInfo.getExtractionDir();
 
-        /* Initializes the library directory within the jar, "null" for the default library directory */
-        if (libraryInfo.getDirectory() != null) {
-            libraryDirectory = libraryInfo.getDirectory();
+        /* Fallback initializes the library directory within the jar from the library-info */
+        if (platformDirectory == null) {
+            platformDirectory = libraryInfo.getDirectory();
         }
     }
 
@@ -137,8 +159,8 @@ public class NativeDynamicLibrary {
      * 
      * @return a string representing the location of the native dynamic library to be loaded
      */
-    public String getLibraryDirectory() {
-        return libraryDirectory;
+    public String getPlatformDirectory() {
+        return platformDirectory;
     }
     
     /**
@@ -147,7 +169,7 @@ public class NativeDynamicLibrary {
      * @return a string representing the library path within the jar compression
      */
     public String getCompressedLibrary() {
-        return libraryDirectory + PropertiesProvider.ZIP_FILE_SEPARATOR.getSystemProperty() + library;
+        return platformDirectory + PropertiesProvider.ZIP_FILE_SEPARATOR.getSystemProperty() + libraryFile;
     }
 
     /**
@@ -157,10 +179,10 @@ public class NativeDynamicLibrary {
      */
     public String getExtractedLibrary() {
         if (extractionDir != null) {
-            return extractionDir + PropertiesProvider.FILE_SEPARATOR.getSystemProperty() + library;
+            return extractionDir + PropertiesProvider.FILE_SEPARATOR.getSystemProperty() + libraryFile;
         }
         return PropertiesProvider.USER_DIR.getSystemProperty() + 
-                    PropertiesProvider.FILE_SEPARATOR.getSystemProperty() + library;
+                    PropertiesProvider.FILE_SEPARATOR.getSystemProperty() + libraryFile;
     }
 
     /**
