@@ -20,6 +20,7 @@ jobs:
       strategy:
         matrix:
           os: [ 'ubuntu-latest' ]
+          jdk: ['8', '17', '20']
       name: Build jSnapLoader
 
       # Steps represent a sequence of tasks that will be executed as part of the job
@@ -27,11 +28,11 @@ jobs:
         - name: Checkout Job
           uses: actions/checkout@v3
 
-        - name: Setup Temurin-JDK-19
+        - name: Setup Oracle JDK
           uses: actions/setup-java@v3
           with:
-            distribution: 'temurin' 
-            java-version: '19'
+            distribution: 'oracle' 
+            java-version: '20'
 
         - name: Compiling java
           run: ./gradlew --console="verbose" :snaploader:build
@@ -55,11 +56,11 @@ jobs:
           - name: Checkout Job
             uses: actions/checkout@v3
           
-          - name: Setup Oracle-JDK-19
+          - name: Setup Oracle JDK
             uses: actions/setup-java@v3
             with:
-              distribution: 'temurin' 
-              java-version: '19'
+              distribution: 'oracle' 
+              java-version: '20'
 
           - name: Generate javadoc
             run: chmod +rwx ./gradlew && ./gradlew :snaploader:generateJavadocJar
@@ -79,11 +80,11 @@ jobs:
           - name: Checkout Job
             uses: actions/checkout@v3
           
-          - name: Setup Temurin-JDK-19
+          - name: Setup Oracle JDK
             uses: actions/setup-java@v3
             with:
-              distribution: 'temurin' 
-              java-version: '19'
+              distribution: 'oracle' 
+              java-version: ${{ matrix.jdk }}
           
           - name: Download snaploader-SNAPSHOT.jar library
             uses: actions/download-artifact@v3
