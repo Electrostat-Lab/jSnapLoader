@@ -13,6 +13,10 @@ tasks.register("generateSourcesJar", Jar) {
     from sourceSets.main.allSource
 }
 
+tasks.withType(JavaCompile) {
+    options.release = 8
+}
+
 jar { // assemble jar options [java -jar]
     manifest {
         attributes 'Project': "jSnaploader",
