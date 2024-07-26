@@ -65,7 +65,7 @@ jobs:
         # runner images with architectures (variants)
         runs-on: ${{ matrix.os }}
         needs: build-snaploader
-        name: Testing snaploader on ${{ matrix.os }}
+        name: Testing snaploader on ${{ matrix.os }}-${{ matrix.jdk }}
         strategy:
           matrix:
             os: [ 'ubuntu-latest', 'windows-latest' ]
