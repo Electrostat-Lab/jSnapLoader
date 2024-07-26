@@ -108,13 +108,13 @@ public class FileExtractor implements OutputStreamProvider {
              * pipe, and allocate memory according to the active bytes manipulated
              * by the pipeline. */
             fileLocator.validateFileLocalization();
-            InputStream libraryStream = fileLocator.getFileInputStream();
+            InputStream fileStream = fileLocator.getFileInputStream();
 
             /* Extracts the shipped native files */
             /* Allocate a byte buffer for the buffered streams */
-            final byte[] buffer = new byte[libraryStream.available()];
+            final byte[] buffer = new byte[fileStream.available()];
 
-            for (int bytes = 0; bytes != EOF; bytes = libraryStream.read(buffer)) {
+            for (int bytes = 0; bytes != EOF; bytes = fileStream.read(buffer)) {
                 /* use the bytes as the buffer length to write valid data */
                 fileOutputStream.write(buffer, 0, bytes);
             }
