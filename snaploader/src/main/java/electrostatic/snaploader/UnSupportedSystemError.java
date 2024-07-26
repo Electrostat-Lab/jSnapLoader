@@ -33,17 +33,10 @@
 package electrostatic.snaploader;
 
 /**
- * A business error of type {@link UnsatisfiedLinkError} to indicate an un-supported system.
- * 
+ * A business error of type {@link UnsatisfiedLinkError} to indicate an unsupported system.
  * <p>
- * This error is thrown when the user tries to run the library on another operating system rather than the supported systems:
- * <ul>
- * <li> Linux - x86 - x86_64 </li>
- * <li> Windows - x86 - x86_64 </li>
- * <li> Mac - x86 - x86_64 </li>
- * <li> Android - intel32 - intel64 - arm32 - arm64 </li>
- * </ul>
- * 
+ * This error is thrown when all the user-defined platform predicates are not met!
+ *
  * @author pavl_g
  */
 public class UnSupportedSystemError extends UnsatisfiedLinkError {
@@ -55,6 +48,6 @@ public class UnSupportedSystemError extends UnsatisfiedLinkError {
      * @param arch the current operating system (os) processor architecture 
      */
     public UnSupportedSystemError(final String os, final String arch) {
-        super("System " + os + "_" + arch + " isn't supported yet !");
+        super("Platform of OS(" + os + ") and ARCH(" + arch + ") isn't supported yet!");
     }
 }
