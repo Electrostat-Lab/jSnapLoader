@@ -47,12 +47,50 @@ public final class LibraryInfo {
     private String extractionDir;
 
     /**
+     * Instantiates a library info object with a basename,
+     * together with the current classpath, the platform directory
+     * as the path to locate the native library, and the current
+     * working directory as an extraction path.
+     *
+     * @param baseName the library basename without the extension
+     */
+    public LibraryInfo(String baseName) {
+        this(null, null, baseName, null);
+    }
+
+    /**
+     * Instantiates a library info object with a basename,
+     * together with the current classpath, the platform directory
+     * as the path to locate the native library, and a custom
+     * user extraction path.
+     *
+     * @param baseName the library basename without the extension
+     * @param extractionDir the path to a user-defined extraction directory
+     */
+    public LibraryInfo(String baseName, String extractionDir) {
+        this(null, null, baseName, extractionDir);
+    }
+
+    /**
+     * Instantiates a library info object with a basename,
+     * together with the current classpath, a user-defined platform-independent
+     * directory, and a custom user extraction path.
+     *
+     * @param directory the directory path to the binary inside the Jar file
+     * @param baseName the library basename without the extension
+     * @param extractionDir the path to a user-defined extraction directory
+     */
+    public LibraryInfo(String directory, String baseName, String extractionDir) {
+        this(null, directory, baseName, extractionDir);
+    }
+
+    /**
      * Instantiates a library info data structure pointing to a library in an external jar with jarPath.
      * 
      * @param jarPath a path to an external jar to locate the library inside, "null" to use the project jar (classpath).
      * @param directory  the directory inside the compression used for locating the native dynamic library, "null" to use 
      *                   the default directory defined by {@link NativeDynamicLibrary}.
-     * @param baseName the library basename, for example: 'lib-basename.so'.
+     * @param baseName the library basename, for example, 'lib-basename.so'.
      * @param extractionDir the extraction destination in absolute string format, "null" if the current [user.dir] is 
      *                      specified as the extraction directory
      */
