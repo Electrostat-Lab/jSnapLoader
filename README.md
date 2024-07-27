@@ -149,3 +149,9 @@ try {
 - [x] Architecture paradigm.
 - [x] API documentation. 
 - [ ] Java-Doc page.
+
+### Credits:
+Those projects had contributed implicitly and/or explicitly and must be recognized:
+- [Serial4j](https://github.com/Electrostat-Lab/Serial4j): was the initial trigger for this project.
+- [Jolt-jni](https://github.com/stephengold/jolt-jni): was and still the drive to continue this project.
+- [Electrostatic4j](https://github.com/Electrostat-Lab/Electrostatic-Sandbox): will be the future supporter for this project.
