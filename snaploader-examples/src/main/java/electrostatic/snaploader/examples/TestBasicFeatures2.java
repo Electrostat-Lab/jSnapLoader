@@ -35,6 +35,7 @@ package electrostatic.snaploader.examples;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.Files;
 import electrostatic.snaploader.LibraryInfo;
 import electrostatic.snaploader.NativeBinaryLoader;
 import electrostatic.snaploader.platform.util.DefaultDynamicLibraries;
@@ -55,8 +56,8 @@ public final class TestBasicFeatures2 {
     public static void main(String[] args) throws IOException {
 
         final Path compressionPath = Paths.get(PropertiesProvider.USER_DIR.getSystemProperty(), "libs", TestBasicFeatures.getJarFile());
-        final Path extractionPath = Paths.get(PropertiesProvider.USER_DIR.getSystemProperty(), "libs", 
-                                              NativeVariant.OS_NAME.getProperty(), NativeVariant.OS_ARCH.getProperty());
+        final Path extractionDirectoryPath = Files.createDirectories(Paths.get(NativeVariant.OS_NAME.getProperty(), NativeVariant.OS_ARCH.getProperty()));
+        final Path extractionPath = Paths.get(PropertiesProvider.USER_DIR.getSystemProperty(), "libs", extractionDirectoryPath.toString());
 
         final LibraryInfo libraryInfo = new LibraryInfo(compressionPath.toString(), "lib/placeholder",
                 "jmealloc", extractionPath.toString());
