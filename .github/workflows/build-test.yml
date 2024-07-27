@@ -89,13 +89,16 @@ jobs:
               name: snaploader-snapshot
               path: snaploader/build/libs/
 
-          - name: Run com.avrsandbox.snaploader.examples.TestBasicFeatures
+          - name: Run TestBasicFeatures
             run: ./gradlew :snaploader-examples:TestBasicFeatures :snaploader-examples:run
+
+          - name: Run TestBasicFeatures2
+            run: ./gradlew :snaploader-examples:TestBasicFeatures2 :snaploader-examples:run
           
-          - name: Run com.avrsandbox.snaploader.examples.TestMultipleLoads
+          - name: Run TestMultipleLoads
             run: ./gradlew :snaploader-examples:TestMultipleLoads :snaploader-examples:run
 
-          - name: Run com.avrsandbox.snaploader.examples.TestZipExtractor
+          - name: Run TestZipExtractor
             run: ./gradlew :snaploader-examples:TestZipExtractor :snaploader-examples:run
 
           - name: List extracted files
