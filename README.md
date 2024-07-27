@@ -46,6 +46,57 @@ BUILD SUCCESSFUL in 1s
 ```
 
 ## Plug-and-play usage: 
+### Project build files:
+[build.gradle]
+```groovy
+dependencies {
+    implementation "io.github.software-hardware-codesign:snaploader:1.0.0-delta"
+}
+```
+[settings.gradle]
+```groovy
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+...
+// project Gradle modules includes
+```
+### Library Implementation: 
+1) The most straightforward way: 
+```java
+final LibraryInfo info = new LibraryInfo(null, "lib/independent", "basename", null);
+final NativeBinaryLoader loader = new NativeBinaryLoader(info);
+final NativeDynamicLibrary[] libraries = new NativeDynamicLibrary[] {
+      new NativeDynamicLibrary("lib/linux/x86-64", PlatformPredicate.LINUX_X86_64),
+      new NativeDynamicLibrary("lib/macos/arm-64", PlatformPredicate.MACOS_ARM_64),
+      new NativeDynamicLibrary("lib/macos/x86-64", PlatformPredicate.MACOS_X86_64),
+      new NativeDynamicLibrary("lib/win/x86-64", PlatformPredicate.WIN_X86_64)
+      ...
+};
+loader.registerNativeLibraries(libraries).initPlatformLibrary();
+loader.setLoggingEnabled(true);
+loader.setRetryWithCleanExtraction(true);
+try {
+      loader.loadLibrary(LoadingCriterion.INCREMENTAL_LOADING);
+} catch (IOException e) {
+      Logger.getLogger(NativeBinaryLoader.class.getName()
+            .log(Level.SEVERE, "Native loader has failed!", e);
+}
+```
+- This way utilizes the classpath on the stock Jar archive to locate, extract and load the native binaries.
+- It first defines a library info object with a pointer to the classpath (first null argument), and a default path that will be
+used in case the platform path for the selected platform predicate is invalid, then a `basename` for the library to be operated, and finally the current working directory as an extraction path (third null argument).
 
 
 ## Appendix:
