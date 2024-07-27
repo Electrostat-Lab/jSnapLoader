@@ -56,8 +56,8 @@ public final class TestBasicFeatures2 {
     public static void main(String[] args) throws IOException {
 
         final Path compressionPath = Paths.get(PropertiesProvider.USER_DIR.getSystemProperty(), "libs", TestBasicFeatures.getJarFile());
-        final Path extractionDirectoryPath = Files.createDirectories(Paths.get(NativeVariant.OS_NAME.getProperty(), NativeVariant.OS_ARCH.getProperty()));
-        final Path extractionPath = Paths.get(PropertiesProvider.USER_DIR.getSystemProperty(), "libs", extractionDirectoryPath.toString());
+        final Path extractionPath = Files.createDirectories(Paths.get(PropertiesProvider.USER_DIR.getSystemProperty(), "libs", 
+                                                                      NativeVariant.OS_NAME.getProperty(), NativeVariant.OS_ARCH.getProperty()));
 
         final LibraryInfo libraryInfo = new LibraryInfo(compressionPath.toString(), "lib/placeholder",
                 "jmealloc", extractionPath.toString());
