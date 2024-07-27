@@ -160,3 +160,9 @@ Those projects had contributed implicitly and/or explicitly and must be recogniz
 #### People:
 I owe these people a cup of coffee for their gracious contributions, when we eventually meet:
 - [Stephen Gold aka. sgold](https://github.com/stephengold)
+
+#### Pure Science: 
+- Discrete mathematics and Ontology.
+- The System-Entity-Structure (SES) Framework for System-design.
+- The Tricotyledeon theory of system design by W.A.Wymore (T3SD).
+- The Finite-automata theory.
