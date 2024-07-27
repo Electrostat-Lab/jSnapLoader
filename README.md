@@ -158,5 +158,5 @@ Those projects had contributed implicitly and/or explicitly and must be recogniz
 - [Electrostatic4j](https://github.com/Electrostat-Lab/Electrostatic-Sandbox): will be the future supporter for this project.
 
 #### People:
-I owe those people a cup of coffee for their gracious contributions, when we eventually meet:
+I owe these people a cup of coffee for their gracious contributions, when we eventually meet:
 - [Stephen Gold aka. sgold](https://github.com/stephengold)
