@@ -11,6 +11,10 @@ tasks.register("TestBasicFeatures") {
     application.mainClass = 'electrostatic.snaploader.examples.TestBasicFeatures'
 }
 
+tasks.register("TestBasicFeatures2") {
+    application.mainClass = 'electrostatic.snaploader.examples.TestBasicFeatures2'
+}
+
 tasks.register("TestMultipleLoads") {
     application.mainClass = 'electrostatic.snaploader.examples.TestMultipleLoads'
 }
