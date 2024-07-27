@@ -125,7 +125,7 @@ try {
             .log(Level.SEVERE, "Native loader has failed!", e);
 }
 ```
-- This way utilizes the `java.nio.Paths` and `java.nio.Path` APIs to build platform-independent directory paths, and it's deemed the most superior way, especially for vague systems; thus it's considered the most robust way, and the best cross-platform strategy; because it depends on the Java implementation for this specific runtime.
+- This way utilizes the `java.nio.file.Paths` and `java.nio.file.Path` APIs to build platform-independent directory paths, and it's deemed the most superior way, especially for vague systems; thus it's considered the most robust way, and the best cross-platform strategy; because it depends on the Java implementation for this specific runtime.
 
 3) Full control (external Jar localizing, platform predicates, and platform-independent extraction paths):
 - [Serial4j's Implementation - `NativeImageLoader`](https://github.com/Electrostat-Lab/Serial4j/blob/master/serial4j/src/main/java/com/serial4j/util/loader/NativeImageLoader.java)
