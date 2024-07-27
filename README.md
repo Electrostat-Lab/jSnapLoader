@@ -98,6 +98,38 @@ try {
 - It first defines a library info object with a pointer to the classpath (first null argument), and a default path that will be
 used in case the platform path for the selected platform predicate is invalid, then a `basename` for the library to be operated, and finally the current working directory as an extraction path (third null argument).
 
+2) A Superior control:
+```java
+import java.nio.file.Path;
+import java.nio.file.Paths;
+...
+// compatible with Java 8, Since 1.7
+final Path compression = Paths.get(PropertiesProvider.USER_DIR.getSystemProperty(), "libs", "electrostatic4j.jar");
+final Path extractionPath = Paths.get(PropertiesProvider.USER_DIR.getSystemProperty(), "libs", "natives");
+final LibraryInfo info = new LibraryInfo(compression.toString(), "lib/independent", "electrostatic4j", extractionPath.toString());
+final NativeBinaryLoader loader = new NativeBinaryLoader(info);
+final NativeDynamicLibrary[] libraries = new NativeDynamicLibrary[] {
+      new NativeDynamicLibrary("lib/linux/x86-64", PlatformPredicate.LINUX_X86_64),
+      new NativeDynamicLibrary("lib/macos/arm-64", PlatformPredicate.MACOS_ARM_64),
+      new NativeDynamicLibrary("lib/macos/x86-64", PlatformPredicate.MACOS_X86_64),
+      new NativeDynamicLibrary("lib/win/x86-64", PlatformPredicate.WIN_X86_64)
+      ...
+};
+loader.registerNativeLibraries(libraries).initPlatformLibrary();
+loader.setLoggingEnabled(true);
+loader.setRetryWithCleanExtraction(true);
+try {
+      loader.loadLibrary(LoadingCriterion.INCREMENTAL_LOADING);
+} catch (IOException e) {
+      Logger.getLogger(NativeBinaryLoader.class.getName()
+            .log(Level.SEVERE, "Native loader has failed!", e);
+}
+```
+- This way utilizes the `java.nio.Paths` and `java.nio.Path` APIs to build platform-independent directory paths, and it's deemed the most superior way, especially for vague systems; thus it's considered the most robust way, and the best cross-platform strategy; because it depends on the Java implementation for this specific runtime.
+
+3) Full control (external Jar localizing, platform predicates, and platform-independent extraction paths):
+- [Serial4j's Implementation - `NativeImageLoader`](https://github.com/Electrostat-Lab/Serial4j/blob/master/serial4j/src/main/java/com/serial4j/util/loader/NativeImageLoader.java)
+- [Electrostatic4j's Implementation - essentially the same](https://github.com/Electrostat-Lab/Electrostatic-Sandbox/blob/master/electrostatic-sandbox-framework/electrostatic4j/electrostatic4j-core/src/main/java/electrostatic4j/util/loader/NativeImageLoader.java)
 
 ## Appendix:
 ### Features:
