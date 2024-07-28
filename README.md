@@ -105,7 +105,8 @@ import java.nio.file.Paths;
 ...
 // compatible with Java 8, Since 1.7
 final Path compression = Paths.get(PropertiesProvider.USER_DIR.getSystemProperty(), "libs", "electrostatic4j.jar");
-final Path extractionPath = Paths.get(PropertiesProvider.USER_DIR.getSystemProperty(), "libs", "natives");
+// create extraction path directory if not exists
+final Path extractionPath = Files.createDirectories(Paths.get(PropertiesProvider.USER_DIR.getSystemProperty(), "libs", "natives"));
 final LibraryInfo info = new LibraryInfo(compression.toString(), "lib/independent", "electrostatic4j", extractionPath.toString());
 final NativeBinaryLoader loader = new NativeBinaryLoader(info);
 final NativeDynamicLibrary[] libraries = new NativeDynamicLibrary[] {
