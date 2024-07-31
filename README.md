@@ -157,7 +157,7 @@ try {
 Those projects had contributed implicitly and/or explicitly and must be recognized:
 - [Serial4j](https://github.com/Electrostat-Lab/Serial4j): was the initial trigger for this project.
 - [Jolt-jni](https://github.com/stephengold/jolt-jni): was and still the drive to continue this project.
-- [snap-jolt](https://github.com/stephengold/snap-jolt): provides an extensive testing environment for the API on a professional basis; that is to extract and load _Jolt-Jni_, a Java binding library for Jolt-Physics framework.
+- [snap-jolt](https://github.com/stephengold/snap-jolt): provides an extensive testing environment for the API on a professional basis (including Linux-Arm); that is to extract and load _Jolt-Jni_, a Java binding library for Jolt-Physics framework.
 - [Electrostatic4j](https://github.com/Electrostat-Lab/Electrostatic-Sandbox): will be the future supporter for this project.
 
 #### People:
