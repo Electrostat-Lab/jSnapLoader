@@ -38,10 +38,12 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.lang.UnsatisfiedLinkError;
-import electrostatic.snaploader.filesystem.ExtractionListener;
+import electrostatic.snaploader.filesystem.FileExtractionListener;
 import electrostatic.snaploader.filesystem.FileExtractor;
+import electrostatic.snaploader.filesystem.FileLocalizingListener;
 import electrostatic.snaploader.filesystem.FileLocator;
 import electrostatic.snaploader.library.LibraryExtractor;
+import electrostatic.snaploader.library.LibraryLocator;
 import electrostatic.snaploader.platform.NativeDynamicLibrary;
 import electrostatic.snaploader.platform.util.NativeVariant;
 
@@ -65,6 +67,10 @@ public class NativeBinaryLoader {
     protected NativeBinaryLoadingListener nativeBinaryLoadingListener;
 
     protected SystemDetectionListener systemDetectionListener;
+
+    protected FileLocalizingListener libraryLocalizingListener;
+
+    protected FileExtractionListener libraryExtractionListener;
 
     /**
      * An Output stream concrete provider for library extraction.
@@ -221,12 +227,28 @@ public class NativeBinaryLoader {
         return nativeBinaryLoadingListener;
     }
 
-    public void setSystemFoundListener(SystemDetectionListener systemDetectionListener) {
+    public void setSystemDetectionListener(SystemDetectionListener systemDetectionListener) {
         this.systemDetectionListener = systemDetectionListener;
     }
 
-    public SystemDetectionListener getSystemFoundListener() {
+    public SystemDetectionListener getSystemDetectionListener() {
         return systemDetectionListener;
+    }
+
+    public void setLibraryExtractionListener(FileExtractionListener libraryExtractionListener) {
+        this.libraryExtractionListener = libraryExtractionListener;
+    }
+
+    public FileExtractionListener getLibraryExtractionListener() {
+        return libraryExtractionListener;
+    }
+
+    public void setLibraryLocalizingListener(FileLocalizingListener libraryLocalizingListener) {
+        this.libraryLocalizingListener = libraryLocalizingListener;
+    }
+
+    public FileLocalizingListener getLibraryLocalizingListener() {
+        return libraryLocalizingListener;
     }
 
     /**
@@ -272,24 +294,39 @@ public class NativeBinaryLoader {
      */
     protected void cleanExtractBinary(NativeDynamicLibrary library) throws IOException {
         libraryExtractor = initializeLibraryExtractor(library);
+        log(Level.INFO, "cleanExtractBinary", "File extractor handler initialized!", null);
         /* CLEAR RESOURCES AND RESET OBJECTS ON-EXTRACTION */
-        libraryExtractor.setExtractionListener(new ExtractionListener() {
+        libraryExtractor.setExtractionListener(new FileExtractionListener() {
             @Override
             public void onExtractionCompleted(FileExtractor fileExtractor) {
                 try {
+                    // free resources
+                    // removes file locks on some OS
                     libraryExtractor.getFileLocator().close();
                     libraryExtractor.close();
                     libraryExtractor = null;
                     log(Level.INFO, "cleanExtractBinary", "Extracted successfully to " + library.getExtractedLibrary(), null);
+                    log(Level.INFO, "cleanExtractBinary", "Filesystem Resources closed!", null);
+                    // load the native binary
                     loadBinary(library);
                 } catch (Exception e) {
                     log(Level.SEVERE, "cleanExtractBinary", "Error while loading the binary!", e);
+                }
+
+                // bind the extraction lifecycle to the user application
+                if (libraryExtractionListener != null) {
+                    libraryExtractionListener.onExtractionCompleted(fileExtractor);
                 }
             }
 
             @Override
             public void onExtractionFailure(FileExtractor fileExtractor, Throwable throwable) {
                 log(Level.SEVERE, "cleanExtractBinary", "Extraction has failed!", throwable);
+
+                // bind the extraction lifecycle to the user application
+                if (libraryExtractionListener != null) {
+                    libraryExtractionListener.onExtractionFailure(fileExtractor, throwable);
+                }
             }
 
             @Override
@@ -298,13 +335,20 @@ public class NativeBinaryLoader {
                     if (fileLocator != null &&
                             fileLocator.getFileInputStream() != null) {
                         fileLocator.close();
+                        log(Level.INFO, "cleanExtractBinary", "File locator Resources closed!", null);
                     }
                     if (fileExtractor != null &&
                             fileExtractor.getFileOutputStream() != null) {
                         fileExtractor.close();
+                        log(Level.INFO, "cleanExtractBinary", "File extractor Resources closed!", null);
                     }
                 } catch (IOException e) {
                     log(Level.SEVERE, "cleanExtractBinary", "Error while closing the resources!", e);
+                }
+
+                // bind the extraction lifecycle to the user application
+                if (libraryExtractionListener != null) {
+                    libraryExtractionListener.onExtractionFinalization(fileExtractor, fileLocator);
                 }
             }
         });
@@ -312,17 +356,55 @@ public class NativeBinaryLoader {
     }
 
     /**
-     * Initializes a filesystem extrator object if the filesystem extractor object associated with this loader isnot defined.
+     * Initializes a filesystem extractor object
+     * if the filesystem extractor object associated with this loader isn't defined.
      * 
      * @param library the native dynamic library to load 
      * @return a new FileExtractor object that represents an output stream provider
      * @throws IOException if the jar filesystem to be located is not found, or if the extraction destination is not found
      */
     protected FileExtractor initializeLibraryExtractor(NativeDynamicLibrary library) throws IOException {
+        FileExtractor extractor;
         if (library.getJarPath() != null) {
-            return new LibraryExtractor(library.getJarPath(), library.getCompressedLibrary(), library.getExtractedLibrary());
+            extractor = new LibraryExtractor(library.getJarPath(), library.getCompressedLibrary(), library.getExtractedLibrary());
+        } else {
+            extractor = new LibraryExtractor(library.getCompressedLibrary(), library.getExtractedLibrary());
         }
-        return new LibraryExtractor(library.getCompressedLibrary(), library.getExtractedLibrary());
+        final LibraryLocator fileLocator = preInitLibraryLocator(extractor);
+        fileLocator.initializeLocator();
+        return extractor;
+    }
+
+    protected LibraryLocator preInitLibraryLocator(FileExtractor extractor) {
+        extractor.getFileLocator().setFileLocalizingListener(new FileLocalizingListener() {
+            @Override
+            public void onFileLocalizationSuccess(FileLocator locator) {
+                log(Level.INFO, "initializeLibraryExtractor", "Locating native libraries has succeeded!", null);
+
+                // bind the library locator lifecycle to the user application
+                if (libraryLocalizingListener != null) {
+                    libraryLocalizingListener.onFileLocalizationSuccess(locator);
+                }
+            }
+
+            @Override
+            public void onFileLocalizationFailure(FileLocator locator, Throwable throwable) {
+                log(Level.SEVERE, "initializeLibraryExtractor", "Locating native libraries has failed!", throwable);
+                try {
+                    extractor.close();
+                    locator.close();
+                    log(Level.INFO, "initializeLibraryExtractor", "Filesystem resources closed!", null);
+                } catch (IOException e) {
+                    log(Level.SEVERE, "initializeLibraryExtractor", "File locator closure failed!", e);
+                }
+
+                // bind the library locator lifecycle to the user application
+                if (libraryLocalizingListener != null) {
+                    libraryLocalizingListener.onFileLocalizationFailure(locator, throwable);
+                }
+            }
+        });
+        return (LibraryLocator) extractor.getFileLocator();
     }
 
     /**
