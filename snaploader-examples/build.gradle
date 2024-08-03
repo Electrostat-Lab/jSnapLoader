@@ -3,6 +3,17 @@ plugins {
     id 'application'
 }
 
+/** get system specific separated directories for the source and the destination of the dependencies */
+String dependenciesDir =  "${rootDir.getPath()}/snaploader-examples/build/libs/dependencies/"
+String libsDir = "${rootDir.getPath()}/snaploader/build/libs/"
+final String dependencyName = "snaploader-${version}.jar"
+
+/** replace unix '/' with windows escaped '\' */
+if (System.getProperty("os.name").contains("Windows")) {
+    dependenciesDir = dependenciesDir.replaceAll("/", "\\\\")
+    libsDir = libsDir.replaceAll("/", "\\\\")
+}
+
 application {
     mainClass = 'electrostatic.snaploader.examples.TestBasicFeatures'
 }
@@ -13,6 +24,14 @@ tasks.register("TestBasicFeatures") {
 
 tasks.register("TestBasicFeatures2") {
     application.mainClass = 'electrostatic.snaploader.examples.TestBasicFeatures2'
+}
+
+tasks.register("MonitorableExample") {
+    application.mainClass = 'electrostatic.snaploader.examples.MonitorableExample'
+}
+
+tasks.register("ReflectiveLauncher") {
+    application.mainClass = 'electrostatic.snaploader.examples.ReflectiveLauncher'
 }
 
 tasks.register("TestMultipleLoads") {
@@ -26,6 +45,44 @@ tasks.register("TestZipExtractor") {
 tasks.register("TestMultiThreading") {
     application.mainClass = 'electrostatic.snaploader.examples.TestMultiThreading'
 }
+
+task copyLibs(type: Copy) {
+    from (libsDir) {
+        include '**/*.jar'
+    }
+    into(dependenciesDir)
+    includeEmptyDirs = false
+    setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+}
+
+/** Assembles a jar file with a class-path loading the dependencies and a main-class */
+task createJar(type : Jar, dependsOn : copyLibs){
+    //get the copied jars
+    String dependenciesString = ""
+    final File dependencies = new File(dependenciesDir)
+    if(dependencies.exists()) {
+        if (dependencies.listFiles().length > 0) {
+            final File[] files = dependencies.listFiles()
+            for (int i = 0; i < files.length; i++) {
+                final String fileName = files[i].getName()
+                if (fileName.contains(".jar")) {
+                    /** All zip paths are unix paths; so no need to the file system specific separator */
+                    dependenciesString += "dependencies/" + fileName + " "
+                }
+            }
+        }
+    }
+
+    manifest {
+        attributes 'Project': 'snaploader-examples',
+                'Automatic-Module-Name': "${project.name.replace("-", ".")}",
+                'Compiled-by': JavaVersion.current(),
+                'Class-Path': dependenciesString,
+                'Main-Class': application.mainClass
+    }
+    with jar
+}
+
 
 dependencies {
     implementation project(path: ':snaploader')
