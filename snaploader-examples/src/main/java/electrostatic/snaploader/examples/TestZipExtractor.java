@@ -33,8 +33,10 @@
 package electrostatic.snaploader.examples;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import electrostatic.snaploader.filesystem.ExtractionListener;
+import electrostatic.snaploader.filesystem.FileExtractionListener;
 import electrostatic.snaploader.filesystem.FileExtractor;
 import electrostatic.snaploader.filesystem.FileLocator;
 import electrostatic.snaploader.filesystem.ZipCompressionType;
@@ -53,7 +55,7 @@ public class TestZipExtractor {
         /* Extracts the image filesystem from the Zip Compression */
         final FileExtractor fileExtractor = new FileExtractor(fileLocator, getExtractionPath());
         /* CLOSE/CLEAR I/O Resources */
-        fileExtractor.setExtractionListener(new ExtractionListener() {
+        fileExtractor.setExtractionListener(new FileExtractionListener() {
             @Override
             public void onExtractionCompleted(FileExtractor fileExtractor) {
 
@@ -69,6 +71,8 @@ public class TestZipExtractor {
                 try {
                     fileExtractor.close();
                     fileLocator.close();
+                    Logger.getLogger(TestZipExtractor.class.getName())
+                            .log(Level.INFO, "Filesystem Resources Closed!");
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -89,14 +93,5 @@ public class TestZipExtractor {
 
     protected static String getFilePath() {
         return "jmelogo700.png";
-    }
-
-    private static void clearResources(FileExtractor fileExtractor) {
-        try {
-            fileExtractor.getFileLocator().close();
-            fileExtractor.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }    
     }
 }
