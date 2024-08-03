@@ -57,6 +57,12 @@ public class FileLocator implements InputStreamProvider {
      */
     protected FileLocalizingListener fileLocalizingListener;
 
+    protected String directory;
+
+    protected String filePath;
+
+    protected ZipCompressionType compressionType;
+
     /**
      * Locates a filesystem inside an external zip compression, the zip filesystem is defined as a {@link ZipFile} object and
      * the locatable filesystem is defined as a {@link ZipEntry} object.
@@ -71,9 +77,9 @@ public class FileLocator implements InputStreamProvider {
      * @throws IOException if the jar to be located is not found or an interrupted I/O exception has occured
      */
     public FileLocator(String directory, String filePath, ZipCompressionType compressionType) throws IOException {
-        ZipFile compression = compressionType.createNewCompressionObject(directory);
-        ZipEntry nativeLibraryEntry = compression.getEntry(filePath);
-        this.fileInputStream = compression.getInputStream(nativeLibraryEntry);
+        this.directory = directory;
+        this.filePath = filePath;
+        this.compressionType = compressionType;
     }
 
     /**
@@ -82,14 +88,21 @@ public class FileLocator implements InputStreamProvider {
     protected FileLocator() {   
     }
 
+    public void initializeLocator() throws IOException {
+        ZipFile compression = compressionType.createNewCompressionObject(directory);
+        ZipEntry zipEntry = compression.getEntry(filePath);
+        validateFileLocalization(zipEntry);
+        this.fileInputStream = compression.getInputStream(zipEntry);
+    }
+
     /**
      * Validates the file localization process inside the compression.
      *
      * @throws FileNotFoundException if the localization of the file inside
      *                               the specified compression has failed.
      */
-    public void validateFileLocalization() throws FileNotFoundException {
-        if (fileInputStream != null) {
+    protected void validateFileLocalization(final ZipEntry zipEntry) throws FileNotFoundException {
+        if (zipEntry != null) {
             if (fileLocalizingListener != null) {
                 fileLocalizingListener.onFileLocalizationSuccess(this);
             }
@@ -111,8 +124,10 @@ public class FileLocator implements InputStreamProvider {
 
     @Override
     public void close() throws IOException {
-        fileInputStream.close();
-        fileInputStream = null;
+        if (fileInputStream != null) {
+            fileInputStream.close();
+            fileInputStream = null;
+        }
     }
 
     @Override
