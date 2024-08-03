@@ -41,12 +41,12 @@ package electrostatic.snaploader.filesystem;
  * <p>
  * Warning: this listener interface is an essential component of
  * developing custom system loaders; as it requires freeing the native stream resources
- * manually through the {@link ExtractionListener#onExtractionFinalization(FileExtractor, FileLocator)}.
+ * manually through the {@link FileExtractionListener#onExtractionFinalization(FileExtractor, FileLocator)}.
  * If not freeing the resources with this interface was attained, then a try-with resources could be used.
  *
  * @author pavl_g
  */
-public interface ExtractionListener {
+public interface FileExtractionListener {
 
     /**
      * Dispatched when the extraction process is completed.
