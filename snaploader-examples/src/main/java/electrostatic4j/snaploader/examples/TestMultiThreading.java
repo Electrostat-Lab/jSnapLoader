@@ -55,7 +55,7 @@ public final class TestMultiThreading {
                 try {
                     Thread.sleep(200);
                     TestBasicFeatures.loader.loadLibrary(LoadingCriterion.CLEAN_EXTRACTION);
-                } catch (UnSupportedSystemError | IOException | InterruptedException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -69,7 +69,7 @@ public final class TestMultiThreading {
                 try {
                     Thread.sleep(200);
                     TestBasicFeatures.loader.loadLibrary(LoadingCriterion.CLEAN_EXTRACTION);
-                } catch (UnSupportedSystemError | IOException | InterruptedException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -83,7 +83,7 @@ public final class TestMultiThreading {
                 try {
                     Thread.sleep(200);
                     TestBasicFeatures.loader.loadLibrary(LoadingCriterion.CLEAN_EXTRACTION);
-                } catch (UnSupportedSystemError | IOException | InterruptedException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }

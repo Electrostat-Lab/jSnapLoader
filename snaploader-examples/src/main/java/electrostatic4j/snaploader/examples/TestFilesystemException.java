@@ -15,7 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public final class TestFilesystemException {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         final Path compressionPath = Paths.get(PropertiesProvider.USER_DIR.getSystemProperty(), "libs", TestBasicFeatures.getJarFile());
         final Path extractionPath = Files.createDirectories(Paths.get(PropertiesProvider.USER_DIR.getSystemProperty(), "libs",
                 NativeVariant.OS_NAME.getProperty(), NativeVariant.OS_ARCH.getProperty()));

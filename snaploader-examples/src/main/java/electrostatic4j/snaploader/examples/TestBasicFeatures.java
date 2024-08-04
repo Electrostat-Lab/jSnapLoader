@@ -66,7 +66,7 @@ public final class TestBasicFeatures {
             DefaultDynamicLibraries.MAC_X86_64,
     };
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         if (loader == null) {
             loader = new NativeBinaryLoader(libraryInfo);
         }

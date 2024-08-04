@@ -92,7 +92,13 @@ public class FileLocator implements InputStreamProvider {
 
 
     @Override
-    public void initialize(int size) {
+    public void initialize(int size) throws IOException {
+        // 1) sanity-check for double initializing
+        // 2) sanity-check for pre-initialization using other routines
+        // (e.g., classpath resources stream).
+        if (this.fileInputStream != null) {
+            return;
+        }
         try {
             final ZipFile compression = compressionType.createNewCompressionObject(directory);
             final ZipEntry zipEntry = compression.getEntry(filePath);
@@ -106,7 +112,8 @@ public class FileLocator implements InputStreamProvider {
             this.fileInputStream = compression.getInputStream(zipEntry);
             SnapLoaderLogger.log(Level.INFO, getClass().getName(), "initialize(int)",
                     "File locator initialized with hash key #" + getHashKey());
-        } catch (IOException e) {
+        } catch (Exception e) {
+            close();
             throw new FilesystemResourceInitializationException(
                     "Failed to initialize the file locator handler #" + getHashKey(), e);
         }

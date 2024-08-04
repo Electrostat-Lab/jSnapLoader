@@ -32,7 +32,6 @@
 
 package electrostatic4j.snaploader;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 import electrostatic4j.snaploader.platform.NativeDynamicLibrary;
@@ -59,7 +58,7 @@ public class ConcurrentNativeBinaryLoader extends NativeBinaryLoader {
     }
     
     @Override
-    protected void cleanExtractBinary(NativeDynamicLibrary library) throws IOException {
+    protected void cleanExtractBinary(NativeDynamicLibrary library) throws Exception {
         try {
             /* CRITICAL SECTION STARTS */
             lock.lock();

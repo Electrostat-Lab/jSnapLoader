@@ -86,7 +86,12 @@ public class FileExtractor implements OutputStreamProvider {
     }
 
     @Override
-    public void initialize(int size) {
+    public void initialize(int size) throws Exception {
+        // 1) sanity-check for double initializing
+        // 2) sanity-check for pre-initialization using other routines
+        if (this.fileOutputStream != null) {
+            return;
+        }
         try {
             if (size > 0) {
                 this.fileOutputStream = new BufferedOutputStream(
@@ -98,7 +103,8 @@ public class FileExtractor implements OutputStreamProvider {
             this.fileOutputStream = new FileOutputStream(destination);
             SnapLoaderLogger.log(Level.INFO, getClass().getName(), "initialize(int)",
                     "File extractor initialized with hash key #" + getHashKey());
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
+            close();
             throw new FilesystemResourceInitializationException(
                     "Failed to initialize the file extractor handler #" + getHashKey(), e);
         }

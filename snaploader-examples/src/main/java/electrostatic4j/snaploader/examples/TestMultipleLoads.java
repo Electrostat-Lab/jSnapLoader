@@ -42,7 +42,7 @@ import java.io.IOException;
  */
 public final class TestMultipleLoads {
     
-    public static void main(String[] args) throws InterruptedException, IOException {
+    public static void main(String[] args) throws Exception {
         TestBasicFeatures.main(args);
         new File(TestBasicFeatures.getNativeDynamicLibraryPath()).delete();
         Thread.sleep(5000);
