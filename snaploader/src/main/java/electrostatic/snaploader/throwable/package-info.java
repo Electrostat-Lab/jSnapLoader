@@ -30,24 +30,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package electrostatic.snaploader.throwable;
-
 /**
- * A business error of type {@link UnsatisfiedLinkError} to indicate an unsupported system.
- * <p>
- * This error is thrown when all the user-defined platform predicates are not met!
- *
- * @author pavl_g
+ * Pack for throwable objects that are recoverable targets.
  */
-public class UnSupportedSystemError extends UnsatisfiedLinkError {
-    
-    /**
-     * Thrown if the system detects an unsupported system binaries of the current OS.
-     * 
-     * @param os the current operating system (os) name
-     * @param arch the current operating system (os) processor architecture 
-     */
-    public UnSupportedSystemError(final String os, final String arch) {
-        super("Platform of OS(" + os + ") and ARCH(" + arch + ") isn't supported yet!");
-    }
-}
+package electrostatic.snaploader.throwable;

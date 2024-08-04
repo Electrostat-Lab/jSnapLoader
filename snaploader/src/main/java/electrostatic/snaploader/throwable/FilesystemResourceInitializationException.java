@@ -33,21 +33,28 @@
 package electrostatic.snaploader.throwable;
 
 /**
- * A business error of type {@link UnsatisfiedLinkError} to indicate an unsupported system.
- * <p>
- * This error is thrown when all the user-defined platform predicates are not met!
+ * Should be thrown when the initialization of the native streams
+ * has failed.
  *
  * @author pavl_g
  */
-public class UnSupportedSystemError extends UnsatisfiedLinkError {
-    
-    /**
-     * Thrown if the system detects an unsupported system binaries of the current OS.
-     * 
-     * @param os the current operating system (os) name
-     * @param arch the current operating system (os) processor architecture 
-     */
-    public UnSupportedSystemError(final String os, final String arch) {
-        super("Platform of OS(" + os + ") and ARCH(" + arch + ") isn't supported yet!");
+public class FilesystemResourceInitializationException extends RuntimeException {
+    public FilesystemResourceInitializationException() {
+    }
+
+    public FilesystemResourceInitializationException(String message) {
+        super(message);
+    }
+
+    public FilesystemResourceInitializationException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public FilesystemResourceInitializationException(Throwable cause) {
+        super(cause);
+    }
+
+    public FilesystemResourceInitializationException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }
