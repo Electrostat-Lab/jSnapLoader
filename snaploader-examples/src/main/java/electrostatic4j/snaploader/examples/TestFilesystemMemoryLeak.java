@@ -49,7 +49,7 @@ import java.util.logging.Logger;
  * @author pavl_g
  */
 public class TestFilesystemMemoryLeak {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         /* Locates the image inside the Zip Compression */
         SnapLoaderLogger.setLoggingEnabled(true);
         final FileLocator fileLocator = new FileLocator(getZipAbsolutePath(), getFilePath(), ZipCompressionType.ZIP);

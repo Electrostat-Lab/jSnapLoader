@@ -53,7 +53,7 @@ import electrostatic4j.snaploader.LoadingCriterion;
  */
 public final class TestBasicFeatures2 {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
 
         final Path compressionPath = Paths.get(PropertiesProvider.USER_DIR.getSystemProperty(), "libs", TestBasicFeatures.getJarFile());
         final Path extractionPath = Files.createDirectories(Paths.get(PropertiesProvider.USER_DIR.getSystemProperty(), "libs", 

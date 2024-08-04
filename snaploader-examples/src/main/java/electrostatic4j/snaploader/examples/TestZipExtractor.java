@@ -48,7 +48,7 @@ import electrostatic4j.snaploader.throwable.FilesystemResourceScavengingExceptio
  */
 public class TestZipExtractor {
      
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         /* Locates the image inside the Zip Compression */
         final FileLocator fileLocator = new FileLocator(getZipAbsolutePath(), getFilePath(), ZipCompressionType.ZIP);
         /* Extracts the image filesystem from the Zip Compression */
