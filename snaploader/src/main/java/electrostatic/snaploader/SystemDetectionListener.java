@@ -33,6 +33,7 @@
 package electrostatic.snaploader;
 
 import electrostatic.snaploader.platform.NativeDynamicLibrary;
+import electrostatic.snaploader.throwable.UnSupportedSystemError;
 
 /**
  * Provides executable functions binding the user applications to
