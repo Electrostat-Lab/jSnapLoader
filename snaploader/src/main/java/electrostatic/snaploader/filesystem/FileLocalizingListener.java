@@ -33,11 +33,10 @@
 package electrostatic.snaploader.filesystem;
 
 /**
- * Provides executable functions by the {@link FileLocator#validateFileLocalization()}
+ * Provides executable functions by the file locator API
  * to enable the binding of user applications with the file locator interface.
  *
  * @author pavl_g
- * @see FileLocator#validateFileLocalization()
  * @see FileExtractor#extract()
  */
 public interface FileLocalizingListener {
@@ -47,7 +46,6 @@ public interface FileLocalizingListener {
      * file can be localized.
      *
      * @param locator the associated file locator object.
-     * @see FileLocator#validateFileLocalization()
      */
     void onFileLocalizationSuccess(FileLocator locator);
 
