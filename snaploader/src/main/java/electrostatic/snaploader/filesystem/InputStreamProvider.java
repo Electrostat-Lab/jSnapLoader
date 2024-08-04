@@ -40,7 +40,7 @@ import java.io.InputStream;
  * 
  * @author pavl_g
  */
-public interface InputStreamProvider extends AutoCloseable {
+public interface InputStreamProvider extends StreamProvider {
     
     /**
      * Retrieves the input stream object associated with this filesystem entry.

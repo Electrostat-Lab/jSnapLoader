@@ -37,6 +37,8 @@ import electrostatic.snaploader.filesystem.FileExtractor;
 import electrostatic.snaploader.filesystem.FileLocator;
 import electrostatic.snaploader.filesystem.ZipCompressionType;
 import electrostatic.snaploader.platform.util.PropertiesProvider;
+import electrostatic.snaploader.util.SnapLoaderLogger;
+
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,9 +51,12 @@ import java.util.logging.Logger;
 public class TestFilesystemMemoryLeak {
     public static void main(String[] args) throws IOException {
         /* Locates the image inside the Zip Compression */
+        SnapLoaderLogger.setLoggingEnabled(true);
         final FileLocator fileLocator = new FileLocator(getZipAbsolutePath(), getFilePath(), ZipCompressionType.ZIP);
         /* Extracts the image filesystem from the Zip Compression */
         final FileExtractor fileExtractor = new FileExtractor(fileLocator, getExtractionPath());
+        fileLocator.initialize(0);
+        fileExtractor.initialize(0);
         /* CLOSE/CLEAR I/O Resources */
         fileExtractor.setExtractionListener(new FileExtractionListener() {
             @Override

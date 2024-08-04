@@ -32,11 +32,11 @@
 
 package electrostatic.snaploader.filesystem;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import electrostatic.snaploader.throwable.FilesystemResourceInitializationException;
+import electrostatic.snaploader.util.SnapLoaderLogger;
+
+import java.io.*;
+import java.util.logging.Level;
 
 /**
  * Extracts a filesystem from a zip compression to a destination filesystem.
@@ -76,13 +76,32 @@ public class FileExtractor implements OutputStreamProvider {
      */
     public FileExtractor(FileLocator fileLocator, String destination) throws FileNotFoundException {
         this.fileLocator = fileLocator;
-        this.fileOutputStream = new FileOutputStream(destination);
+        this.destination = destination;
     }
 
     /**
      * Instantiates an empty filesystem extractor.
      */
     protected FileExtractor() {
+    }
+
+    @Override
+    public void initialize(int size) {
+        try {
+            if (size > 0) {
+                this.fileOutputStream = new BufferedOutputStream(
+                        new FileOutputStream(destination), size);
+                SnapLoaderLogger.log(Level.INFO, getClass().getName(), "initialize(int)",
+                        "File extractor initialized with hash key #" + getHashKey());
+                return;
+            }
+            this.fileOutputStream = new FileOutputStream(destination);
+            SnapLoaderLogger.log(Level.INFO, getClass().getName(), "initialize(int)",
+                    "File extractor initialized with hash key #" + getHashKey());
+        } catch (FileNotFoundException e) {
+            throw new FilesystemResourceInitializationException(
+                    "Failed to initialize the file extractor handler #" + getHashKey(), e);
+        }
     }
 
     /**
@@ -133,11 +152,21 @@ public class FileExtractor implements OutputStreamProvider {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() throws Exception {
         if (fileOutputStream != null) {
             fileOutputStream.close();
             fileOutputStream = null;
         }
+
+        // close the associated file locator resources
+        if (getFileLocator() != null && getFileLocator().getFileInputStream() != null) {
+            getFileLocator().close();
+            SnapLoaderLogger.log(Level.INFO, getClass().getName(), "close",
+                    "Delegation for file locator resources closure has succeeded!");
+        }
+
+        SnapLoaderLogger.log(Level.INFO, getClass().getName(), "close",
+                "File extractor #" + getHashKey() + " resources closed!");
     }
 
     @Override

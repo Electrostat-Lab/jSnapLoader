@@ -30,29 +30,24 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package electrostatic.snaploader.filesystem;
-
-import java.io.OutputStream;
+package electrostatic.snaploader.throwable;
 
 /**
- * Defines an interface for an output stream provider to locate and extract a filesystem from a zip compression;
- * the output stream provider object is associated with an input stream provider object that locates this filesystem.
- * 
+ * A business error of type {@link UnsatisfiedLinkError} to indicate an unsupported system.
+ * <p>
+ * This error is thrown when all the user-defined platform predicates are not met!
+ *
  * @author pavl_g
  */
-public interface OutputStreamProvider extends StreamProvider {
-
+public class UnSupportedSystemError extends UnsatisfiedLinkError {
+    
     /**
-     * Retrieves the input stream provider object (the filesystem locator object).
+     * Thrown if the system detects an unsupported system binaries of the current OS.
      * 
-     * @return an input stream provider object that is the filesystem locator object
+     * @param os the current operating system (os) name
+     * @param arch the current operating system (os) processor architecture 
      */
-    InputStreamProvider getFileLocator();
-
-    /**
-     * Retrieves the output stream object associated with this provider.
-     * 
-     * @return an output stream provider object to extract the filesystem
-     */
-    OutputStream getFileOutputStream();
+    public UnSupportedSystemError(final String os, final String arch) {
+        super("Platform of OS(" + os + ") and ARCH(" + arch + ") isn't supported yet!");
+    }
 }

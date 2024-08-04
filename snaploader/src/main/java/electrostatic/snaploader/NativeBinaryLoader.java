@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.lang.UnsatisfiedLinkError;
 import electrostatic.snaploader.filesystem.FileExtractionListener;
 import electrostatic.snaploader.filesystem.FileExtractor;
@@ -46,6 +45,8 @@ import electrostatic.snaploader.library.LibraryExtractor;
 import electrostatic.snaploader.library.LibraryLocator;
 import electrostatic.snaploader.platform.NativeDynamicLibrary;
 import electrostatic.snaploader.platform.util.NativeVariant;
+import electrostatic.snaploader.throwable.UnSupportedSystemError;
+import electrostatic.snaploader.util.SnapLoaderLogger;
 
 /**
  * A cross-platform utility for extracting and loading native binaries based on 
@@ -54,11 +55,6 @@ import electrostatic.snaploader.platform.util.NativeVariant;
  * @author pavl_g.
  */
 public class NativeBinaryLoader {
-
-    /**
-     * NativeBinaryLoader logger object.
-     */
-    protected static final Logger logger = Logger.getLogger(NativeBinaryLoader.class.getName());
 
     protected final LibraryInfo libraryInfo;
 
@@ -81,11 +77,6 @@ public class NativeBinaryLoader {
      * The native dynamic library object representing the library to extract and load.
      */
     protected NativeDynamicLibrary nativeDynamicLibrary;
-
-    /**
-     * Flag for enable/disable logging.
-     */
-    protected boolean loggingEnabled;
 
     /**
      * Flag for retry loading with clean extract if UnSatisfiedLinkError is thrown.
@@ -173,7 +164,7 @@ public class NativeBinaryLoader {
     /**
      * Retrieves the native dynamic library object representing the library to extract and load.
      * 
-     * @return an object representing the platform dependent native dynamic library
+     * @return an object representing the platform-dependent native dynamic library
      */
     public NativeDynamicLibrary getNativeDynamicLibrary() {
         return nativeDynamicLibrary;
@@ -181,20 +172,11 @@ public class NativeBinaryLoader {
 
     /**
      * Enables the logging for this object, default value is false.
-     * 
+     *
      * @param loggingEnabled true to enable logging, false otherwise
      */
     public void setLoggingEnabled(boolean loggingEnabled) {
-        this.loggingEnabled = loggingEnabled;
-    }
-
-    /**
-     * Tests the logging flag, default value is false.
-     * 
-     * @return true if the logging flag is enabled, false otherwise
-     */
-    public boolean isLoggingEnabled() {
-        return loggingEnabled;
+        SnapLoaderLogger.setLoggingEnabled(loggingEnabled);
     }
 
     /**
@@ -252,7 +234,7 @@ public class NativeBinaryLoader {
     }
 
     /**
-     * Loads a native binary using the platform dependent object, for android, 
+     * Loads a native binary using the platform-dependent object, for Android;
      * the library is loaded by its basename (variant is managed internally by the android sdk).
      * 
      * @param library the platform-specific library to load
@@ -260,18 +242,22 @@ public class NativeBinaryLoader {
      */
     protected void loadBinary(NativeDynamicLibrary library) throws IOException {
         try {
-            /* sanity check for android java vm (the dalvik) */
+            /* sanity-check for android java vm (the dalvik) */
             if (NativeVariant.Os.isAndroid()) {
                 System.loadLibrary(libraryInfo.getBaseName());
+                SnapLoaderLogger.log(Level.INFO, getClass().getName(),"loadBinary", "Successfully loaded library for Android: "
+                        + library.getExtractedLibrary());
                 return;
             }
             System.load(library.getExtractedLibrary());
-            log(Level.INFO, "loadBinary", "Successfully loaded library: " + library.getExtractedLibrary(), null);
+            SnapLoaderLogger.log(Level.INFO, getClass().getName(),"loadBinary", "Successfully loaded library: "
+                    + library.getExtractedLibrary());
             if (nativeBinaryLoadingListener != null) {
                 nativeBinaryLoadingListener.onLoadingSuccess(this);
             }
         } catch (final UnsatisfiedLinkError error) {
-            log(Level.SEVERE, "loadBinary", "Cannot load the dynamic library: " + library.getExtractedLibrary(), error);
+            SnapLoaderLogger.log(Level.SEVERE, getClass().getName(), "loadBinary", "Cannot load the dynamic library: "
+                    + library.getExtractedLibrary(), error);
             if (nativeBinaryLoadingListener != null) {
                 nativeBinaryLoadingListener.onLoadingFailure(this);
             }
@@ -289,12 +275,13 @@ public class NativeBinaryLoader {
      * Cleanly extracts and loads the native binary to the current [user.dir].
      * 
      * @param library the platform-specific library to extract and load
-     * @throws IOException in case the binary to be extracted is not found on the specified jar or an 
-     *                     interrupted I/O operation has occured
+     * @throws IOException in case the binary to be extracted is not found on the specified jar, or an
+     *                     interrupted I/O operation has occurred
      */
     protected void cleanExtractBinary(NativeDynamicLibrary library) throws IOException {
         libraryExtractor = initializeLibraryExtractor(library);
-        log(Level.INFO, "cleanExtractBinary", "File extractor handler initialized!", null);
+       SnapLoaderLogger.log(Level.INFO, getClass().getName(), "cleanExtractBinary",
+               "File extractor handler initialized!");
         /* CLEAR RESOURCES AND RESET OBJECTS ON-EXTRACTION */
         libraryExtractor.setExtractionListener(new FileExtractionListener() {
             @Override
@@ -302,15 +289,15 @@ public class NativeBinaryLoader {
                 try {
                     // free resources
                     // removes file locks on some OS
-                    libraryExtractor.getFileLocator().close();
                     libraryExtractor.close();
                     libraryExtractor = null;
-                    log(Level.INFO, "cleanExtractBinary", "Extracted successfully to " + library.getExtractedLibrary(), null);
-                    log(Level.INFO, "cleanExtractBinary", "Filesystem Resources closed!", null);
+                    SnapLoaderLogger.log(Level.INFO, getClass().getName(), "cleanExtractBinary",
+                            "Extracted successfully to " + library.getExtractedLibrary());
                     // load the native binary
                     loadBinary(library);
                 } catch (Exception e) {
-                    log(Level.SEVERE, "cleanExtractBinary", "Error while loading the binary!", e);
+                    SnapLoaderLogger.log(Level.SEVERE, getClass().getName(), "cleanExtractBinary",
+                            "Error while loading the binary!", e);
                 }
 
                 // bind the extraction lifecycle to the user application
@@ -321,7 +308,8 @@ public class NativeBinaryLoader {
 
             @Override
             public void onExtractionFailure(FileExtractor fileExtractor, Throwable throwable) {
-                log(Level.SEVERE, "cleanExtractBinary", "Extraction has failed!", throwable);
+                SnapLoaderLogger.log(Level.SEVERE, getClass().getName(),
+                        "cleanExtractBinary", "Extraction has failed!", throwable);
 
                 // bind the extraction lifecycle to the user application
                 if (libraryExtractionListener != null) {
@@ -332,18 +320,13 @@ public class NativeBinaryLoader {
             @Override
             public void onExtractionFinalization(FileExtractor fileExtractor, FileLocator fileLocator) {
                 try {
-                    if (fileLocator != null &&
-                            fileLocator.getFileInputStream() != null) {
-                        fileLocator.close();
-                        log(Level.INFO, "cleanExtractBinary", "File locator Resources closed!", null);
-                    }
                     if (fileExtractor != null &&
                             fileExtractor.getFileOutputStream() != null) {
                         fileExtractor.close();
-                        log(Level.INFO, "cleanExtractBinary", "File extractor Resources closed!", null);
                     }
-                } catch (IOException e) {
-                    log(Level.SEVERE, "cleanExtractBinary", "Error while closing the resources!", e);
+                } catch (Exception e) {
+                    SnapLoaderLogger.log(Level.SEVERE, getClass().getName(),
+                            "cleanExtractBinary", "Error while closing the resources!", e);
                 }
 
                 // bind the extraction lifecycle to the user application
@@ -370,8 +353,9 @@ public class NativeBinaryLoader {
         } else {
             extractor = new LibraryExtractor(library.getCompressedLibrary(), library.getExtractedLibrary());
         }
+        extractor.initialize(0);
         final LibraryLocator fileLocator = preInitLibraryLocator(extractor);
-        fileLocator.initializeLocator();
+        fileLocator.initialize(0);
         return extractor;
     }
 
@@ -379,7 +363,8 @@ public class NativeBinaryLoader {
         extractor.getFileLocator().setFileLocalizingListener(new FileLocalizingListener() {
             @Override
             public void onFileLocalizationSuccess(FileLocator locator) {
-                log(Level.INFO, "initializeLibraryExtractor", "Locating native libraries has succeeded!", null);
+                SnapLoaderLogger.log(Level.INFO, getClass().getName(), "initializeLibraryExtractor",
+                        "Locating native libraries has succeeded!");
 
                 // bind the library locator lifecycle to the user application
                 if (libraryLocalizingListener != null) {
@@ -389,13 +374,13 @@ public class NativeBinaryLoader {
 
             @Override
             public void onFileLocalizationFailure(FileLocator locator, Throwable throwable) {
-                log(Level.SEVERE, "initializeLibraryExtractor", "Locating native libraries has failed!", throwable);
+                SnapLoaderLogger.log(Level.SEVERE, getClass().getName(), "initializeLibraryExtractor",
+                        "Locating native libraries has failed!", throwable);
                 try {
                     extractor.close();
-                    locator.close();
-                    log(Level.INFO, "initializeLibraryExtractor", "Filesystem resources closed!", null);
-                } catch (IOException e) {
-                    log(Level.SEVERE, "initializeLibraryExtractor", "File locator closure failed!", e);
+                } catch (Exception e) {
+                    SnapLoaderLogger.log(Level.SEVERE, getClass().getName(),
+                            "initializeLibraryExtractor", "File locator closure failed!", e);
                 }
 
                 // bind the library locator lifecycle to the user application
@@ -405,24 +390,5 @@ public class NativeBinaryLoader {
             }
         });
         return (LibraryLocator) extractor.getFileLocator();
-    }
-
-    /**
-     * Log data with a level and a throwable (optional).
-     * 
-     * @param level the logger level
-     * @param sourceMethod the source of this call
-     * @param msg a string formatted message to display 
-     * @param throwable optional param for error messages
-     */
-    protected void log(Level level, String sourceMethod, String msg, Throwable throwable) {
-        if (!isLoggingEnabled()) {
-            return;
-        }
-        if (throwable == null) {
-            logger.logp(level, this.getClass().getName(), sourceMethod, msg);
-        } else {
-            logger.logp(level, this.getClass().getName(), sourceMethod, msg, throwable);
-        }
     }
 }

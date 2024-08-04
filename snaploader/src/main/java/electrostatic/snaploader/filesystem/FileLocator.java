@@ -32,9 +32,11 @@
 
 package electrostatic.snaploader.filesystem;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import electrostatic.snaploader.throwable.FilesystemResourceInitializationException;
+import electrostatic.snaploader.util.SnapLoaderLogger;
+
+import java.io.*;
+import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -88,11 +90,26 @@ public class FileLocator implements InputStreamProvider {
     protected FileLocator() {   
     }
 
-    public void initializeLocator() throws IOException {
-        ZipFile compression = compressionType.createNewCompressionObject(directory);
-        ZipEntry zipEntry = compression.getEntry(filePath);
-        validateFileLocalization(zipEntry);
-        this.fileInputStream = compression.getInputStream(zipEntry);
+
+    @Override
+    public void initialize(int size) {
+        try {
+            final ZipFile compression = compressionType.createNewCompressionObject(directory);
+            final ZipEntry zipEntry = compression.getEntry(filePath);
+            validateFileLocalization(zipEntry);
+            if (size > 0) {
+                this.fileInputStream = new BufferedInputStream(compression.getInputStream(zipEntry), size);
+                SnapLoaderLogger.log(Level.INFO, getClass().getName(), "initialize(int)",
+                        "File locator initialized with hash key #" + getHashKey());
+                return;
+            }
+            this.fileInputStream = compression.getInputStream(zipEntry);
+            SnapLoaderLogger.log(Level.INFO, getClass().getName(), "initialize(int)",
+                    "File locator initialized with hash key #" + getHashKey());
+        } catch (IOException e) {
+            throw new FilesystemResourceInitializationException(
+                    "Failed to initialize the file locator handler #" + getHashKey(), e);
+        }
     }
 
     /**
@@ -128,6 +145,8 @@ public class FileLocator implements InputStreamProvider {
             fileInputStream.close();
             fileInputStream = null;
         }
+        SnapLoaderLogger.log(Level.INFO, getClass().getName(),
+                "close", "File locator #" + getHashKey() + " resources closed!");
     }
 
     @Override

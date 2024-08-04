@@ -30,29 +30,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package electrostatic.snaploader.filesystem;
-
-import java.io.OutputStream;
-
 /**
- * Defines an interface for an output stream provider to locate and extract a filesystem from a zip compression;
- * the output stream provider object is associated with an input stream provider object that locates this filesystem.
- * 
- * @author pavl_g
+ * Pack for throwable objects that are recoverable targets.
  */
-public interface OutputStreamProvider extends StreamProvider {
-
-    /**
-     * Retrieves the input stream provider object (the filesystem locator object).
-     * 
-     * @return an input stream provider object that is the filesystem locator object
-     */
-    InputStreamProvider getFileLocator();
-
-    /**
-     * Retrieves the output stream object associated with this provider.
-     * 
-     * @return an output stream provider object to extract the filesystem
-     */
-    OutputStream getFileOutputStream();
-}
+package electrostatic.snaploader.throwable;

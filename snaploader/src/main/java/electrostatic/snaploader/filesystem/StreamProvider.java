@@ -32,27 +32,30 @@
 
 package electrostatic.snaploader.filesystem;
 
-import java.io.OutputStream;
-
 /**
- * Defines an interface for an output stream provider to locate and extract a filesystem from a zip compression;
- * the output stream provider object is associated with an input stream provider object that locates this filesystem.
- * 
+ * A generic interface providing the main entry for
+ * all stream providers for buffered IO operations.
+ *
  * @author pavl_g
  */
-public interface OutputStreamProvider extends StreamProvider {
+public interface StreamProvider extends AutoCloseable {
 
     /**
-     * Retrieves the input stream provider object (the filesystem locator object).
-     * 
-     * @return an input stream provider object that is the filesystem locator object
+     * Initializes the buffered stream handler object.
+     *
+     * @param size the size of the buffered IO in bytes or zero
+     *             for auto filesystem size
      */
-    InputStreamProvider getFileLocator();
+    void initialize(int size);
 
     /**
-     * Retrieves the output stream object associated with this provider.
-     * 
-     * @return an output stream provider object to extract the filesystem
+     * Generates a unique hash key for this object
+     * using an MSB to LSB spreading algorithm.
+     *
+     * @return an XoR operation of the MSBs (Most Significant Bits) with
+     *         the LSBs (the Least Significant Bits) of the object hash code
      */
-    OutputStream getFileOutputStream();
+    default int getHashKey() {
+        return (hashCode() >>> 16) ^ hashCode();
+    }
 }
