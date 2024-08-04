@@ -46,7 +46,7 @@ public interface StreamProvider extends AutoCloseable {
      * @param size the size of the buffered IO in bytes or zero
      *             for auto filesystem size
      */
-    void initialize(int size);
+    void initialize(int size) throws Exception;
 
     /**
      * Generates a unique hash key for this object
