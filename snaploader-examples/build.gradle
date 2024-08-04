@@ -15,35 +15,35 @@ if (System.getProperty("os.name").contains("Windows")) {
 }
 
 application {
-    mainClass = 'electrostatic.snaploader.examples.TestBasicFeatures'
+    mainClass = 'electrostatic4j.snaploader.examples.TestBasicFeatures'
 }
 
 tasks.register("TestBasicFeatures") {
-    application.mainClass = 'electrostatic.snaploader.examples.TestBasicFeatures'
+    application.mainClass = 'electrostatic4j.snaploader.examples.TestBasicFeatures'
 }
 
 tasks.register("TestBasicFeatures2") {
-    application.mainClass = 'electrostatic.snaploader.examples.TestBasicFeatures2'
+    application.mainClass = 'electrostatic4j.snaploader.examples.TestBasicFeatures2'
 }
 
 tasks.register("MonitorableExample") {
-    application.mainClass = 'electrostatic.snaploader.examples.MonitorableExample'
+    application.mainClass = 'electrostatic4j.snaploader.examples.MonitorableExample'
 }
 
 tasks.register("ReflectiveLauncher") {
-    application.mainClass = 'electrostatic.snaploader.examples.ReflectiveLauncher'
+    application.mainClass = 'electrostatic4j.snaploader.examples.ReflectiveLauncher'
 }
 
 tasks.register("TestMultipleLoads") {
-    application.mainClass = 'electrostatic.snaploader.examples.TestMultipleLoads'
+    application.mainClass = 'electrostatic4j.snaploader.examples.TestMultipleLoads'
 }
 
 tasks.register("TestZipExtractor") {
-    application.mainClass = 'electrostatic.snaploader.examples.TestZipExtractor'
+    application.mainClass = 'electrostatic4j.snaploader.examples.TestZipExtractor'
 }
 
 tasks.register("TestMultiThreading") {
-    application.mainClass = 'electrostatic.snaploader.examples.TestMultiThreading'
+    application.mainClass = 'electrostatic4j.snaploader.examples.TestMultiThreading'
 }
 
 task copyLibs(type: Copy) {
