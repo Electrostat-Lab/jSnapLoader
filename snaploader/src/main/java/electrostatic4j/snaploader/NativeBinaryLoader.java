@@ -152,7 +152,7 @@ public class NativeBinaryLoader {
      * @return this instance for chained invocations
      * @throws IOException if the library to extract is not present in the jar filesystem
      */
-    public NativeBinaryLoader loadLibrary(LoadingCriterion criterion) throws IOException {
+    public NativeBinaryLoader loadLibrary(LoadingCriterion criterion) throws Exception {
         if (criterion == LoadingCriterion.INCREMENTAL_LOADING && nativeDynamicLibrary.isExtracted()) {
             loadBinary(nativeDynamicLibrary);
             return this;
@@ -240,7 +240,7 @@ public class NativeBinaryLoader {
      * @param library the platform-specific library to load
      * @throws IOException in case the binary to be extracted is not found on the specified jar
      */
-    protected void loadBinary(NativeDynamicLibrary library) throws IOException {
+    protected void loadBinary(NativeDynamicLibrary library) throws Exception {
         try {
             /* sanity-check for android java vm (the dalvik) */
             if (NativeVariant.Os.isAndroid()) {
@@ -278,7 +278,7 @@ public class NativeBinaryLoader {
      * @throws IOException in case the binary to be extracted is not found on the specified jar, or an
      *                     interrupted I/O operation has occurred
      */
-    protected void cleanExtractBinary(NativeDynamicLibrary library) throws IOException {
+    protected void cleanExtractBinary(NativeDynamicLibrary library) throws Exception {
         libraryExtractor = initializeLibraryExtractor(library);
        SnapLoaderLogger.log(Level.INFO, getClass().getName(), "cleanExtractBinary",
                "File extractor handler initialized!");
@@ -346,7 +346,7 @@ public class NativeBinaryLoader {
      * @return a new FileExtractor object that represents an output stream provider
      * @throws IOException if the jar filesystem to be located is not found, or if the extraction destination is not found
      */
-    protected FileExtractor initializeLibraryExtractor(NativeDynamicLibrary library) throws IOException {
+    protected FileExtractor initializeLibraryExtractor(NativeDynamicLibrary library) throws Exception {
         FileExtractor extractor;
         if (library.getJarPath() != null) {
             extractor = new LibraryExtractor(library.getJarPath(), library.getCompressedLibrary(), library.getExtractedLibrary());
