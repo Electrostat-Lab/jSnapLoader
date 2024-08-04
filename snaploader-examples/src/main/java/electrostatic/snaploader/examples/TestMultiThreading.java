@@ -37,7 +37,7 @@ import java.util.Arrays;
 
 import electrostatic.snaploader.LoadingCriterion;
 import electrostatic.snaploader.ConcurrentNativeBinaryLoader;
-import electrostatic.snaploader.UnSupportedSystemError;
+import electrostatic.snaploader.throwable.UnSupportedSystemError;
 import electrostatic.snaploader.platform.util.DefaultDynamicLibraries;
 import electrostatic.snaploader.platform.NativeDynamicLibrary;
 

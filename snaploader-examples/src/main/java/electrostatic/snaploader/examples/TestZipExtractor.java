@@ -41,6 +41,7 @@ import electrostatic.snaploader.filesystem.FileExtractor;
 import electrostatic.snaploader.filesystem.FileLocator;
 import electrostatic.snaploader.filesystem.ZipCompressionType;
 import electrostatic.snaploader.platform.util.PropertiesProvider;
+import electrostatic.snaploader.throwable.FilesystemResourceScavengingException;
 
 /**
  * Tests extracting an image compression from a Zip compression type filesystem using {@link FileExtractor} API.
@@ -54,6 +55,8 @@ public class TestZipExtractor {
         final FileLocator fileLocator = new FileLocator(getZipAbsolutePath(), getFilePath(), ZipCompressionType.ZIP);
         /* Extracts the image filesystem from the Zip Compression */
         final FileExtractor fileExtractor = new FileExtractor(fileLocator, getExtractionPath());
+        fileLocator.initialize(0);
+        fileExtractor.initialize(0);
         /* CLOSE/CLEAR I/O Resources */
         fileExtractor.setExtractionListener(new FileExtractionListener() {
             @Override
@@ -70,11 +73,8 @@ public class TestZipExtractor {
             public void onExtractionFinalization(FileExtractor fileExtractor, FileLocator fileLocator) {
                 try {
                     fileExtractor.close();
-                    fileLocator.close();
-                    Logger.getLogger(TestZipExtractor.class.getName())
-                            .log(Level.INFO, "Filesystem Resources Closed!");
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                } catch (Exception e) {
+                    throw new FilesystemResourceScavengingException(e);
                 }
             }
         });
