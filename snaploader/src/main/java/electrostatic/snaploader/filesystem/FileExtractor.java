@@ -58,7 +58,7 @@ public class FileExtractor implements OutputStreamProvider {
     /**
      * An interface object to provide the extraction process with a command-state pattern.
      */
-    protected ExtractionListener extractionListener;
+    protected FileExtractionListener fileExtractionListener;
 
     /**
      * An absolute path for the destination filesystem of the extraction process.
@@ -107,7 +107,6 @@ public class FileExtractor implements OutputStreamProvider {
              * unlike the unbuffered streams, which polls byte streams from an online
              * pipe, and allocate memory according to the active bytes manipulated
              * by the pipeline. */
-            fileLocator.validateFileLocalization();
             InputStream fileStream = fileLocator.getFileInputStream();
 
             /* Extracts the shipped native files */
@@ -118,25 +117,27 @@ public class FileExtractor implements OutputStreamProvider {
                 /* use the bytes as the buffer length to write valid data */
                 fileOutputStream.write(buffer, 0, bytes);
             }
-            if (extractionListener != null) {
-                extractionListener.onExtractionCompleted(this);
+            if (fileExtractionListener != null) {
+                fileExtractionListener.onExtractionCompleted(this);
             }
         } catch (Exception e) {
-            if (extractionListener != null) {
-                extractionListener.onExtractionFailure(this, e);
+            if (fileExtractionListener != null) {
+                fileExtractionListener.onExtractionFailure(this, e);
             }
         // release the native resources anyway!
         } finally {
-            if (extractionListener != null) {
-                extractionListener.onExtractionFinalization(this, fileLocator);
+            if (fileExtractionListener != null) {
+                fileExtractionListener.onExtractionFinalization(this, fileLocator);
             }
         }
     }
 
     @Override
     public void close() throws IOException {
-        fileOutputStream.close();
-        fileOutputStream = null;
+        if (fileOutputStream != null) {
+            fileOutputStream.close();
+            fileOutputStream = null;
+        }
     }
 
     @Override
@@ -150,13 +151,13 @@ public class FileExtractor implements OutputStreamProvider {
     }
 
     /**
-     * Sets the extraction listener action to dispatch the {@link ExtractionListener#onExtractionCompleted(FileExtractor)}
+     * Sets the extraction listener action to dispatch the {@link FileExtractionListener#onExtractionCompleted(FileExtractor)}
      * when the extraction task is completed.
      * 
-     * @param extractionListener an implementation object of the extraction listener dispatched when the 
+     * @param fileExtractionListener an implementation object of the extraction listener dispatched when the
      *                           extraction is completed
      */
-    public void setExtractionListener(ExtractionListener extractionListener) {
-        this.extractionListener = extractionListener;
+    public void setExtractionListener(FileExtractionListener fileExtractionListener) {
+        this.fileExtractionListener = fileExtractionListener;
     }
 }
