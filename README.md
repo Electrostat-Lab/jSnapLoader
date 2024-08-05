@@ -138,6 +138,7 @@ try {
 - [x] Platform-specific dynamic libraries' registration.
 - [x] Platform-specific dynamic libraries building using platform-specific predicates (NEW).
 - [x] Locate and load external dynamic libraries directly.
+- [x] File Locator and extractor routines (classpath - external jar).
 - [x] Extract native libraries from the stock jar library (classpath).
 - [x] Locate external jars and extract native libraries from them.
 - [x] Define an extract directory.
@@ -145,6 +146,9 @@ try {
 - [x] Exposed the platform-dependent library `NativeDynamicLibrary` (NEW).
 - [x] Exposed the `NativeVariant` providing system properties.
 - [x] EventDispatchers: Extraction Listeners, Loading Listeners, and System Detection Listeners.
+- [x] Filesystem Failure Throwable Exceptions: binds the user API to the jSnapLoader lifecycle.
+- [x] Tight handling of memory leaks; as a result of file locator and/or file extractor failures.
+- [x] Memory logging of the stream providers' handlers using the object hash keys. 
 - [ ] Extract automatically based on the application name and version.
 
 ### Documentation-list:
