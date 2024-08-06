@@ -32,6 +32,7 @@
 
 package electrostatic4j.snaploader;
 
+import electrostatic4j.snaploader.filesystem.DirectoryPath;
 import electrostatic4j.snaploader.platform.NativeDynamicLibrary;
 
 /**
@@ -62,7 +63,7 @@ public final class LibraryInfo {
     private String jarPath;
     private String directory;
     private String baseName;
-    private String extractionDir;
+    private DirectoryPath directoryPath;
 
     /**
      * Instantiates a library info data structure pointing to a library in the classpath.
@@ -71,11 +72,11 @@ public final class LibraryInfo {
      *                  this is used as a backup directory path
      *                  in case the {@link NativeDynamicLibrary#getPlatformDirectory()} is not valid.
      * @param baseName the library basename, for example, 'lib-basename.so'.
-     * @param extractionDir the extraction destination in absolute string format, "null" if the current [user.dir] is
+     * @param directoryPath the extraction destination in absolute string format, "null" if the current [user.dir] is
      *                      specified as the extraction directory
      */
-    public LibraryInfo(String directory, String baseName, String extractionDir) {
-        this(null, directory, baseName, extractionDir);
+    public LibraryInfo(String directory, String baseName, DirectoryPath directoryPath) {
+        this(null, directory, baseName, directoryPath);
     }
 
     /**
@@ -86,14 +87,13 @@ public final class LibraryInfo {
      *                  this is used as a backup directory path
      *                  in case the {@link NativeDynamicLibrary#getPlatformDirectory()} is not valid.
      * @param baseName the library basename, for example, 'lib-basename.so'.
-     * @param extractionDir the extraction destination in absolute string format, "null" if the current [user.dir] is 
-     *                      specified as the extraction directory
+     * @param directoryPath the extraction destination in absolute string format
      */
-    public LibraryInfo(String jarPath, String directory, String baseName, String extractionDir) {
+    public LibraryInfo(String jarPath, String directory, String baseName, DirectoryPath directoryPath) {
         this.jarPath = jarPath;
         this.directory = directory;
         this.baseName = baseName;
-        this.extractionDir = extractionDir;
+        this.directoryPath = directoryPath;
     }
 
     /**
@@ -129,11 +129,10 @@ public final class LibraryInfo {
     /**
      * Retrieves the extraction absolute directory.
      * 
-     * @return the extraction destination in absolute string format, "null" if the current [user.dir] is 
-     *         specified as the extraction directory
+     * @return the extraction destination in absolute string format
      */
-    public String getExtractionDir() {
-        return extractionDir;
+    public DirectoryPath getExtractionDirectory() {
+        return directoryPath;
     }
 
     /**
@@ -171,10 +170,10 @@ public final class LibraryInfo {
      * Sets the extraction directory used for extracting the native dynamic library in the 
      * form of an absolute directory, "null" to use the current [user.dir].
      * 
-     * @param extractionDir the absolute extraction directory to which the located library
-     *                      will be extracted to, "null" to set the extraction to the current [user.dir]
+     * @param directoryPath the absolute extraction directory to which the located library
+     *                      will be extracted to
      */
-    public void setExtractionDir(String extractionDir) {
-        this.extractionDir = extractionDir;
+    public void setExtractionDirectory(DirectoryPath directoryPath) {
+        this.directoryPath = directoryPath;
     }
 }
