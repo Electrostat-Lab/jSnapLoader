@@ -21,7 +21,7 @@ public final class TestFilesystemException {
         final Path extractionPath = Files.createDirectories(Paths.get(PropertiesProvider.USER_DIR.getSystemProperty(), "libs",
                 NativeVariant.OS_NAME.getProperty(), NativeVariant.OS_ARCH.getProperty()));
 
-        final LibraryInfo libraryInfo = new LibraryInfo(compressionPath.toString(), "lib/placeholder",
+        final LibraryInfo libraryInfo = new LibraryInfo(new DirectoryPath(compressionPath.toString()), new DirectoryPath("lib/placeholder"),
                 "jme3alloc", new DirectoryPath(extractionPath.toString()));
 
         final NativeDynamicLibrary[] libraries = new NativeDynamicLibrary[] {

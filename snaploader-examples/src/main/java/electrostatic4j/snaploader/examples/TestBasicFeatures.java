@@ -50,7 +50,7 @@ import electrostatic4j.snaploader.LoadingCriterion;
 public final class TestBasicFeatures {
                                                      
     protected static final LibraryInfo libraryInfo = new LibraryInfo(getJarFilePath(),
-                                                                     "lib/placeholder",
+                                                                     new DirectoryPath(DefaultDynamicLibraries.LINUX_X86.getPlatformDirectory()),
                                                                      getLibraryBaseName(), 
                                                                      getLibrariesAbsolutePath());
 
@@ -95,9 +95,8 @@ public final class TestBasicFeatures {
         return new DirectoryPath(PropertiesProvider.USER_DIR.getSystemProperty(), "libs");
     }
 
-    protected static String getJarFilePath() {
-        return getLibrariesAbsolutePath().getPath() +
-                    PropertiesProvider.FILE_SEPARATOR.getSystemProperty() + getJarFile();
+    protected static DirectoryPath getJarFilePath() {
+        return new DirectoryPath(getLibrariesAbsolutePath().getPath(), getJarFile());
     }
 
     protected static String getNativeDynamicLibraryPath() {
