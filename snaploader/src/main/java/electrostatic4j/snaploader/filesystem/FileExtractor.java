@@ -34,7 +34,6 @@ package electrostatic4j.snaploader.filesystem;
 
 import electrostatic4j.snaploader.throwable.FilesystemResourceInitializationException;
 import electrostatic4j.snaploader.util.SnapLoaderLogger;
-
 import java.io.*;
 import java.util.logging.Level;
 
@@ -72,9 +71,8 @@ public class FileExtractor implements OutputStreamProvider {
      * 
      * @param fileLocator locates a filesystem inside a zip compression
      * @param destination an absolute filesystem path representing the extraction destination filesystem
-     * @throws FileNotFoundException if the destination filesystem path is not found
      */
-    public FileExtractor(FileLocator fileLocator, String destination) throws FileNotFoundException {
+    public FileExtractor(FileLocator fileLocator, String destination) {
         this.fileLocator = fileLocator;
         this.destination = destination;
     }
@@ -90,6 +88,8 @@ public class FileExtractor implements OutputStreamProvider {
         // 1) sanity-check for double initializing
         // 2) sanity-check for pre-initialization using other routines
         if (this.fileOutputStream != null) {
+            SnapLoaderLogger.log(Level.INFO, getClass().getName(), "initialize(int)",
+                    "File extractor already initialized using external routines with hash key #" + getHashKey());
             return;
         }
         try {
