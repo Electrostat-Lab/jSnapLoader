@@ -135,14 +135,14 @@ public class NativeDynamicLibrary {
         }
 
         /* Initializes the library jar path to locate before extracting, "null" to use the classpath */
-        jarPath = libraryInfo.getJarPath();
+        jarPath = libraryInfo.getJarPath().getPath();
 
         /* Initializes the library with an extraction path, "null" to extract to the current user directory */
         directoryPath = libraryInfo.getExtractionDirectory();
 
         /* Fallback initializes the library directory within the jar from the library-info */
         if (platformDirectory == null) {
-            platformDirectory = libraryInfo.getDirectory();
+            platformDirectory = libraryInfo.getDirectory().getPath();
         }
     }
 
