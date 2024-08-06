@@ -35,6 +35,7 @@ package electrostatic4j.snaploader.platform;
 import java.io.File;
 import electrostatic4j.snaploader.LibraryInfo;
 import electrostatic4j.snaploader.NativeBinaryLoader;
+import electrostatic4j.snaploader.filesystem.DirectoryPath;
 import electrostatic4j.snaploader.platform.util.NativeVariant;
 import electrostatic4j.snaploader.platform.util.PlatformPredicate;
 import electrostatic4j.snaploader.platform.util.PropertiesProvider;
@@ -69,7 +70,7 @@ public class NativeDynamicLibrary {
      * A designator for the extraction directory of the
      * native library.
      */
-    protected String extractionDir;
+    protected DirectoryPath directoryPath;
 
     /**
      * The platform-specific predicate; that if evaluated as
@@ -137,7 +138,7 @@ public class NativeDynamicLibrary {
         jarPath = libraryInfo.getJarPath();
 
         /* Initializes the library with an extraction path, "null" to extract to the current user directory */
-        extractionDir = libraryInfo.getExtractionDir();
+        directoryPath = libraryInfo.getExtractionDirectory();
 
         /* Fallback initializes the library directory within the jar from the library-info */
         if (platformDirectory == null) {
@@ -178,11 +179,8 @@ public class NativeDynamicLibrary {
      * @return the absolute path composed of the extraction directory and the library name and system-specific extension
      */
     public String getExtractedLibrary() {
-        if (extractionDir != null) {
-            return extractionDir + PropertiesProvider.FILE_SEPARATOR.getSystemProperty() + libraryFile;
-        }
-        return PropertiesProvider.USER_DIR.getSystemProperty() + 
-                    PropertiesProvider.FILE_SEPARATOR.getSystemProperty() + libraryFile;
+        return directoryPath.getPath()
+                + PropertiesProvider.FILE_SEPARATOR.getSystemProperty() + libraryFile;
     }
 
     /**
