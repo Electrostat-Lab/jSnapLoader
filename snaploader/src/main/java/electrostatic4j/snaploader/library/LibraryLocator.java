@@ -33,9 +33,8 @@
 package electrostatic4j.snaploader.library;
 
 import java.io.IOException;
-import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
-import electrostatic4j.snaploader.filesystem.ZipCompressionType;
+import java.util.zip.ZipFile;
 import electrostatic4j.snaploader.filesystem.FileLocator;
 
 /**
@@ -47,7 +46,6 @@ public class LibraryLocator extends FileLocator {
     
     /**
      * Locates the library inside the stock jar filesystem.
-     * This object leaks an input stream.
      * 
      * @param libraryPath the path to the dynamic native library inside that jar filesystem
      */
@@ -56,15 +54,12 @@ public class LibraryLocator extends FileLocator {
     } 
 
     /**
-     * Locates a library inside an external jar, the external jar is defined by the means of a {@link JarFile} and 
-     * the native library is defined as a {@link ZipEntry}. 
-     * This object leaks an input stream.
-     * 
-     * @param directory the absolute path for the external jar filesystem
-     * @param libraryPath the path to the dynamic native library inside that jar filesystem
-     * @throws IOException if the jar to be located is not found or an interrupt I/O operation has occured
+     * Locates a library inside an external jar, the external jar is defined by the means of a {@link ZipFile} and
+     * the native library is defined as a {@link ZipEntry}.
+     *
+     * @throws IOException if the jar to be located is not found or an interrupt I/O operation has occurred.
      */
-    public LibraryLocator(String directory, String libraryPath) throws IOException {
-        super(directory, libraryPath, ZipCompressionType.JAR);
+    public LibraryLocator(ZipFile compression, String filePath) throws IOException {
+        super(compression, filePath);
     }
 }

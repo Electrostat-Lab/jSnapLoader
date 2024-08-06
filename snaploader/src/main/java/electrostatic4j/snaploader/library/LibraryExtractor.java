@@ -33,6 +33,7 @@
 package electrostatic4j.snaploader.library;
 
 import java.io.IOException;
+import java.util.zip.ZipFile;
 import electrostatic4j.snaploader.filesystem.ConcurrentFileExtractor;
 import electrostatic4j.snaploader.filesystem.FileExtractor;
 
@@ -44,26 +45,26 @@ import electrostatic4j.snaploader.filesystem.FileExtractor;
 public class LibraryExtractor extends ConcurrentFileExtractor {
 
     /**
-     * Instantiates a native dynamic library extractor with a jar path, library path and extract destination filesystem path.
+     * Instantiates a native dynamic library extractor for an external compression file locator routine.
      * 
-     * @param jarPath an absolute path to the jar filesystem containing the library
-     * @param libraryPath the path of the library inside the jar filesystem
+     * @param compression the zip file object for external locator routines
+     * @param libraryPath the path of the library inside the compression filesystem
      * @param destination the extraction destination filesystem path
      * @throws IOException if the jar filesystem to be located is not found, or if the extraction destination is not found
      */
-    public LibraryExtractor(String jarPath, String libraryPath, String destination) throws IOException {
-        super(new LibraryLocator(jarPath, libraryPath), destination);
+    public LibraryExtractor(ZipFile compression, String libraryPath, String destination) throws IOException {
+        super(new LibraryLocator(compression, libraryPath), destination);
     }
 
     /**
      * Instantiates a native dynamic library extractor with a library path and an extract destination filesystem path. This
-     * object locates a dynamic native library inside the stock jar filesystem based on a classpath input stream.
+     * object locates a dynamic native library inside the stock jar filesystem based on a classpath input stream
+     * (i.e., classpath file locator routine).
      * 
      * @param libraryPath the path of the library inside the jar filesystem
      * @param destination the extraction destination filesystem path
-     * @throws IOException if the jar filesystem to be located is not found, or if the extraction destination is not found
      */
-    public LibraryExtractor(String libraryPath, String destination) throws IOException {
+    public LibraryExtractor(String libraryPath, String destination) {
         super(new LibraryLocator(libraryPath), destination);
     }
 }
