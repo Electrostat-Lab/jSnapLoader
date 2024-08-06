@@ -32,7 +32,6 @@
 
 package electrostatic4j.snaploader.filesystem;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -53,9 +52,8 @@ public class ConcurrentFileExtractor extends FileExtractor {
      * 
      * @param fileLocator locates a filesystem inside a zip compression
      * @param destination an absolute filesystem path representing the extraction destination filesystem
-     * @throws FileNotFoundException if the destination filesystem path is not found
      */
-    public ConcurrentFileExtractor(FileLocator fileLocator, String destination) throws FileNotFoundException {
+    public ConcurrentFileExtractor(FileLocator fileLocator, String destination) {
         super(fileLocator, destination);
     }
 
