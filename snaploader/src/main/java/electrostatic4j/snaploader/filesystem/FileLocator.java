@@ -58,17 +58,19 @@ public class FileLocator implements ZipStreamProvider {
      */
     protected FileLocalizingListener fileLocalizingListener;
 
+    /**
+     * Resembles the compression stream provider object, used in the case of
+     * external compression routines.
+     */
     protected ZipFile compression;
 
-    protected String compressionPath;
-
+    /**
+     * Resembles the file path inside the compression.
+     */
     protected String filePath;
-
-    protected ZipCompressionType compressionType;
 
     /**
      * Locates the library inside the stock jar filesystem.
-     * This object leaks an input stream.
      *
      * @param filePath the path to the dynamic native library inside that jar filesystem
      */
@@ -79,20 +81,15 @@ public class FileLocator implements ZipStreamProvider {
     /**
      * Locates a filesystem inside an external zip compression, the zip filesystem is defined as a {@link ZipFile} object and
      * the locatable filesystem is defined as a {@link ZipEntry} object.
-     * <p>
-     * Warning: This object leaks a buffered stream, either use try-with-resources, or handle your
-     * memory manually!
      * 
-     * @param compressionPath the absolute path for the external jar filesystem
-     * @param filePath the path to the filesystem to be extracted
-     * @param compressionType the type of the zip compression, ZIP or JAR
+     * @param compression the compression, either {@link ZipFile} or {@link java.util.jar.JarFile}
+     * @param filePath the path to the filesystem inside the compression to be extracted
      * 
-     * @throws IOException if the jar to be located is not found or an interrupted I/O exception has occured
+     * @throws IOException if the jar to be located is not found or an interrupted I/O exception has occurred
      */
-    public FileLocator(String compressionPath, String filePath, ZipCompressionType compressionType) throws IOException {
-        this.compressionPath = compressionPath;
+    public FileLocator(ZipFile compression, String filePath) throws IOException {
         this.filePath = filePath;
-        this.compressionType = compressionType;
+        this.compression = compression;
     }
 
     /**
@@ -102,6 +99,18 @@ public class FileLocator implements ZipStreamProvider {
     }
 
 
+    /**
+     * Initializes the input stream provider through a file locator routine, either
+     * classpath routine or external archive routine.
+     * <p>
+     * Warning: this stack leaks an input stream provider object for the
+     * file to be extracted, and the external archive stream provider in case
+     * of using an external archive routine to locate the file.
+     *
+     * @param size the size of the buffered IO in bytes or zero
+     *             for auto filesystem size
+     * @throws IOException if an I/O error has occurred.
+     */
     @Override
     public void initialize(int size) throws IOException {
         // 1) sanity-check for double initializing
@@ -114,7 +123,7 @@ public class FileLocator implements ZipStreamProvider {
 
             // 2) sanity-check for initialization routines
             // (e.g., classpath resources stream v.s. external compression).
-            if (compressionPath == null || compressionType == null) {
+            if (compression == null) {
                 classPathRoutine();
             } else {
                 externalCompressionRoutine(size);
@@ -137,14 +146,23 @@ public class FileLocator implements ZipStreamProvider {
         }
     }
 
+    /**
+     * Commands for the classpath routines.
+     */
     protected void classPathRoutine() {
         SnapLoaderLogger.log(Level.INFO, getClass().getName(), "initialize(int)",
                 "File locator initialized using classpath routine with hash key #" + getHashKey());
         this.fileInputStream = getClass().getResourceAsStream(filePath);
     }
 
+    /**
+     * Commands for the external compression routines.
+     *
+     * @param size custom buffer size, zero for auto filesystem size
+     *             (warning: file expansion and truncation rules are applied).
+     * @throws IOException if an I/O error has occurred.
+     */
     protected void externalCompressionRoutine(int size) throws IOException {
-        this.compression = compressionType.createNewCompressionObject(compressionPath);
         final ZipEntry zipEntry = compression.getEntry(filePath);
         if (size > 0) {
             this.fileInputStream = new BufferedInputStream(compression.getInputStream(zipEntry), size);
