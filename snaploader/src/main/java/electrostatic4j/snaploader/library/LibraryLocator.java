@@ -52,7 +52,7 @@ public class LibraryLocator extends FileLocator {
      * @param libraryPath the path to the dynamic native library inside that jar filesystem
      */
     public LibraryLocator(String libraryPath) {
-        this.fileInputStream = LibraryLocator.class.getClassLoader().getResourceAsStream(libraryPath);
+        super(libraryPath);
     } 
 
     /**
