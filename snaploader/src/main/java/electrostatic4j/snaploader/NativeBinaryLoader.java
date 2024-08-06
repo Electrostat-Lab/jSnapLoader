@@ -35,6 +35,7 @@ package electrostatic4j.snaploader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.lang.UnsatisfiedLinkError;
 import electrostatic4j.snaploader.filesystem.FileExtractionListener;
@@ -349,7 +350,7 @@ public class NativeBinaryLoader {
     protected FileExtractor initializeLibraryExtractor(NativeDynamicLibrary library) throws Exception {
         FileExtractor extractor;
         if (library.getJarPath() != null) {
-            extractor = new LibraryExtractor(library.getJarPath(), library.getCompressedLibrary(), library.getExtractedLibrary());
+            extractor = new LibraryExtractor(new JarFile(library.getJarPath()), library.getCompressedLibrary(), library.getExtractedLibrary());
         } else {
             extractor = new LibraryExtractor(library.getCompressedLibrary(), library.getExtractedLibrary());
         }
