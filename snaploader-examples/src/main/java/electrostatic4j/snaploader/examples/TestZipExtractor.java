@@ -35,9 +35,10 @@ package electrostatic4j.snaploader.examples;
 import electrostatic4j.snaploader.filesystem.FileExtractionListener;
 import electrostatic4j.snaploader.filesystem.FileExtractor;
 import electrostatic4j.snaploader.filesystem.FileLocator;
-import electrostatic4j.snaploader.filesystem.ZipCompressionType;
 import electrostatic4j.snaploader.platform.util.PropertiesProvider;
 import electrostatic4j.snaploader.throwable.FilesystemResourceScavengingException;
+
+import java.util.zip.ZipFile;
 
 /**
  * Tests extracting an image compression from a Zip compression type filesystem using {@link FileExtractor} API.
@@ -48,7 +49,7 @@ public class TestZipExtractor {
      
     public static void main(String[] args) throws Exception {
         /* Locates the image inside the Zip Compression */
-        final FileLocator fileLocator = new FileLocator(getZipAbsolutePath(), getFilePath(), ZipCompressionType.ZIP);
+        final FileLocator fileLocator = new FileLocator(new ZipFile(getZipAbsolutePath()), getFilePath());
         /* Extracts the image filesystem from the Zip Compression */
         final FileExtractor fileExtractor = new FileExtractor(fileLocator, getExtractionPath());
         fileLocator.initialize(0);
