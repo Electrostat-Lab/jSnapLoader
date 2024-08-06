@@ -97,6 +97,8 @@ public class FileLocator implements InputStreamProvider {
         // 2) sanity-check for pre-initialization using other routines
         // (e.g., classpath resources stream).
         if (this.fileInputStream != null) {
+            SnapLoaderLogger.log(Level.INFO, getClass().getName(), "initialize(int)",
+                    "File locator already initialized using external routines with hash key #" + getHashKey());
             return;
         }
         try {
