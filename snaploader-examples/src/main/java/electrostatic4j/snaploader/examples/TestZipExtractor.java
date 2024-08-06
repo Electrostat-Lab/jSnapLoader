@@ -32,8 +32,6 @@
 
 package electrostatic4j.snaploader.examples;
 
-import java.io.IOException;
-
 import electrostatic4j.snaploader.filesystem.FileExtractionListener;
 import electrostatic4j.snaploader.filesystem.FileExtractor;
 import electrostatic4j.snaploader.filesystem.FileLocator;

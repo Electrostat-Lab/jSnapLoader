@@ -32,10 +32,9 @@
 
 package electrostatic4j.snaploader.examples;
 
-import java.io.IOException;
-
 import electrostatic4j.snaploader.LibraryInfo;
 import electrostatic4j.snaploader.NativeBinaryLoader;
+import electrostatic4j.snaploader.filesystem.DirectoryPath;
 import electrostatic4j.snaploader.platform.util.DefaultDynamicLibraries;
 import electrostatic4j.snaploader.platform.NativeDynamicLibrary;
 import electrostatic4j.snaploader.platform.util.NativeVariant;
@@ -92,13 +91,12 @@ public final class TestBasicFeatures {
         System.out.println("--------------------------------------------------------------");
     }
 
-    protected static String getLibrariesAbsolutePath() {
-        return PropertiesProvider.USER_DIR.getSystemProperty() + 
-                    PropertiesProvider.FILE_SEPARATOR.getSystemProperty() + "libs";
+    protected static DirectoryPath getLibrariesAbsolutePath() {
+        return new DirectoryPath(PropertiesProvider.USER_DIR.getSystemProperty(), "libs");
     }
 
     protected static String getJarFilePath() {
-        return getLibrariesAbsolutePath() + 
+        return getLibrariesAbsolutePath().getPath() +
                     PropertiesProvider.FILE_SEPARATOR.getSystemProperty() + getJarFile();
     }
 

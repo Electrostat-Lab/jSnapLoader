@@ -32,12 +32,12 @@
 
 package electrostatic4j.snaploader.examples;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
 import electrostatic4j.snaploader.LibraryInfo;
 import electrostatic4j.snaploader.NativeBinaryLoader;
+import electrostatic4j.snaploader.filesystem.DirectoryPath;
 import electrostatic4j.snaploader.platform.util.DefaultDynamicLibraries;
 import electrostatic4j.snaploader.platform.NativeDynamicLibrary;
 import electrostatic4j.snaploader.platform.util.NativeVariant;
@@ -60,7 +60,7 @@ public final class TestBasicFeatures2 {
                                                                       NativeVariant.OS_NAME.getProperty(), NativeVariant.OS_ARCH.getProperty()));
 
         final LibraryInfo libraryInfo = new LibraryInfo(compressionPath.toString(), "lib/placeholder",
-                "jmealloc", extractionPath.toString());
+                "jmealloc", new DirectoryPath(extractionPath.toString()));
 
         final NativeDynamicLibrary[] libraries = new NativeDynamicLibrary[] {
                 DefaultDynamicLibraries.LINUX_X86,

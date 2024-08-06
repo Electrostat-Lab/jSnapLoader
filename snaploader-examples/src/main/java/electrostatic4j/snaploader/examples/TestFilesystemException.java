@@ -3,6 +3,7 @@ package electrostatic4j.snaploader.examples;
 import electrostatic4j.snaploader.LibraryInfo;
 import electrostatic4j.snaploader.LoadingCriterion;
 import electrostatic4j.snaploader.NativeBinaryLoader;
+import electrostatic4j.snaploader.filesystem.DirectoryPath;
 import electrostatic4j.snaploader.platform.NativeDynamicLibrary;
 import electrostatic4j.snaploader.platform.util.DefaultDynamicLibraries;
 import electrostatic4j.snaploader.platform.util.NativeVariant;
@@ -21,7 +22,7 @@ public final class TestFilesystemException {
                 NativeVariant.OS_NAME.getProperty(), NativeVariant.OS_ARCH.getProperty()));
 
         final LibraryInfo libraryInfo = new LibraryInfo(compressionPath.toString(), "lib/placeholder",
-                "jme3alloc", extractionPath.toString());
+                "jme3alloc", new DirectoryPath(extractionPath.toString()));
 
         final NativeDynamicLibrary[] libraries = new NativeDynamicLibrary[] {
                 DefaultDynamicLibraries.LINUX_X86,
