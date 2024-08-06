@@ -51,7 +51,15 @@ public final class DirectoryPath {
      * An alias object for the root user home directory absolute path.
      */
     public static final DirectoryPath USER_HOME =
-            new DirectoryPath(PropertiesProvider.USER_DIR.getSystemProperty());
+            new DirectoryPath(PropertiesProvider.USER_HOME.getSystemProperty());
+
+    /**
+     * When combined with the
+     * {@link electrostatic4j.snaploader.LibraryInfo#LibraryInfo(DirectoryPath, DirectoryPath, String, DirectoryPath)}
+     * and the {@link electrostatic4j.snaploader.NativeBinaryLoader}
+     * APIs, it denotes the classpath routine for the {@link FileLocator} API.
+     */
+    public static final DirectoryPath CLASS_PATH = new DirectoryPath(null);
 
     private String path;
 
