@@ -101,7 +101,7 @@ public final class TestBasicFeatures {
     }
 
     protected static String getNativeDynamicLibraryPath() {
-        return getLibrariesAbsolutePath() + 
+        return getLibrariesAbsolutePath().getPath() +
                     PropertiesProvider.FILE_SEPARATOR.getSystemProperty() + 
                     "lib" + getLibraryBaseName() + ".so";
     }

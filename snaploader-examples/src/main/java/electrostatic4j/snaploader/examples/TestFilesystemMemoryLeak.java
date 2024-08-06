@@ -79,12 +79,12 @@ public class TestFilesystemMemoryLeak {
     }
 
     protected static String getZipAbsolutePath() {
-        return TestBasicFeatures.getLibrariesAbsolutePath() +
+        return TestBasicFeatures.getLibrariesAbsolutePath().getPath() +
                 PropertiesProvider.FILE_SEPARATOR.getSystemProperty() + "jmelogo700.zip";
     }
 
     protected static String getExtractionPath() {
-        return TestBasicFeatures.getLibrariesAbsolutePath() +
+        return TestBasicFeatures.getLibrariesAbsolutePath().getPath() +
                 PropertiesProvider.FILE_SEPARATOR.getSystemProperty() + getFilePath();
     }
 
