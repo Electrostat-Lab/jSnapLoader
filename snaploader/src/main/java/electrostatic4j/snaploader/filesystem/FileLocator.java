@@ -162,6 +162,8 @@ public class FileLocator implements ZipStreamProvider {
         // getClassLoader() is invoked on them, it will return "null" pointer
         // indicating the invalidity of active loaders
         this.fileInputStream = getClass().getClassLoader().getResourceAsStream(filePath);
+        assert (this.fileInputStream != null):
+                "Classpath Routine failed: the file is not in the classpath!";
     }
 
     /**
