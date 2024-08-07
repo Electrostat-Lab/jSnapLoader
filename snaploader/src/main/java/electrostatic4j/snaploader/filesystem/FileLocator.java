@@ -152,7 +152,12 @@ public class FileLocator implements ZipStreamProvider {
     protected void classPathRoutine() {
         SnapLoaderLogger.log(Level.INFO, getClass().getName(), "initialize(int)",
                 "File locator initialized using classpath routine with hash key #" + getHashKey());
-        this.fileInputStream = getClass().getResourceAsStream(filePath);
+        // use the AppClassLoader, a BuiltinClassLoader to get the resources from the classpath
+        // notice that the JVM Classloaders are arranged in a tree-like structure
+        // 1) The BootStrap ClassLoader is the most ancestor
+        // 2) The Java Platform ClassLoader is the next in the tree.
+        // 3) The AppClassLoader is the last in the tree.
+        this.fileInputStream = getClass().getClassLoader().getResourceAsStream(filePath);
     }
 
     /**
