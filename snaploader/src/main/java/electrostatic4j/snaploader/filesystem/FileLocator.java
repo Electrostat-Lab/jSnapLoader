@@ -148,8 +148,10 @@ public class FileLocator implements ZipStreamProvider {
 
     /**
      * Commands for the classpath routines.
+     *
+     * @throws FilesystemResourceInitializationException if the classpath routine fails to locate the file.
      */
-    protected void classPathRoutine() {
+    protected void classPathRoutine() throws FilesystemResourceInitializationException {
         SnapLoaderLogger.log(Level.INFO, getClass().getName(), "initialize(int)",
                 "File locator initialized using classpath routine with hash key #" + getHashKey());
         // Use the AppClassLoader, a BuiltinClassLoader to get the resources from the classpath
@@ -162,8 +164,9 @@ public class FileLocator implements ZipStreamProvider {
         // getClassLoader() is invoked on them, it will return "null" pointer
         // indicating the invalidity of active loaders
         this.fileInputStream = getClass().getClassLoader().getResourceAsStream(filePath);
-        assert (this.fileInputStream != null):
-                "Classpath Routine failed: the file is not in the classpath!";
+        if (this.fileInputStream == null) {
+            throw new FilesystemResourceInitializationException("Classpath Routine failed: the file is not in the classpath!");
+        }
     }
 
     /**
