@@ -34,6 +34,8 @@ package electrostatic4j.snaploader.filesystem;
 
 import electrostatic4j.snaploader.throwable.FilesystemResourceInitializationException;
 import electrostatic4j.snaploader.util.SnapLoaderLogger;
+import electrostatic4j.snaploader.util.StreamObjectValidator;
+
 import java.io.*;
 import java.util.logging.Level;
 import java.util.zip.ZipEntry;
@@ -129,20 +131,19 @@ public class FileLocator implements ZipStreamProvider {
                 externalCompressionRoutine(size);
             }
 
+            StreamObjectValidator.validateAndThrow(fileInputStream, StreamObjectValidator.BROKEN_FILE_LOCATOR_PROVIDER);
+
             // fire the success listener if the file localization has passed!
             if (fileLocalizingListener != null) {
                 fileLocalizingListener.onFileLocalizationSuccess(this);
             }
         } catch (Exception e) {
             close();
-            final FilesystemResourceInitializationException exception = new FilesystemResourceInitializationException(
-                    "Failed to initialize the file locator handler #" + getHashKey(), e);
             // fire the failure listener when file localization fails and pass
             // the causative exception
             if (fileLocalizingListener != null) {
-                fileLocalizingListener.onFileLocalizationFailure(this, exception);
+                fileLocalizingListener.onFileLocalizationFailure(this, e);
             }
-            throw exception;
         }
     }
 
@@ -164,9 +165,6 @@ public class FileLocator implements ZipStreamProvider {
         // getClassLoader() is invoked on them, it will return "null" pointer
         // indicating the invalidity of active loaders
         this.fileInputStream = getClass().getClassLoader().getResourceAsStream(filePath);
-        if (this.fileInputStream == null) {
-            throw new FilesystemResourceInitializationException("Classpath Routine failed: the file is not in the classpath!");
-        }
     }
 
     /**
@@ -178,11 +176,13 @@ public class FileLocator implements ZipStreamProvider {
      */
     protected void externalCompressionRoutine(int size) throws IOException {
         final ZipEntry zipEntry = compression.getEntry(filePath);
+        StreamObjectValidator.validateAndThrow(zipEntry, StreamObjectValidator.COMPRESSION_FILE_LOCALIZING_FAIL);
         if (size > 0) {
             this.fileInputStream = new BufferedInputStream(compression.getInputStream(zipEntry), size);
         } else {
             this.fileInputStream = compression.getInputStream(zipEntry);
         }
+
         SnapLoaderLogger.log(Level.INFO, getClass().getName(), "initialize(int)",
                 "File locator initialized using external compression routine with hash key #" + getHashKey());
     }

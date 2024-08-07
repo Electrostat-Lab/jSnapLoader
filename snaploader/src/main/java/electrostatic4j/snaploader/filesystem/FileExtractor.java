@@ -34,6 +34,8 @@ package electrostatic4j.snaploader.filesystem;
 
 import electrostatic4j.snaploader.throwable.FilesystemResourceInitializationException;
 import electrostatic4j.snaploader.util.SnapLoaderLogger;
+import electrostatic4j.snaploader.util.StreamObjectValidator;
+
 import java.io.*;
 import java.util.logging.Level;
 
@@ -133,6 +135,7 @@ public class FileExtractor implements OutputStreamProvider {
              * pipe, and allocate memory according to the active bytes manipulated
              * by the pipeline. */
             InputStream fileStream = fileLocator.getFileInputStream();
+            StreamObjectValidator.validateAndThrow(fileStream, StreamObjectValidator.BROKEN_FILE_LOCATOR_PROVIDER);
 
             /* Extracts the shipped native files */
             /* Allocate a byte buffer for the buffered streams */
