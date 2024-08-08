@@ -76,7 +76,10 @@ dependencyResolutionManagement {
 ### Library Implementation: 
 1) The most straightforward way: 
 ```java
-final LibraryInfo info = new LibraryInfo(null, "lib/independent", "basename", null);
+final LibraryInfo info = new LibraryInfo(new DirectoryPath("lib/independent"), "basename", DirectoryPath.USER_DIR);
+// or
+// final LibraryInfo info = new LibraryInfo(DirectoryPath.CLASS_PATH,
+//      new DirectoryPath("lib/independent"), "basename", DirectoryPath.USER_DIR);
 final NativeBinaryLoader loader = new NativeBinaryLoader(info);
 final NativeDynamicLibrary[] libraries = new NativeDynamicLibrary[] {
       new NativeDynamicLibrary("lib/linux/x86-64", PlatformPredicate.LINUX_X86_64),
@@ -108,7 +111,7 @@ import java.nio.file.Paths;
 final Path compression = Paths.get(PropertiesProvider.USER_DIR.getSystemProperty(), "libs", "electrostatic4j.jar");
 // create extraction path directory if not exists
 final Path extractionPath = Files.createDirectories(Paths.get(PropertiesProvider.USER_DIR.getSystemProperty(), "libs", "natives"));
-final LibraryInfo info = new LibraryInfo(compression.toString(), "lib/independent", "electrostatic4j", extractionPath.toString());
+final LibraryInfo info = new LibraryInfo(new DirectoryPath(compression.toString()), new DirectoryPath("lib/independent"), "electrostatic4j", new DirectoryPath(extractionPath.toString()));
 final NativeBinaryLoader loader = new NativeBinaryLoader(info);
 final NativeDynamicLibrary[] libraries = new NativeDynamicLibrary[] {
       new NativeDynamicLibrary("lib/linux/x86-64", PlatformPredicate.LINUX_X86_64),
