@@ -51,7 +51,7 @@ BUILD SUCCESSFUL in 1s
 [build.gradle]
 ```groovy
 dependencies {
-    implementation "io.github.software-hardware-codesign:snaploader:1.0.0-delta"
+    implementation "io.github.software-hardware-codesign:snaploader:1.0.0-stable"
 }
 ```
 [settings.gradle]
