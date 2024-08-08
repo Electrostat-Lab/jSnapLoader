@@ -35,6 +35,7 @@ package electrostatic4j.snaploader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.lang.UnsatisfiedLinkError;
 import electrostatic4j.snaploader.filesystem.FileExtractionListener;
@@ -349,8 +350,10 @@ public class NativeBinaryLoader {
     protected FileExtractor initializeLibraryExtractor(NativeDynamicLibrary library) throws Exception {
         FileExtractor extractor;
         if (library.getJarPath() != null) {
-            extractor = new LibraryExtractor(library.getJarPath(), library.getCompressedLibrary(), library.getExtractedLibrary());
+            // use an extractor with the external jar routine
+            extractor = new LibraryExtractor(new JarFile(library.getJarPath()), library.getCompressedLibrary(), library.getExtractedLibrary());
         } else {
+            // use an extractor with the classpath routine
             extractor = new LibraryExtractor(library.getCompressedLibrary(), library.getExtractedLibrary());
         }
         extractor.initialize(0);
@@ -363,7 +366,7 @@ public class NativeBinaryLoader {
         extractor.getFileLocator().setFileLocalizingListener(new FileLocalizingListener() {
             @Override
             public void onFileLocalizationSuccess(FileLocator locator) {
-                SnapLoaderLogger.log(Level.INFO, getClass().getName(), "initializeLibraryExtractor",
+                SnapLoaderLogger.log(Level.INFO, getClass().getName(), "preInitLibraryLocator",
                         "Locating native libraries has succeeded!");
 
                 // bind the library locator lifecycle to the user application
@@ -374,7 +377,7 @@ public class NativeBinaryLoader {
 
             @Override
             public void onFileLocalizationFailure(FileLocator locator, Throwable throwable) {
-                SnapLoaderLogger.log(Level.SEVERE, getClass().getName(), "initializeLibraryExtractor",
+                SnapLoaderLogger.log(Level.SEVERE, getClass().getName(), "preInitLibraryLocator",
                         "Locating native libraries has failed!", throwable);
                 try {
                     extractor.close();

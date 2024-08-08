@@ -32,10 +32,9 @@
 
 package electrostatic4j.snaploader.examples;
 
-import java.io.IOException;
-
 import electrostatic4j.snaploader.LibraryInfo;
 import electrostatic4j.snaploader.NativeBinaryLoader;
+import electrostatic4j.snaploader.filesystem.DirectoryPath;
 import electrostatic4j.snaploader.platform.util.DefaultDynamicLibraries;
 import electrostatic4j.snaploader.platform.NativeDynamicLibrary;
 import electrostatic4j.snaploader.platform.util.NativeVariant;
@@ -51,7 +50,7 @@ import electrostatic4j.snaploader.LoadingCriterion;
 public final class TestBasicFeatures {
                                                      
     protected static final LibraryInfo libraryInfo = new LibraryInfo(getJarFilePath(),
-                                                                     "lib/placeholder",
+                                                                     new DirectoryPath(DefaultDynamicLibraries.LINUX_X86.getPlatformDirectory()),
                                                                      getLibraryBaseName(), 
                                                                      getLibrariesAbsolutePath());
 
@@ -92,18 +91,16 @@ public final class TestBasicFeatures {
         System.out.println("--------------------------------------------------------------");
     }
 
-    protected static String getLibrariesAbsolutePath() {
-        return PropertiesProvider.USER_DIR.getSystemProperty() + 
-                    PropertiesProvider.FILE_SEPARATOR.getSystemProperty() + "libs";
+    protected static DirectoryPath getLibrariesAbsolutePath() {
+        return new DirectoryPath(PropertiesProvider.USER_DIR.getSystemProperty(), "libs");
     }
 
-    protected static String getJarFilePath() {
-        return getLibrariesAbsolutePath() + 
-                    PropertiesProvider.FILE_SEPARATOR.getSystemProperty() + getJarFile();
+    protected static DirectoryPath getJarFilePath() {
+        return new DirectoryPath(getLibrariesAbsolutePath().getPath(), getJarFile());
     }
 
     protected static String getNativeDynamicLibraryPath() {
-        return getLibrariesAbsolutePath() + 
+        return getLibrariesAbsolutePath().getPath() +
                     PropertiesProvider.FILE_SEPARATOR.getSystemProperty() + 
                     "lib" + getLibraryBaseName() + ".so";
     }

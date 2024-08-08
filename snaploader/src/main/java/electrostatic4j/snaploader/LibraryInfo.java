@@ -32,6 +32,7 @@
 
 package electrostatic4j.snaploader;
 
+import electrostatic4j.snaploader.filesystem.DirectoryPath;
 import electrostatic4j.snaploader.platform.NativeDynamicLibrary;
 
 /**
@@ -59,10 +60,10 @@ import electrostatic4j.snaploader.platform.NativeDynamicLibrary;
  */
 public final class LibraryInfo {
 
-    private String jarPath;
-    private String directory;
+    private DirectoryPath jarPath;
+    private DirectoryPath directory;
     private String baseName;
-    private String extractionDir;
+    private DirectoryPath directoryPath;
 
     /**
      * Instantiates a library info data structure pointing to a library in the classpath.
@@ -70,30 +71,33 @@ public final class LibraryInfo {
      * @param directory the platform-independent directory inside the compression used for locating the native dynamic library,
      *                  this is used as a backup directory path
      *                  in case the {@link NativeDynamicLibrary#getPlatformDirectory()} is not valid.
-     * @param baseName the library basename, for example, 'lib-basename.so'.
-     * @param extractionDir the extraction destination in absolute string format, "null" if the current [user.dir] is
-     *                      specified as the extraction directory
+     * @param baseName the library basename, for example, 'lib-basename.so' (not null).
+     * @param directoryPath the extraction destination path, {@link DirectoryPath#USER_DIR} for
+     *                      a user working directory extraction path,
+     *                      and {@link DirectoryPath#USER_HOME} for the user home (not null).
      */
-    public LibraryInfo(String directory, String baseName, String extractionDir) {
-        this(null, directory, baseName, extractionDir);
+    public LibraryInfo(DirectoryPath directory, String baseName, DirectoryPath directoryPath) {
+        this(DirectoryPath.CLASS_PATH, directory, baseName, directoryPath);
     }
 
     /**
      * Instantiates a library info data structure pointing to a library in an external jar with jarPath.
      * 
-     * @param jarPath a path to an external jar to locate the library inside, "null" to use the project jar (classpath).
+     * @param jarPath a path to an external jar to locate the library inside, {@link DirectoryPath#CLASS_PATH} to assign the classpath routine
+     *                to the {@link electrostatic4j.snaploader.filesystem.FileLocator} API (not null).
      * @param directory the platform-independent directory inside the compression used for locating the native dynamic library,
      *                  this is used as a backup directory path
      *                  in case the {@link NativeDynamicLibrary#getPlatformDirectory()} is not valid.
-     * @param baseName the library basename, for example, 'lib-basename.so'.
-     * @param extractionDir the extraction destination in absolute string format, "null" if the current [user.dir] is 
-     *                      specified as the extraction directory
+     * @param baseName the library basename, for example, 'lib-basename.so' (not null).
+     * @param directoryPath the extraction destination path, {@link DirectoryPath#USER_DIR} for
+     *                      a user working directory extraction path,
+     *                      and {@link DirectoryPath#USER_HOME} for the user home (not null).
      */
-    public LibraryInfo(String jarPath, String directory, String baseName, String extractionDir) {
+    public LibraryInfo(DirectoryPath jarPath, DirectoryPath directory, String baseName, DirectoryPath directoryPath) {
         this.jarPath = jarPath;
         this.directory = directory;
         this.baseName = baseName;
-        this.extractionDir = extractionDir;
+        this.directoryPath = directoryPath;
     }
 
     /**
@@ -109,41 +113,38 @@ public final class LibraryInfo {
      * Retrieves the jar filesystem path, the jar is the compression used to locate the native dynamic library to
      * be extracted and loaded by {@link NativeBinaryLoader}.
      * 
-     * @return the jar absolute filesystem path in a string format, "null" if the classpath is specified instead of
-     *         an external jar compression
+     * @return the jar absolute filesystem path object.
      */
-    public String getJarPath() {
+    public DirectoryPath getJarPath() {
         return jarPath;
     }
 
     /**
      * Retrieves the directory inside the compression used for locating the native dynamic library.
      * 
-     * @return the path to the dynamic library filesystem inside the compression, "null" if the
-     *         default variant-based directories are set to be used
+     * @return the path to the dynamic library filesystem inside the compression.
      */
-    public String getDirectory() {
+    public DirectoryPath getDirectory() {
         return directory;
     }
 
     /**
      * Retrieves the extraction absolute directory.
      * 
-     * @return the extraction destination in absolute string format, "null" if the current [user.dir] is 
-     *         specified as the extraction directory
+     * @return the extraction destination path object.
      */
-    public String getExtractionDir() {
-        return extractionDir;
+    public DirectoryPath getExtractionDirectory() {
+        return directoryPath;
     }
 
     /**
      * Sets the absolute path to the jar filesystem to locate the native dynamic library to be
      * extracted and loaded, "null" to use the "classpath (the stock jar)"" to load the library filesystem.
      * 
-     * @param jarPath the absolute path to the jar filesystem to locate the library to be extracted, "null" to
-     *                use the "classpath" (aka. the stock jar)
+     * @param jarPath the external jar path object to localize the compression, use {@link DirectoryPath#CLASS_PATH}
+     *                to switch the file locator to the classpath routine.
      */
-    public void setJarPath(String jarPath) {
+    public void setJarPath(DirectoryPath jarPath) {
         this.jarPath = jarPath;
     }
 
@@ -151,10 +152,9 @@ public final class LibraryInfo {
      * Sets the directory to the native dynamic library inside the jar compression, "null" to use
      * the default directories specified for each variant by {@link NativeBinaryLoader}.
      * 
-     * @param directory the location to the native dynamic library inside the jar compression, "null"
-     *                  to use the default variant-based directories
+     * @param directory the location to the native dynamic library inside the jar compression.
      */
-    public void setDirectory(String directory) {
+    public void setDirectory(DirectoryPath directory) {
         this.directory = directory;
     }
 
@@ -168,13 +168,12 @@ public final class LibraryInfo {
     }
 
     /**
-     * Sets the extraction directory used for extracting the native dynamic library in the 
-     * form of an absolute directory, "null" to use the current [user.dir].
+     * Sets the extraction directory used for extracting the native dynamic library.
      * 
-     * @param extractionDir the absolute extraction directory to which the located library
-     *                      will be extracted to, "null" to set the extraction to the current [user.dir]
+     * @param directoryPath the extraction directory path to which the native-located library
+     *                      will be extracted to.
      */
-    public void setExtractionDir(String extractionDir) {
-        this.extractionDir = extractionDir;
+    public void setExtractionDirectory(DirectoryPath directoryPath) {
+        this.directoryPath = directoryPath;
     }
 }

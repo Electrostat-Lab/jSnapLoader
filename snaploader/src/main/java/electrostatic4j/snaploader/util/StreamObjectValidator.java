@@ -30,36 +30,35 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package electrostatic4j.snaploader.library;
+package electrostatic4j.snaploader.util;
 
-import java.io.IOException;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import electrostatic4j.snaploader.filesystem.FileLocator;
+import electrostatic4j.snaploader.filesystem.StreamProvider;
+import electrostatic4j.snaploader.throwable.FilesystemResourceInitializationException;
 
 /**
- * Locates a library inside a jar filesystem, the probable source for the native dynamic libraries to extract and load.
- * 
+ * Validates the stream providers tokens.
+ *
  * @author pavl_g
  */
-public class LibraryLocator extends FileLocator {
-    
-    /**
-     * Locates the library inside the stock jar filesystem.
-     * 
-     * @param libraryPath the path to the dynamic native library inside that jar filesystem
-     */
-    public LibraryLocator(String libraryPath) {
-        super(libraryPath);
-    } 
+public final class StreamObjectValidator {
 
-    /**
-     * Locates a library inside an external jar, the external jar is defined by the means of a {@link ZipFile} and
-     * the native library is defined as a {@link ZipEntry}.
-     *
-     * @throws IOException if the jar to be located is not found or an interrupt I/O operation has occurred.
-     */
-    public LibraryLocator(ZipFile compression, String filePath) throws IOException {
-        super(compression, filePath);
+    public static final String BROKEN_FILE_LOCATOR_PROVIDER = "Broken file locator stream provider!";
+    public static final String COMPRESSION_FILE_LOCALIZING_FAIL = "Cannot locate the file entry in the compression!";
+
+    private StreamObjectValidator() {
+    }
+
+    public static void validateAndThrow(final StreamProvider object, final String message, final Throwable cause) {
+        if (object != null) {
+            return;
+        }
+        throw new FilesystemResourceInitializationException(message, cause);
+    }
+
+    public static void validateAndThrow(final Object object, final String message) {
+        if (object != null) {
+            return;
+        }
+        throw new FilesystemResourceInitializationException(message);
     }
 }

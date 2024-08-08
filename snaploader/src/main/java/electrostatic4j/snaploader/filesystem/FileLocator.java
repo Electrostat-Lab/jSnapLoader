@@ -34,6 +34,7 @@ package electrostatic4j.snaploader.filesystem;
 
 import electrostatic4j.snaploader.throwable.FilesystemResourceInitializationException;
 import electrostatic4j.snaploader.util.SnapLoaderLogger;
+import electrostatic4j.snaploader.util.StreamObjectValidator;
 
 import java.io.*;
 import java.util.logging.Level;
@@ -46,7 +47,7 @@ import java.util.zip.ZipFile;
  * 
  * @author pavl_g
  */
-public class FileLocator implements InputStreamProvider {
+public class FileLocator implements ZipStreamProvider {
     
     /**
      * The input stream associated with the located filesystem.
@@ -59,29 +60,38 @@ public class FileLocator implements InputStreamProvider {
      */
     protected FileLocalizingListener fileLocalizingListener;
 
-    protected String directory;
+    /**
+     * Resembles the compression stream provider object, used in the case of
+     * external compression routines.
+     */
+    protected ZipFile compression;
 
+    /**
+     * Resembles the file path inside the compression.
+     */
     protected String filePath;
 
-    protected ZipCompressionType compressionType;
+    /**
+     * Locates the library inside the stock jar filesystem.
+     *
+     * @param filePath the path to the dynamic native library inside that jar filesystem
+     */
+    public FileLocator(String filePath) {
+        this.filePath = filePath;
+    }
 
     /**
      * Locates a filesystem inside an external zip compression, the zip filesystem is defined as a {@link ZipFile} object and
      * the locatable filesystem is defined as a {@link ZipEntry} object.
-     * <p>
-     * Warning: This object leaks a buffered stream, either use try-with-resources, or handle your
-     * memory manually!
      * 
-     * @param directory the absolute path for the external jar filesystem
-     * @param filePath the path to the filesystem to be extracted
-     * @param compressionType the type of the zip compression, ZIP or JAR
+     * @param compression the compression, either {@link ZipFile} or {@link java.util.jar.JarFile}
+     * @param filePath the path to the filesystem inside the compression to be extracted
      * 
-     * @throws IOException if the jar to be located is not found or an interrupted I/O exception has occured
+     * @throws IOException if the jar to be located is not found or an interrupted I/O exception has occurred
      */
-    public FileLocator(String directory, String filePath, ZipCompressionType compressionType) throws IOException {
-        this.directory = directory;
+    public FileLocator(ZipFile compression, String filePath) throws IOException {
         this.filePath = filePath;
-        this.compressionType = compressionType;
+        this.compression = compression;
     }
 
     /**
@@ -91,54 +101,90 @@ public class FileLocator implements InputStreamProvider {
     }
 
 
+    /**
+     * Initializes the input stream provider through a file locator routine, either
+     * classpath routine or external archive routine.
+     * <p>
+     * Warning: this stack leaks an input stream provider object for the
+     * file to be extracted, and the external archive stream provider in case
+     * of using an external archive routine to locate the file.
+     *
+     * @param size the size of the buffered IO in bytes or zero
+     *             for auto filesystem size
+     * @throws IOException if an I/O error has occurred.
+     */
     @Override
     public void initialize(int size) throws IOException {
         // 1) sanity-check for double initializing
-        // 2) sanity-check for pre-initialization using other routines
-        // (e.g., classpath resources stream).
         if (this.fileInputStream != null) {
+            SnapLoaderLogger.log(Level.INFO, getClass().getName(), "initialize(int)",
+                    "File locator already initialized using external routines with hash key #" + getHashKey());
             return;
         }
         try {
-            final ZipFile compression = compressionType.createNewCompressionObject(directory);
-            final ZipEntry zipEntry = compression.getEntry(filePath);
-            validateFileLocalization(zipEntry);
-            if (size > 0) {
-                this.fileInputStream = new BufferedInputStream(compression.getInputStream(zipEntry), size);
-                SnapLoaderLogger.log(Level.INFO, getClass().getName(), "initialize(int)",
-                        "File locator initialized with hash key #" + getHashKey());
-                return;
+
+            // 2) sanity-check for initialization routines
+            // (e.g., classpath resources stream v.s. external compression).
+            if (compression == null) {
+                classPathRoutine();
+            } else {
+                externalCompressionRoutine(size);
             }
-            this.fileInputStream = compression.getInputStream(zipEntry);
-            SnapLoaderLogger.log(Level.INFO, getClass().getName(), "initialize(int)",
-                    "File locator initialized with hash key #" + getHashKey());
+
+            StreamObjectValidator.validateAndThrow(fileInputStream, StreamObjectValidator.BROKEN_FILE_LOCATOR_PROVIDER);
+
+            // fire the success listener if the file localization has passed!
+            if (fileLocalizingListener != null) {
+                fileLocalizingListener.onFileLocalizationSuccess(this);
+            }
         } catch (Exception e) {
             close();
-            throw new FilesystemResourceInitializationException(
-                    "Failed to initialize the file locator handler #" + getHashKey(), e);
+            // fire the failure listener when file localization fails and pass
+            // the causative exception
+            if (fileLocalizingListener != null) {
+                fileLocalizingListener.onFileLocalizationFailure(this, e);
+            }
         }
     }
 
     /**
-     * Validates the file localization process inside the compression.
+     * Commands for the classpath routines.
      *
-     * @throws FileNotFoundException if the localization of the file inside
-     *                               the specified compression has failed.
+     * @throws FilesystemResourceInitializationException if the classpath routine fails to locate the file.
      */
-    protected void validateFileLocalization(final ZipEntry zipEntry) throws FileNotFoundException {
-        if (zipEntry != null) {
-            if (fileLocalizingListener != null) {
-                fileLocalizingListener.onFileLocalizationSuccess(this);
-            }
-        } else {
-            final FileNotFoundException fileNotFoundException =
-                    new FileNotFoundException("File locator has failed to locate the file inside the compression!");
+    protected void classPathRoutine() throws FilesystemResourceInitializationException {
+        SnapLoaderLogger.log(Level.INFO, getClass().getName(), "initialize(int)",
+                "File locator initialized using classpath routine with hash key #" + getHashKey());
+        // Use the AppClassLoader, a BuiltinClassLoader to get the resources from the classpath
+        // notice that the JVM Classloaders are arranged in a tree-like structure
+        // 1) The BootStrap ClassLoader is the most ancestor
+        // 2) The Java Platform ClassLoader is the next in the tree.
+        // 3) The AppClassLoader is the last in the tree.
+        // So, each one backs up to its ancestor!
+        // However, all those classloaders are loaded by the BootStrap, so if
+        // getClassLoader() is invoked on them, it will return "null" pointer
+        // indicating the invalidity of active loaders
+        this.fileInputStream = getClass().getClassLoader().getResourceAsStream(filePath);
+    }
 
-            if (fileLocalizingListener != null) {
-                fileLocalizingListener.onFileLocalizationFailure(this, fileNotFoundException);
-            }
-            throw fileNotFoundException;
+    /**
+     * Commands for the external compression routines.
+     *
+     * @param size custom buffer size, zero for auto filesystem size
+     *             (warning: file expansion and truncation rules are applied).
+     * @throws IOException if an I/O error has occurred.
+     */
+    protected void externalCompressionRoutine(int size) throws IOException {
+        final ZipEntry zipEntry = compression.getEntry(filePath);
+        StreamObjectValidator.validateAndThrow(zipEntry, StreamObjectValidator.COMPRESSION_FILE_LOCALIZING_FAIL);
+        if (size > 0) {
+            this.fileInputStream = new BufferedInputStream(compression.getInputStream(zipEntry), size);
+        } else {
+            this.fileInputStream = compression.getInputStream(zipEntry);
         }
+
+        SnapLoaderLogger.log(Level.INFO, getClass().getName(), "initialize(int)",
+                "File locator initialized using external compression routine with hash key #" + getHashKey());
     }
 
     @Override
@@ -148,9 +194,23 @@ public class FileLocator implements InputStreamProvider {
 
     @Override
     public void close() throws IOException {
+        // this is executed in all routines
+        // it updates the CleanableResource object
+        // for the Compression Routines
         if (fileInputStream != null) {
             fileInputStream.close();
             fileInputStream = null;
+        }
+
+        // this will be bypassed in the case of using other non-compression routines to
+        // initialize the file streams (e.g., the classpath routines).
+        if (compression != null) {
+            // this closes all the streams associated with it (if they are not closed)
+            // aka.
+            // the file entries stream
+            // and the native resources for this object
+            compression.close();
+            compression = null;
         }
         SnapLoaderLogger.log(Level.INFO, getClass().getName(),
                 "close", "File locator #" + getHashKey() + " resources closed!");
@@ -159,5 +219,10 @@ public class FileLocator implements InputStreamProvider {
     @Override
     public void setFileLocalizingListener(FileLocalizingListener fileLocalizingListener) {
         this.fileLocalizingListener = fileLocalizingListener;
+    }
+
+    @Override
+    public ZipFile getCompression() {
+        return compression;
     }
 }
