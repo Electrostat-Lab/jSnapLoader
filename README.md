@@ -99,8 +99,8 @@ try {
 }
 ```
 - This way utilizes the classpath on the stock Jar archive to locate, extract and load the native binaries.
-- It first defines a library info object with a pointer to the classpath (first null argument), and a default path that will be
-used in case the platform path for the selected platform predicate is invalid, then a `basename` for the library to be operated, and finally the current working directory as an extraction path (third null argument).
+- It first defines a library info object with a pointer to the classpath (aka. wrapped null string path), and a default path that will be
+used in case the platform path for the selected platform predicate is not assigned, then a `basename` for the library to be operated, and finally the current working directory as an extraction path.
 
 2) A Superior control:
 ```java
