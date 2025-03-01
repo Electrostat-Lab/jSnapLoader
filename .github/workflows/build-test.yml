@@ -34,7 +34,7 @@ jobs:
           run: ./gradlew --console="verbose" :snaploader:build
 
         - name: Archive build
-          uses: actions/upload-artifact@v3
+          uses: actions/upload-artifact@v4
           with:
             name: snaploader-snapshot
             path: snaploader/build/libs/
@@ -84,7 +84,7 @@ jobs:
               java-version: ${{ matrix.jdk }}
           
           - name: Download snaploader-SNAPSHOT.jar library
-            uses: actions/download-artifact@v3
+            uses: actions/download-artifact@v4
             with:
               name: snaploader-snapshot
               path: snaploader/build/libs/
