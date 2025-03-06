@@ -40,7 +40,7 @@ jobs:
           run: ./gradlew --console="verbose" -Pversion=${GITHUB_REF_NAME} :snaploader:build
 
         - name: Archive build
-          uses: actions/upload-artifact@v3
+          uses: actions/upload-artifact@v4
           with:
             name: snaploader-build
             path: snaploader/build/libs
@@ -95,7 +95,7 @@ jobs:
               run: ./gradlew -Pversion=$GITHUB_REF_NAME :snaploader:generateJavadocJar
                           
             - name: Download build
-              uses: actions/download-artifact@v3
+              uses: actions/download-artifact@v4
               with:
                 name: snaploader-build
                 path: snaploader/build/libs/
