@@ -34,6 +34,7 @@ package electrostatic4j.snaploader.examples;
 
 import electrostatic4j.snaploader.LibraryInfo;
 import electrostatic4j.snaploader.NativeBinaryLoader;
+import electrostatic4j.snaploader.NativeBinaryLoadingListener;
 import electrostatic4j.snaploader.filesystem.DirectoryPath;
 import electrostatic4j.snaploader.filesystem.FileExtractionListener;
 import electrostatic4j.snaploader.filesystem.FileExtractor;
@@ -44,6 +45,7 @@ import electrostatic4j.snaploader.platform.util.NativeVariant;
 import electrostatic4j.snaploader.platform.util.PlatformPredicate;
 import electrostatic4j.snaploader.platform.util.DefaultPropertiesProvider;
 import electrostatic4j.snaploader.LoadingCriterion;
+import electrostatic4j.snaploader.util.CallingStackMetaData;
 
 /**
  * Tests basic features of the {@link NativeBinaryLoader} API.
@@ -73,10 +75,27 @@ public final class TestBrokenFeatures {
             loader = new NativeBinaryLoader(libraryInfo);
         }
         loader.registerNativeLibraries(libraries).initPlatformLibrary();
-        loader.setLoggingEnabled(true);
+        loader.setLoggingEnabled(false);
         loader.setRetryWithCleanExtraction(true);
         /* Native dynamic library properties */
         printDetails(loader);
+        loader.setNativeBinaryLoadingListener(new NativeBinaryLoadingListener() {
+            @Override
+            public void onLoadingSuccess(NativeBinaryLoader nativeBinaryLoader, CallingStackMetaData callingStackMetaData) {
+
+            }
+
+            @Override
+            public void onLoadingFailure(NativeBinaryLoader nativeBinaryLoader, CallingStackMetaData callingStackMetaData) {
+                System.err.println(callingStackMetaData.getErrorCause());
+            }
+
+            @Override
+            public void onRetryCriterionExecution(NativeBinaryLoader nativeBinaryLoader, CallingStackMetaData callingStackMetaData) {
+
+            }
+        });
+
         loader.setLibraryExtractionListener(new FileExtractionListener() {
             @Override
             public void onExtractionCompleted(FileExtractor fileExtractor) {
@@ -93,6 +112,7 @@ public final class TestBrokenFeatures {
                 System.out.println("Finalization State has been reached!");
             }
         });
+
         loader.loadLibrary(LoadingCriterion.INCREMENTAL_LOADING);
     }
 
