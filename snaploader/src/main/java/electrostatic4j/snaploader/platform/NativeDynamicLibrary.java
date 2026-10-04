@@ -146,6 +146,13 @@ public class NativeDynamicLibrary {
         }
     }
 
+    public boolean exists() {
+        if (jarPath == null || libraryFile == null || directoryPath == null) {
+            return false;
+        }
+        return new File(getExtractedLibrary()).exists();
+    }
+
     /**
      * Retrieves the absolute path for the jar compression as specified by the {@link LibraryInfo} API.
      * 

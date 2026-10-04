@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, The Electrostatic-Sandbox Distributed Simulation Framework, jSnapLoader
+ * Copyright (c) 2023-2026, The Electrostatic-Sandbox Distributed Simulation Framework, jSnapLoader
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,7 @@
 package electrostatic4j.snaploader;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.util.Arrays;
@@ -49,6 +50,7 @@ import electrostatic4j.snaploader.platform.NativeDynamicLibrary;
 import electrostatic4j.snaploader.platform.util.NativeVariant;
 import electrostatic4j.snaploader.platform.util.PropertiesControllerNamespace;
 import electrostatic4j.snaploader.platform.util.PropertiesController;
+import electrostatic4j.snaploader.throwable.LibraryNotFoundException;
 import electrostatic4j.snaploader.throwable.LoadingRetryExhaustionException;
 import electrostatic4j.snaploader.throwable.UnSupportedSystemError;
 import electrostatic4j.snaploader.util.CallingStackMetaData;
@@ -337,6 +339,9 @@ public class NativeBinaryLoader {
      */
     protected void loadBinary(NativeDynamicLibrary library, LoadingCriterion loadingCriterion) throws Exception {
         try {
+            if (!nativeDynamicLibrary.exists()) {
+                throw new LibraryNotFoundException("Library " + nativeDynamicLibrary.getExtractedLibrary() + " not found!");
+            }
             System.load(library.getExtractedLibrary());
             SnapLoaderLogger.log(Level.INFO, getClass().getName(), "loadBinary", "Successfully loaded library: "
                     + library.getExtractedLibrary());
@@ -344,7 +349,7 @@ public class NativeBinaryLoader {
                 nativeBinaryLoadingListener.onLoadingSuccess(this,
                         new CallingStackMetaData(Thread.currentThread().getStackTrace()[1], loadingCriterion));
             }
-        } catch (final UnsatisfiedLinkError error) {
+        } catch (final UnsatisfiedLinkError | FileNotFoundException error) {
             SnapLoaderLogger.log(Level.SEVERE, getClass().getName(), "loadBinary", "Cannot load the dynamic library: "
                     + library.getExtractedLibrary(), error);
             if (nativeBinaryLoadingListener != null) {
