@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, The Electrostatic-Sandbox Distributed Simulation Framework, jSnapLoader
+ * Copyright (c) 2023-2026, The Electrostatic-Sandbox Distributed Simulation Framework, jSnapLoader
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -73,7 +73,7 @@ public final class TestBrokenFeatures {
             loader = new NativeBinaryLoader(libraryInfo);
         }
         loader.registerNativeLibraries(libraries).initPlatformLibrary();
-        loader.setLoggingEnabled(false);
+        loader.setLoggingEnabled(true);
         loader.setRetryWithCleanExtraction(true);
         /* Native dynamic library properties */
         printDetails(loader);
