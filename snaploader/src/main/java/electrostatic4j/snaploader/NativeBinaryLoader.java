@@ -183,12 +183,13 @@ public class NativeBinaryLoader {
             throw new IllegalArgumentException("Native library data structures cannot be null!");
         }
         // commands and loads the library from the system directories
-        if (NativeVariant.Os.isAndroid() || criterion == LoadingCriterion.SYSTEM_LOAD) {
+        if (NativeVariant.Os.isAndroid() ||
+                criterion == LoadingCriterion.SYSTEM_LOAD) {
             loadSystemBinary(nativeDynamicLibrary);
             loadingCriterion = LoadingCriterion.SYSTEM_LOAD;
             return this;
         }
-        if (criterion == LoadingCriterion.INCREMENTAL_LOADING && nativeDynamicLibrary.isExtracted()) {
+        if (criterion == LoadingCriterion.INCREMENTAL_LOADING) {
             loadBinary(nativeDynamicLibrary, criterion);
             loadingCriterion = LoadingCriterion.INCREMENTAL_LOADING;
             return this;
