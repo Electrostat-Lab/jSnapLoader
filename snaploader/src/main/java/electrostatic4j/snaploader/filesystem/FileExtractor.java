@@ -66,6 +66,8 @@ public class FileExtractor implements OutputStreamProvider {
      */
     protected String destination;
 
+    protected File extractableFile;
+
     private static final int EOF = -1; /* End-of-filesystem */
 
     /**
@@ -103,6 +105,7 @@ public class FileExtractor implements OutputStreamProvider {
                 return;
             }
             this.fileOutputStream = new FileOutputStream(destination);
+            extractableFile = new File(destination);
             SnapLoaderLogger.log(Level.INFO, getClass().getName(), "initialize(int)",
                     "File extractor initialized with hash key #" + getHashKey());
         } catch (Exception e) {
@@ -149,6 +152,14 @@ public class FileExtractor implements OutputStreamProvider {
                 fileExtractionListener.onExtractionCompleted(this);
             }
         } catch (Exception e) {
+            // ensure deleting the blank created files
+            // by the Java Legacy FileOutputStream upon failure!
+
+            // blank created files; create an opaque behavior
+            // that triggers an UnSatisfiedLinkError: file is too short
+            // as a result of trying to load corrupted files
+            // on the next runtime...
+            delete();
             if (fileExtractionListener != null) {
                 fileExtractionListener.onExtractionFailure(this, e);
             }
@@ -158,6 +169,20 @@ public class FileExtractor implements OutputStreamProvider {
                 fileExtractionListener.onExtractionFinalization(this, fileLocator);
             }
         }
+    }
+
+    /**
+     * Deletes the associated file created by the Legacy
+     * Java OutputStream {@link FileExtractor#getFileOutputStream()}.
+     *
+     * @return true if the file has been deleted, false otherwise if the
+     * file is not defined or doesn't exist.
+     */
+    protected boolean delete() {
+        if (extractableFile == null || !extractableFile.exists()) {
+            return false;
+        }
+        return extractableFile.delete();
     }
 
     @Override
