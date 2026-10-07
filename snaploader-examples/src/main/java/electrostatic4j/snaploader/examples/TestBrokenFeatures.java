@@ -38,6 +38,7 @@ import electrostatic4j.snaploader.NativeBinaryLoadingListener;
 import electrostatic4j.snaploader.filesystem.DirectoryPath;
 import electrostatic4j.snaploader.filesystem.FileExtractionListener;
 import electrostatic4j.snaploader.filesystem.FileExtractor;
+import electrostatic4j.snaploader.filesystem.FileLocalizingListener;
 import electrostatic4j.snaploader.filesystem.FileLocator;
 import electrostatic4j.snaploader.platform.util.DefaultDynamicLibraries;
 import electrostatic4j.snaploader.platform.NativeDynamicLibrary;
@@ -45,6 +46,10 @@ import electrostatic4j.snaploader.platform.util.NativeVariant;
 import electrostatic4j.snaploader.platform.util.PlatformPredicate;
 import electrostatic4j.snaploader.platform.util.DefaultPropertiesProvider;
 import electrostatic4j.snaploader.LoadingCriterion;
+import electrostatic4j.snaploader.throwable.FileExtractionProcessingException;
+import electrostatic4j.snaploader.throwable.FilesystemResourceInitializationException;
+import electrostatic4j.snaploader.throwable.FilesystemResourceScavengingException;
+import electrostatic4j.snaploader.throwable.LoadingRetryExhaustionException;
 import electrostatic4j.snaploader.util.CallingStackMetaData;
 
 /**
@@ -70,12 +75,12 @@ public final class TestBrokenFeatures {
             DefaultDynamicLibraries.MAC_X86_64,
     };
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws FilesystemResourceScavengingException, LoadingRetryExhaustionException, FilesystemResourceInitializationException, FileExtractionProcessingException {
         if (loader == null) {
             loader = new NativeBinaryLoader(libraryInfo);
         }
         loader.registerNativeLibraries(libraries).initPlatformLibrary();
-        loader.setLoggingEnabled(false);
+        loader.setLoggingEnabled(true);
         loader.setRetryWithCleanExtraction(true);
         /* Native dynamic library properties */
         printDetails(loader);
@@ -100,11 +105,6 @@ public final class TestBrokenFeatures {
             @Override
             public void onExtractionCompleted(FileExtractor fileExtractor) {
                 System.out.println("Extracted Successfully!");
-            }
-
-            @Override
-            public void onExtractionFailure(FileExtractor fileExtractor, Throwable throwable) {
-                System.err.println(throwable.toString());
             }
 
             @Override

@@ -63,11 +63,6 @@ public class TestFilesystemMemoryLeak {
             }
 
             @Override
-            public void onExtractionFailure(FileExtractor fileExtractor, Throwable throwable) {
-
-            }
-
-            @Override
             public void onExtractionFinalization(FileExtractor fileExtractor, FileLocator fileLocator) {
                 Logger.getLogger(TestZipExtractor.class.getName())
                         .log(Level.INFO, "Resources Leak!");

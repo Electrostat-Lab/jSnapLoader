@@ -309,10 +309,6 @@ public class NativeDllLoader implements NativeBinaryLoadingListener, FileLocaliz
     public void onFileLocalizationSuccess(FileLocator locator) {
     }
 
-    @Override
-    public void onFileLocalizationFailure(FileLocator locator, Throwable throwable) {
-    }
-
     /**
      * Sets base feature libraries group strong reference. This command
      * will only take effect before dispatching the loading
