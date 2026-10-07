@@ -33,7 +33,6 @@
 package electrostatic4j.snaploader;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.util.Arrays;
@@ -45,11 +44,13 @@ import electrostatic4j.snaploader.filesystem.FileExtractor;
 import electrostatic4j.snaploader.filesystem.FileLocalizingListener;
 import electrostatic4j.snaploader.filesystem.FileLocator;
 import electrostatic4j.snaploader.library.LibraryExtractor;
-import electrostatic4j.snaploader.library.LibraryLocator;
 import electrostatic4j.snaploader.platform.NativeDynamicLibrary;
 import electrostatic4j.snaploader.platform.util.NativeVariant;
 import electrostatic4j.snaploader.platform.util.PropertiesControllerNamespace;
 import electrostatic4j.snaploader.platform.util.PropertiesController;
+import electrostatic4j.snaploader.throwable.FileExtractionProcessingException;
+import electrostatic4j.snaploader.throwable.FilesystemResourceInitializationException;
+import electrostatic4j.snaploader.throwable.FilesystemResourceScavengingException;
 import electrostatic4j.snaploader.throwable.LibraryNotFoundException;
 import electrostatic4j.snaploader.throwable.LoadingRetryExhaustionException;
 import electrostatic4j.snaploader.throwable.UnSupportedSystemError;
@@ -180,7 +181,7 @@ public class NativeBinaryLoader {
      * @return this instance for chained invocations
      * @throws IOException if the library to extract is not present in the jar filesystem
      */
-    public NativeBinaryLoader loadLibrary(LoadingCriterion criterion) throws Exception {
+    public NativeBinaryLoader loadLibrary(LoadingCriterion criterion) throws FilesystemResourceScavengingException, LoadingRetryExhaustionException, FilesystemResourceInitializationException, FileExtractionProcessingException {
         if (nativeDynamicLibrary == null || libraryInfo == null) {
             throw new IllegalArgumentException("Native library data structures cannot be null!");
         }
@@ -333,11 +334,11 @@ public class NativeBinaryLoader {
      *
      * @param library the platform-specific library to load
      * @param loadingCriterion pass the loading criterion condition to the calling stack metadata structure
-     * @throws IOException                     in case the binary to be extracted is not found on the specified jar
+     * @throws FilesystemResourceInitializationException in case the binary to be extracted is not found on the specified jar
      * @throws LoadingRetryExhaustionException if the number of loading failure exceeds the specified
      *                                         number.
      */
-    protected void loadBinary(NativeDynamicLibrary library, LoadingCriterion loadingCriterion) throws Exception {
+    protected void loadBinary(NativeDynamicLibrary library, LoadingCriterion loadingCriterion) throws FilesystemResourceInitializationException, FilesystemResourceScavengingException, LoadingRetryExhaustionException, FileExtractionProcessingException {
         try {
             if (!nativeDynamicLibrary.exists()) {
                 throw new LibraryNotFoundException("Library " + nativeDynamicLibrary.getExtractedLibrary() + " not found!");
@@ -349,7 +350,7 @@ public class NativeBinaryLoader {
                 nativeBinaryLoadingListener.onLoadingSuccess(this,
                         new CallingStackMetaData(Thread.currentThread().getStackTrace()[1], loadingCriterion));
             }
-        } catch (final UnsatisfiedLinkError | FileNotFoundException error) {
+        } catch (Throwable error) {
             SnapLoaderLogger.log(Level.SEVERE, getClass().getName(), "loadBinary", "Cannot load the dynamic library: "
                     + library.getExtractedLibrary(), error);
             if (nativeBinaryLoadingListener != null) {
@@ -378,10 +379,10 @@ public class NativeBinaryLoader {
      * Cleanly extracts and loads the native binary to the current [user.dir].
      *
      * @param library the platform-specific library to extract and load
-     * @throws IOException in case the binary to be extracted is not found on the specified jar, or an
+     * @throws FilesystemResourceInitializationException in case the binary to be extracted is not found on the specified jar, or an
      *                     interrupted I/O operation has occurred
      */
-    protected void cleanExtractBinary(NativeDynamicLibrary library) throws Exception {
+    protected void cleanExtractBinary(NativeDynamicLibrary library) throws FilesystemResourceInitializationException, FilesystemResourceScavengingException, FileExtractionProcessingException {
         libraryExtractor = initializeLibraryExtractor(library);
         SnapLoaderLogger.log(Level.INFO, getClass().getName(), "cleanExtractBinary",
                 "File extractor handler initialized!");
@@ -410,17 +411,6 @@ public class NativeBinaryLoader {
             }
 
             @Override
-            public void onExtractionFailure(FileExtractor fileExtractor, Throwable throwable) {
-                SnapLoaderLogger.log(Level.SEVERE, getClass().getName(),
-                        "cleanExtractBinary", "Extraction has failed!", throwable);
-
-                // bind the extraction lifecycle to the user application
-                if (libraryExtractionListener != null) {
-                    libraryExtractionListener.onExtractionFailure(fileExtractor, throwable);
-                }
-            }
-
-            @Override
             public void onExtractionFinalization(FileExtractor fileExtractor, FileLocator fileLocator) {
                 try {
                     if (fileExtractor != null &&
@@ -438,6 +428,7 @@ public class NativeBinaryLoader {
                 }
             }
         });
+
         libraryExtractor.extract();
     }
 
@@ -447,61 +438,23 @@ public class NativeBinaryLoader {
      *
      * @param library the native dynamic library to load
      * @return a new FileExtractor object that represents an output stream provider
-     * @throws IOException if the jar filesystem to be located is not found, or if the extraction destination is not found
+     * @throws FilesystemResourceInitializationException if the jar filesystem to be located is not found, or if the extraction destination is not found
      */
-    protected FileExtractor initializeLibraryExtractor(NativeDynamicLibrary library) throws Exception {
-        FileExtractor extractor;
-        if (library.getJarPath() != null) {
-            // use an extractor with the external jar routine
-            extractor = new LibraryExtractor(new JarFile(library.getJarPath()), library.getCompressedLibrary(), library.getExtractedLibrary());
-        } else {
-            // use an extractor with the classpath routine
-            extractor = new LibraryExtractor(library.getCompressedLibrary(), library.getExtractedLibrary());
-        }
-        extractor.initialize(0);
-        final LibraryLocator fileLocator = preInitLibraryLocator(extractor);
-        fileLocator.initialize(0);
-        return extractor;
-    }
-
-    protected LibraryLocator preInitLibraryLocator(FileExtractor extractor) {
-        extractor.getFileLocator().setFileLocalizingListener(new FileLocalizingListener() {
-            @Override
-            public void onFileLocalizationSuccess(FileLocator locator) {
-                SnapLoaderLogger.log(Level.INFO, getClass().getName(), "preInitLibraryLocator",
-                        "Locating native libraries has succeeded!");
-
-                // bind the library locator lifecycle to the user application
-                if (libraryLocalizingListener != null) {
-                    libraryLocalizingListener.onFileLocalizationSuccess(locator);
-                }
-            }
-
-            @Override
-            public void onFileLocalizationFailure(FileLocator locator, Throwable throwable) {
-                SnapLoaderLogger.log(Level.SEVERE, getClass().getName(), "preInitLibraryLocator",
-                        "Locating native libraries has failed!", throwable);
+    protected FileExtractor initializeLibraryExtractor(NativeDynamicLibrary library) throws FilesystemResourceInitializationException, FilesystemResourceScavengingException {
+            FileExtractor extractor;
+            if (library.getJarPath() != null) {
                 try {
-                    extractor.close();
-                } catch (Exception e) {
-                    SnapLoaderLogger.log(Level.SEVERE, getClass().getName(),
-                            "initializeLibraryExtractor", "File locator closure failed!", e);
+                    // use an extractor with the external jar routine
+                extractor = new LibraryExtractor(new JarFile(library.getJarPath()), library.getCompressedLibrary(), library.getExtractedLibrary());
+                } catch (IOException e) {
+                    throw new FilesystemResourceInitializationException("Error while initializing the file extractor!", e);
                 }
-
-                // bind the library locator lifecycle to the user application
-                if (libraryLocalizingListener != null) {
-                    libraryLocalizingListener.onFileLocalizationFailure(locator, throwable);
-                }
-
-                // make use of the loader listeners
-                if (nativeBinaryLoadingListener != null) {
-                    // a file locator and extractor loader is always a CLEAN_EXTRACTION regarding
-                    // the loading criterion
-                    nativeBinaryLoadingListener.onLoadingFailure(NativeBinaryLoader.this,
-                            new CallingStackMetaData(Thread.currentThread().getStackTrace()[1], LoadingCriterion.CLEAN_EXTRACTION, throwable));
-                }
+            } else {
+                // use an extractor with the classpath routine
+                extractor = new LibraryExtractor(library.getCompressedLibrary(), library.getExtractedLibrary());
             }
-        });
-        return (LibraryLocator) extractor.getFileLocator();
+            extractor.initialize(0);
+
+        return extractor;
     }
 }

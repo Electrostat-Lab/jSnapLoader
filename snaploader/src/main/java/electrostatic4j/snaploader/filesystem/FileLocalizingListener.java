@@ -48,14 +48,4 @@ public interface FileLocalizingListener {
      * @param locator the associated file locator object.
      */
     void onFileLocalizationSuccess(FileLocator locator);
-
-    /**
-     * Dispatched whenever the file input stream is invalid, hence the specified
-     * file cannot be localized for the extraction process.
-     *
-     * @param locator the associated file locator object.
-     * @param throwable the throwable object, typically indicating a failure
-     *                  to locate the file inside the compression.
-     */
-    void onFileLocalizationFailure(FileLocator locator, Throwable throwable);
 }
