@@ -33,6 +33,7 @@
 package electrostatic4j.snaploader.filesystem;
 
 import electrostatic4j.snaploader.throwable.FilesystemResourceInitializationException;
+import electrostatic4j.snaploader.throwable.FilesystemResourceScavengingException;
 import electrostatic4j.snaploader.util.SnapLoaderLogger;
 import electrostatic4j.snaploader.util.StreamObjectValidator;
 
@@ -111,10 +112,10 @@ public class FileLocator implements ZipStreamProvider {
      *
      * @param size the size of the buffered IO in bytes or zero
      *             for auto filesystem size
-     * @throws IOException if an I/O error has occurred.
      */
     @Override
-    public void initialize(int size) throws IOException {
+    public void initialize(int size) throws FilesystemResourceInitializationException,
+                                            FilesystemResourceScavengingException {
         // 1) sanity-check for double initializing
         if (this.fileInputStream != null) {
             SnapLoaderLogger.log(Level.INFO, getClass().getName(), "initialize(int)",
@@ -138,21 +139,22 @@ public class FileLocator implements ZipStreamProvider {
                 fileLocalizingListener.onFileLocalizationSuccess(this);
             }
         } catch (Exception e) {
-            close();
+            try {
+                close();
+            } catch (IOException ex) {
+                throw new FilesystemResourceScavengingException("File locator resources closure failed!", ex);
+            }
             // fire the failure listener when file localization fails and pass
             // the causative exception
-            if (fileLocalizingListener != null) {
-                fileLocalizingListener.onFileLocalizationFailure(this, e);
-            }
+            throw new FilesystemResourceInitializationException("File locator initialization failed!", e);
         }
     }
 
     /**
      * Commands for the classpath routines.
      *
-     * @throws FilesystemResourceInitializationException if the classpath routine fails to locate the file.
      */
-    protected void classPathRoutine() throws FilesystemResourceInitializationException {
+    protected void classPathRoutine() {
         SnapLoaderLogger.log(Level.INFO, getClass().getName(), "initialize(int)",
                 "File locator initialized using classpath routine with hash key #" + getHashKey());
         // Use the AppClassLoader, a BuiltinClassLoader to get the resources from the classpath
@@ -174,7 +176,7 @@ public class FileLocator implements ZipStreamProvider {
      *             (warning: file expansion and truncation rules are applied).
      * @throws IOException if an I/O error has occurred.
      */
-    protected void externalCompressionRoutine(int size) throws IOException {
+    protected void externalCompressionRoutine(int size) throws IOException, FilesystemResourceInitializationException {
         final ZipEntry zipEntry = compression.getEntry(filePath);
         StreamObjectValidator.validateAndThrow(zipEntry, StreamObjectValidator.COMPRESSION_FILE_LOCALIZING_FAIL);
         if (size > 0) {
