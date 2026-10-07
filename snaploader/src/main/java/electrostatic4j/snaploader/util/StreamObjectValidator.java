@@ -48,14 +48,14 @@ public final class StreamObjectValidator {
     private StreamObjectValidator() {
     }
 
-    public static void validateAndThrow(final StreamProvider object, final String message, final Throwable cause) {
+    public static void validateAndThrow(final StreamProvider object, final String message, final Throwable cause) throws FilesystemResourceInitializationException {
         if (object != null) {
             return;
         }
         throw new FilesystemResourceInitializationException(message, cause);
     }
 
-    public static void validateAndThrow(final Object object, final String message) {
+    public static void validateAndThrow(final Object object, final String message) throws FilesystemResourceInitializationException {
         if (object != null) {
             return;
         }
