@@ -179,7 +179,6 @@ public class NativeBinaryLoader {
      * @param criterion the initial loading criterion, either {@link LoadingCriterion#INCREMENTAL_LOADING}, {@link LoadingCriterion#CLEAN_EXTRACTION}
      *                  or {@link LoadingCriterion#SYSTEM_LOAD} for loading native dlls from system directories.
      * @return this instance for chained invocations
-     * @throws IOException if the library to extract is not present in the jar filesystem
      */
     public NativeBinaryLoader loadLibrary(LoadingCriterion criterion) throws FilesystemResourceScavengingException, LoadingRetryExhaustionException, FilesystemResourceInitializationException, FileExtractionProcessingException {
         if (nativeDynamicLibrary == null || libraryInfo == null) {

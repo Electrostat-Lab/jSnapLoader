@@ -134,9 +134,6 @@ public class FileExtractor implements OutputStreamProvider {
      * attained either through the extraction completed and failure listeners, or through a try-with
      * resources.
      *
-     * @throws IOException if the input/output streams has failed or an interrupted I/O operation has occurred.
-     * @throws FileNotFoundException if the file locator has failed to locate the file inside the compression
-     *                               for the extraction process.
      */
     public void extract() throws FileExtractionProcessingException, FilesystemResourceScavengingException {
         try {
