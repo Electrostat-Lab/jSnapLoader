@@ -32,6 +32,8 @@
 
 package electrostatic4j.snaploader.examples;
 
+import java.io.PrintWriter;
+
 import electrostatic4j.snaploader.LibraryInfo;
 import electrostatic4j.snaploader.NativeBinaryLoader;
 import electrostatic4j.snaploader.NativeBinaryLoadingListener;
@@ -113,7 +115,11 @@ public final class TestBrokenFeatures {
             }
         });
 
-        loader.loadLibrary(LoadingCriterion.INCREMENTAL_LOADING);
+        try {
+            loader.loadLibrary(LoadingCriterion.INCREMENTAL_LOADING);
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
     }
 
     protected static void printDetails(NativeBinaryLoader loader) {
