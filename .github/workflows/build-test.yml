@@ -104,5 +104,9 @@ jobs:
           - name: Run TestCpuFeatures
             run: ./gradlew :snaploader-examples:TestCpuFeatures :snaploader-examples:run
 
+          - name: Run TestBrokenFeatures
+            run: ./gradlew :snaploader-examples:ReflectiveLauncher :snaploader-examples:run --args="electrostatic4j.snaploader.examples.TestBrokenFeatures"
+
           - name: List extracted files
             run: ls ./snaploader-examples/libs/
+

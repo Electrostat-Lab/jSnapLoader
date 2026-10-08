@@ -32,10 +32,11 @@
 
 package electrostatic4j.snaploader.filesystem;
 
+import electrostatic4j.snaploader.throwable.FileExtractionProcessingException;
 import electrostatic4j.snaploader.throwable.FilesystemResourceInitializationException;
+import electrostatic4j.snaploader.throwable.FilesystemResourceScavengingException;
 import electrostatic4j.snaploader.util.SnapLoaderLogger;
 import electrostatic4j.snaploader.util.StreamObjectValidator;
-
 import java.io.*;
 import java.util.logging.Level;
 
@@ -66,6 +67,8 @@ public class FileExtractor implements OutputStreamProvider {
      */
     protected String destination;
 
+    protected File extractableFile;
+
     private static final int EOF = -1; /* End-of-filesystem */
 
     /**
@@ -86,7 +89,11 @@ public class FileExtractor implements OutputStreamProvider {
     }
 
     @Override
-    public void initialize(int size) throws Exception {
+    public void initialize(int size) throws FilesystemResourceInitializationException,
+                                            FilesystemResourceScavengingException {
+        if (fileLocator == null) {
+            throw new IllegalArgumentException("File locator cannot be null!");
+        }
         // 1) sanity-check for double initializing
         // 2) sanity-check for pre-initialization using other routines
         if (this.fileOutputStream != null) {
@@ -95,6 +102,7 @@ public class FileExtractor implements OutputStreamProvider {
             return;
         }
         try {
+            fileLocator.initialize(size);
             if (size > 0) {
                 this.fileOutputStream = new BufferedOutputStream(
                         new FileOutputStream(destination), size);
@@ -103,10 +111,16 @@ public class FileExtractor implements OutputStreamProvider {
                 return;
             }
             this.fileOutputStream = new FileOutputStream(destination);
+            extractableFile = new File(destination);
             SnapLoaderLogger.log(Level.INFO, getClass().getName(), "initialize(int)",
                     "File extractor initialized with hash key #" + getHashKey());
         } catch (Exception e) {
-            close();
+            try {
+                close();
+            } catch (Exception cause) {
+               throw new FilesystemResourceScavengingException(
+                       "Failed to close the file extractor handler #" + getHashKey(), e);
+            }
             throw new FilesystemResourceInitializationException(
                     "Failed to initialize the file extractor handler #" + getHashKey(), e);
         }
@@ -120,11 +134,8 @@ public class FileExtractor implements OutputStreamProvider {
      * attained either through the extraction completed and failure listeners, or through a try-with
      * resources.
      *
-     * @throws IOException if the input/output streams has failed or an interrupted I/O operation has occurred.
-     * @throws FileNotFoundException if the file locator has failed to locate the file inside the compression
-     *                               for the extraction process.
      */
-    public void extract() throws IOException, FileNotFoundException {
+    public void extract() throws FileExtractionProcessingException, FilesystemResourceScavengingException {
         try {
             /* uses buffered streams */
             /* buffered byte streams provide a constant memory allocation
@@ -149,15 +160,40 @@ public class FileExtractor implements OutputStreamProvider {
                 fileExtractionListener.onExtractionCompleted(this);
             }
         } catch (Exception e) {
-            if (fileExtractionListener != null) {
-                fileExtractionListener.onExtractionFailure(this, e);
+            // ensure deleting the blank created files
+            // by the Java Legacy FileOutputStream upon failure!
+
+            // blank created files; create an opaque behavior
+            // that triggers an UnSatisfiedLinkError: file is too short
+            // as a result of trying to load corrupted files
+            // on the next runtime...
+            delete();
+            try {
+                close();
+            } catch (Exception ex) {
+                throw new FilesystemResourceScavengingException();
             }
+            throw new FileExtractionProcessingException("", e);
         // release the native resources anyway!
         } finally {
             if (fileExtractionListener != null) {
                 fileExtractionListener.onExtractionFinalization(this, fileLocator);
             }
         }
+    }
+
+    /**
+     * Deletes the associated file created by the Legacy
+     * Java OutputStream {@link FileExtractor#getFileOutputStream()}.
+     *
+     * @return true if the file has been deleted, false otherwise if the
+     * file is not defined or doesn't exist.
+     */
+    public boolean delete() {
+        if (extractableFile == null || !extractableFile.exists()) {
+            return false;
+        }
+        return extractableFile.delete();
     }
 
     @Override

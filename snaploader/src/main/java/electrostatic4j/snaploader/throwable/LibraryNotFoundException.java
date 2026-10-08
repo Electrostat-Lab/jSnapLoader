@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, The Electrostatic-Sandbox Distributed Simulation Framework, jSnapLoader
+ * Copyright (c) 2023-2026, The Electrostatic-Sandbox Distributed Simulation Framework, jSnapLoader
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,22 +30,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package electrostatic4j.snaploader.filesystem;
+package electrostatic4j.snaploader.throwable;
+
+import java.io.FileNotFoundException;
 
 /**
- * Provides executable functions by the file locator API
- * to enable the binding of user applications with the file locator interface.
+ * A business exception that is thrown to indicate that a library, that is
+ * tried to be loaded, doesn't exist.
  *
  * @author pavl_g
- * @see FileExtractor#extract()
  */
-public interface FileLocalizingListener {
-
-    /**
-     * Dispatched whenever the file input stream is valid, hence the specified
-     * file can be localized.
-     *
-     * @param locator the associated file locator object.
-     */
-    void onFileLocalizationSuccess(FileLocator locator);
+public class LibraryNotFoundException extends FileNotFoundException {
+    public LibraryNotFoundException(String message) {
+        super(message);
+    }
 }

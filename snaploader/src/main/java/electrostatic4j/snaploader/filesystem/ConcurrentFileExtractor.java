@@ -35,6 +35,9 @@ package electrostatic4j.snaploader.filesystem;
 import java.io.IOException;
 import java.util.concurrent.locks.ReentrantLock;
 
+import electrostatic4j.snaploader.throwable.FileExtractionProcessingException;
+import electrostatic4j.snaploader.throwable.FilesystemResourceScavengingException;
+
 /**
  * A thread-safe implementation of the filesystem extractor API.
  * 
@@ -65,7 +68,7 @@ public class ConcurrentFileExtractor extends FileExtractor {
     }
 
     @Override
-    public void extract() throws IOException {
+    public void extract() throws FileExtractionProcessingException, FilesystemResourceScavengingException {
         try {
             /* CRITICAL SECTION STARTS */
             lock.lock();

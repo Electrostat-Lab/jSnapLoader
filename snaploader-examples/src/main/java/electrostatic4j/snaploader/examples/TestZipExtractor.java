@@ -62,11 +62,6 @@ public class TestZipExtractor {
             }
 
             @Override
-            public void onExtractionFailure(FileExtractor fileExtractor, Throwable throwable) {
-
-            }
-
-            @Override
             public void onExtractionFinalization(FileExtractor fileExtractor, FileLocator fileLocator) {
                 try {
                     fileExtractor.close();

@@ -35,6 +35,10 @@ package electrostatic4j.snaploader;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 import electrostatic4j.snaploader.platform.NativeDynamicLibrary;
+import electrostatic4j.snaploader.throwable.FileExtractionProcessingException;
+import electrostatic4j.snaploader.throwable.FilesystemResourceInitializationException;
+import electrostatic4j.snaploader.throwable.FilesystemResourceScavengingException;
+import electrostatic4j.snaploader.throwable.LoadingRetryExhaustionException;
 import electrostatic4j.snaploader.throwable.UnSupportedSystemError;
 
 /**
@@ -71,7 +75,7 @@ public class ConcurrentNativeBinaryLoader extends NativeBinaryLoader {
     }
 
     @Override
-    public NativeBinaryLoader loadLibrary(LoadingCriterion criterion) throws Exception {
+    public NativeBinaryLoader loadLibrary(LoadingCriterion criterion) throws FilesystemResourceScavengingException, LoadingRetryExhaustionException, FilesystemResourceInitializationException, FileExtractionProcessingException {
         try {
             /* CRITICAL SECTION STARTS */
             lock.lock();
@@ -83,7 +87,7 @@ public class ConcurrentNativeBinaryLoader extends NativeBinaryLoader {
     }
 
     @Override
-    protected void cleanExtractBinary(NativeDynamicLibrary library) throws Exception {
+    protected void cleanExtractBinary(NativeDynamicLibrary library) throws FilesystemResourceScavengingException, FileExtractionProcessingException, FilesystemResourceInitializationException {
         try {
             /* CRITICAL SECTION STARTS */
             lock.lock();

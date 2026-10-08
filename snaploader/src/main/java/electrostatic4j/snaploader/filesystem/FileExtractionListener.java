@@ -56,15 +56,6 @@ public interface FileExtractionListener {
     void onExtractionCompleted(FileExtractor fileExtractor);
 
     /**
-     * Dispatched when the extraction process has failed with a throwable
-     * component.
-     *
-     * @param fileExtractor the extractor in-command.
-     * @param throwable the throwable captured from the FileExtractor API.
-     */
-    void onExtractionFailure(FileExtractor fileExtractor, Throwable throwable);
-
-    /**
      * Dispatched when the extraction process is finalized, at this point, manually
      * freeing active resources should be attained.
      *

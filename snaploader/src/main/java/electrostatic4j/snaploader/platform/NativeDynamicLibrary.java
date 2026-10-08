@@ -39,6 +39,7 @@ import electrostatic4j.snaploader.filesystem.DirectoryPath;
 import electrostatic4j.snaploader.platform.util.NativeVariant;
 import electrostatic4j.snaploader.platform.util.PlatformPredicate;
 import electrostatic4j.snaploader.platform.util.DefaultPropertiesProvider;
+import electrostatic4j.snaploader.throwable.LibraryInitException;
 
 /**
  * Represents a filesystem to a platform-specific binary inside
@@ -144,6 +145,13 @@ public class NativeDynamicLibrary {
         if (platformDirectory == null) {
             platformDirectory = libraryInfo.getDirectory().getPath();
         }
+    }
+
+    public boolean exists() throws LibraryInitException {
+        if (libraryFile == null) {
+            throw new LibraryInitException("Library file name cannot be null!");
+        }
+        return new File(getExtractedLibrary()).exists();
     }
 
     /**
