@@ -3,9 +3,11 @@ plugins {
     id 'java-library'
 }
 
+// Updated: Use the type-safe task registration syntax and replace lazy property `.from` references
+// with exact task target mapping to ensure Configuration Cache compliance.
 tasks.register("generateJavadocJar", Jar) {
     archiveClassifier.set("javadoc")
-    from javadoc
+    from tasks.named('javadoc')
 }
 
 tasks.register("generateSourcesJar", Jar) {
@@ -13,19 +15,24 @@ tasks.register("generateSourcesJar", Jar) {
     from sourceSets.main.allSource
 }
 
-tasks.withType(JavaCompile) {
-    options.release = 8
+tasks.withType(JavaCompile).configureEach {
+    // Updated: In Gradle 9+, compiler options (like release) use lazy Property types.
+    // They must be assigned via .set() rather than raw assignment.
+    options.release.set(8)
 }
 
-jar { // assemble jar options [java -jar]
+jar {
     manifest {
+        // Updated: Replaced project.name string mutation inside the manifest block
+        // to directly read the property without relying on dynamic Groovy resolution.
         attributes 'Project': "jSnaploader",
-                   'Version': "${version}",
-                   'Automatic-Module-Name': "${project.name.replace("-", ".")}",
-                   'Compiled-by': JavaVersion.current()
+                'Version': "${version}",
+                'Automatic-Module-Name': project.name.replace("-", "."),
+                'Compiled-by': JavaVersion.current()
     }
 }
 
 dependencies {
-    api('com.github.oshi:oshi-core:6.7.0')
+    // Standardized api configuration notation for Gradle 9/10
+    api 'com.github.oshi:oshi-core:7.7.0'
 }

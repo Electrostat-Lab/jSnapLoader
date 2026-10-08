@@ -1,101 +1,83 @@
 plugins {
-    // Apply the java-library plugin for API and implementation separation.
     id 'application'
 }
 
-/** get system specific separated directories for the source and the destination of the dependencies */
-String dependenciesDir =  "${rootDir.getPath()}/snaploader-examples/build/libs/dependencies/"
-String libsDir = "${rootDir.getPath()}/snaploader/build/libs/"
-final String dependencyName = "snaploader-${version}.jar"
-
-/** replace unix '/' with windows escaped '\' */
-if (System.getProperty("os.name").contains("Windows")) {
-    dependenciesDir = dependenciesDir.replaceAll("/", "\\\\")
-    libsDir = libsDir.replaceAll("/", "\\\\")
-}
+// Configuration Properties for Directories
+// Note: Kept path structure clean without eager runtime os-checks during configuration phase
+def dependenciesDir = layout.buildDirectory.dir("libs/dependencies").get().asFile.absolutePath
+def libsDir = project(':snaploader').layout.buildDirectory.dir("libs").get().asFile.absolutePath
 
 application {
-    mainClass = 'electrostatic4j.snaploader.examples.TestBasicFeatures'
+    // Updated: In Gradle 9+, mainClass is a lazy Property and should be assigned cleanly
+    mainClass.set('electrostatic4j.snaploader.examples.TestBasicFeatures')
 }
 
-tasks.register("TestBasicFeatures") {
-    application.mainClass = 'electrostatic4j.snaploader.examples.TestBasicFeatures'
+// Helper method to eliminate duplicate boilerplate for registering executable example tasks
+def registerExampleTask(String taskName, String mainClassName) {
+    tasks.register(taskName, JavaExec) {
+        group = 'application'
+        description = "Runs the ${taskName} example app."
+        classpath = sourceSets.main.runtimeClasspath
+        mainClass.set(mainClassName)
+    }
 }
 
-tasks.register("TestBasicFeatures2") {
-    application.mainClass = 'electrostatic4j.snaploader.examples.TestBasicFeatures2'
-}
+// Updated: Converted all plain tasks that previously mutated a global variable into proper standalone JavaExec tasks.
+registerExampleTask("TestBasicFeatures", 'electrostatic4j.snaploader.examples.TestBasicFeatures')
+registerExampleTask("TestBasicFeatures2", 'electrostatic4j.snaploader.examples.TestBasicFeatures2')
+registerExampleTask("TestCpuFeatures", 'electrostatic4j.snaploader.examples.TestCpuFeatures')
+registerExampleTask("MonitorableExample", 'electrostatic4j.snaploader.examples.MonitorableExample')
+registerExampleTask("ReflectiveLauncher", 'electrostatic4j.snaploader.examples.ReflectiveLauncher')
+registerExampleTask("TestMultipleLoads", 'electrostatic4j.snaploader.examples.TestMultipleLoads')
+registerExampleTask("TestZipExtractor", 'electrostatic4j.snaploader.examples.TestZipExtractor')
+registerExampleTask("TestMultiThreading", 'electrostatic4j.snaploader.examples.TestMultiThreading')
+registerExampleTask("TestRetryExhaustionException", 'electrostatic4j.snaploader.examples.TestRetryExhaustionException')
 
-tasks.register("TestCpuFeatures", JavaExec) {
-    classpath sourceSets.main.runtimeClasspath
-    description = 'Runs the TestCpuFeatures example app.'
-    mainClass = 'electrostatic4j.snaploader.examples.TestCpuFeatures'
-}
-
-tasks.register("MonitorableExample") {
-    application.mainClass = 'electrostatic4j.snaploader.examples.MonitorableExample'
-}
-
-tasks.register("ReflectiveLauncher") {
-    application.mainClass = 'electrostatic4j.snaploader.examples.ReflectiveLauncher'
-}
-
-tasks.register("TestMultipleLoads") {
-    application.mainClass = 'electrostatic4j.snaploader.examples.TestMultipleLoads'
-}
-
-tasks.register("TestZipExtractor") {
-    application.mainClass = 'electrostatic4j.snaploader.examples.TestZipExtractor'
-}
-
-tasks.register("TestMultiThreading") {
-    application.mainClass = 'electrostatic4j.snaploader.examples.TestMultiThreading'
-}
-
-tasks.register("TestRetryExhaustionException") {
-    application.mainClass = 'electrostatic4j.snaploader.examples.TestRetryExhaustionException'
-}
-
-task copyLibs(type: Copy) {
-    from (libsDir) {
+// Updated: Changed legacy "task name(type: Copy)" layout to modern "tasks.register" syntax
+tasks.register("copyLibs", Copy) {
+    from(libsDir) {
         include '**/*.jar'
     }
     into(dependenciesDir)
     includeEmptyDirs = false
-    setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-/** Assembles a jar file with a class-path loading the dependencies and a main-class */
-task createJar(type : Jar, dependsOn : copyLibs){
-    //get the copied jars
-    String dependenciesString = ""
-    final File dependencies = new File(dependenciesDir)
-    if(dependencies.exists()) {
-        if (dependencies.listFiles().length > 0) {
-            final File[] files = dependencies.listFiles()
-            for (int i = 0; i < files.length; i++) {
-                final String fileName = files[i].getName()
-                if (fileName.contains(".jar")) {
-                    /** All zip paths are unix paths; so no need to the file system specific separator */
-                    dependenciesString += "dependencies/" + fileName + " "
+// Updated: Changed legacy task declaration and moved imperative file-system reading
+// inside "doFirst" block to make it fully compatible with Gradle 9+ Configuration Caching.
+tasks.register("createJar", Jar) {
+    dependsOn(tasks.named('copyLibs'))
+
+    // Mixin the base jar behaviors cleanly using modern named task mapping
+    from(sourceSets.main.output)
+
+    doFirst {
+        String dependenciesString = ""
+        File dependenciesFolder = new File(dependenciesDir)
+        if (dependenciesFolder.exists()) {
+            File[] files = dependenciesFolder.listFiles()
+            if (files != null && files.length > 0) {
+                for (File file : files) {
+                    String fileName = file.getName()
+                    if (fileName.endsWith(".jar")) {
+                        dependenciesString += "dependencies/" + fileName + " "
+                    }
                 }
             }
         }
-    }
 
-    manifest {
-        attributes 'Project': 'snaploader-examples',
-                'Automatic-Module-Name': "${project.name.replace("-", ".")}",
-                'Compiled-by': JavaVersion.current(),
-                'Class-Path': dependenciesString,
-                'Main-Class': application.mainClass
+        manifest {
+            attributes 'Project': 'snaploader-examples',
+                    'Automatic-Module-Name': project.name.replace("-", "."),
+                    'Compiled-by': JavaVersion.current(),
+                    'Class-Path': dependenciesString.trim(),
+                    'Main-Class': application.mainClass.get()
+        }
     }
-    with jar
 }
 
-
 dependencies {
-    implementation project(path: ':snaploader')
+    implementation project(':snaploader')
     implementation 'org.apache.logging.log4j:log4j-slf4j2-impl:2.24.3'
 
     implementation 'com.github.stephengold:jolt-jni-Linux64:0.9.7'
