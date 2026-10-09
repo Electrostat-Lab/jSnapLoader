@@ -8,6 +8,7 @@ def dependenciesDir = layout.buildDirectory.dir("libs/dependencies").get().asFil
 def libsDir = project(':snaploader').layout.buildDirectory.dir("libs").get().asFile.absolutePath
 
 application {
+    mainModule.set('electrostatic4j.snaploader.examples')
     // Updated: In Gradle 9+, mainClass is a lazy Property and should be assigned cleanly
     mainClass.set('electrostatic4j.snaploader.examples.TestBasicFeatures')
 }

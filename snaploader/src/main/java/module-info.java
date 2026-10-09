@@ -1,4 +1,4 @@
-module com.electrostat.snaploader {
+module electrostatic4j.snaploader {
     requires java.logging;
     requires java.base;
     requires com.github.oshi;
