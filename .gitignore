@@ -13,3 +13,5 @@ apache-maven-3.9.3
 apache-maven-3.9.3-bin.tar.gz
 
 snaploader-examples/libs
+
+local.properties

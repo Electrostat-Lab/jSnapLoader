@@ -4,16 +4,17 @@ plugins {
 
 android {
     namespace 'electrostat.lab.snaploaderapp'
-    compileSdk 34
+    compileSdk 37
 
     defaultConfig {
         applicationId "electrostat.lab.snaploaderapp"
         minSdk 24
-        targetSdk 34
+        targetSdk 35
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        // Updated from deprecated android.support.test to androidx.test
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -23,34 +24,35 @@ android {
         }
     }
     compileOptions {
+        // Gradle 9/10 require modern Java versions (Java 17 or Java 21) for the build environment,
+        // but you can still target Java 8 or Java 11 for Android compatibility.
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    packagingOptions {
-        exclude 'META-INF/AL2.0'
-        exclude 'META-INF/LGPL2.1'
+
+    // Updated: packagingOptions is deprecated and removed in AGP 9.0+. Use packaging instead.
+    packaging {
+        resources {
+            excludes += '/META-INF/AL2.0'
+            excludes += '/META-INF/LGPL2.1'
+        }
     }
 }
 
 dependencies {
-
-    implementation (project(path: ':snaploader')) {
+    // Updated: Changed the deprecated/removed syntax of project exclusions to the modern lazy configuration layout
+    implementation(project(':snaploader')) {
         exclude group: 'com.github.oshi', module: 'oshi-core'
     }
 
-    implementation 'net.java.dev.jna:jna:5.16.0@aar'
-
-//    implementation (project(path: ':snaploader-examples')) {
-//        exclude group: 'com.github.oshi', module: 'oshi-core'
-//        exclude group: 'io.github.software-hardware-codesign', module: 'jme3-alloc-desktop'
-//    }
+    implementation 'net.java.dev.jna:jna:5.19.1@aar'
 
     implementation 'io.github.software-hardware-codesign:jme3-alloc-android:1.0.0-pre-gamma-2'
 
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.8.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.appcompat:appcompat:1.8.0'
+    implementation 'com.google.android.material:material:1.14.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.2'
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.3.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
 }
