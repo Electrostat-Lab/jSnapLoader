@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, The Electrostatic-Sandbox Distributed Simulation Framework, jSnapLoader
+ * Copyright (c) 2023-2026, The Electrostatic-Sandbox Distributed Simulation Framework, jSnapLoader
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -142,11 +142,11 @@ public class FileLocator implements ZipStreamProvider {
             try {
                 close();
             } catch (IOException ex) {
-                throw new FilesystemResourceScavengingException("File locator resources closure failed!", ex);
+                throw new FilesystemResourceScavengingException("File locator resources closure failed #" + getHashKey(), ex);
             }
             // fire the failure listener when file localization fails and pass
             // the causative exception
-            throw new FilesystemResourceInitializationException("File locator initialization failed!", e);
+            throw new FilesystemResourceInitializationException("File locator initialization failed #" + getHashKey(), e);
         }
     }
 

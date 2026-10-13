@@ -16,4 +16,4 @@ generateGenericPom ${groupId} ${desktop_artifactId_release} ${version} "${deskto
 cat "${desktop_pomFile}"
 
 # publish 'android' and 'desktop' builds to maven sonatype
-publishBuild "${desktop_artifactId_release}" "${desktop_artifact}" "${version}" "${javadoc_jar}" "${sources_jar}" "${desktop_pomFile}"
+publishBuild "${groupId}" "${desktop_artifactId_release}" "${desktop_artifact}" "${version}" "${javadoc_jar}" "${sources_jar}" "${desktop_pomFile}"

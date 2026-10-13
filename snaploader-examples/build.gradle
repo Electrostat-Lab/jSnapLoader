@@ -87,3 +87,8 @@ dependencies {
     runtimeOnly 'com.github.stephengold:jolt-jni-Windows64_avx2:6.1.1:DebugSp'
     runtimeOnly 'io.github.software-hardware-codesign:jme3-alloc-desktop:1.0.0-pre-gamma-2'
 }
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}

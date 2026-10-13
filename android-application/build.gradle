@@ -26,8 +26,8 @@ android {
     compileOptions {
         // Gradle 9/10 require modern Java versions (Java 17 or Java 21) for the build environment,
         // but you can still target Java 8 or Java 11 for Android compatibility.
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_1_9
+        targetCompatibility = JavaVersion.VERSION_1_9
     }
 
     // Updated: packagingOptions is deprecated and removed in AGP 9.0+. Use packaging instead.

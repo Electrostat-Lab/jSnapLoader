@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, The Electrostatic-Sandbox Distributed Simulation Framework, jSnapLoader
+ * Copyright (c) 2023-2026, The Electrostatic-Sandbox Distributed Simulation Framework, jSnapLoader
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -171,9 +171,10 @@ public class FileExtractor implements OutputStreamProvider {
             try {
                 close();
             } catch (Exception ex) {
-                throw new FilesystemResourceScavengingException();
+                throw new FilesystemResourceScavengingException(
+                        "Failed to close the file extractor handler #" + getHashKey(), e);
             }
-            throw new FileExtractionProcessingException("", e);
+            throw new FileExtractionProcessingException("Error while extracting the file #" + getHashKey(), e);
         // release the native resources anyway!
         } finally {
             if (fileExtractionListener != null) {
