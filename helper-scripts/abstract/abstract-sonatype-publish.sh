@@ -40,23 +40,39 @@ function generateGenericPom() {
 }
 
 function publishBuild() {
-    local artifactId=$1
-    local artifact=$2
-    local version=$3
-    local javadoc_jar=$4
-    local sources_jar=$5
-    local pomFile=$6
+    local groupId="$1"
+    local artifactId="$2"
+    local artifact="$3"
+    local version="$4"
+    local javadoc_jar="$5"
+    local sources_jar="$6"
+    local pomFile="$7"
 
-    ${maven_bin} gpg:sign-and-deploy-file -s ${settings} -Durl=${sonatype_url} \
-                                                         -DartifactId=${artifactId} \
-                                                         -DrepositoryId=${repository} \
-                                                         -Dversion=${version} \
-                                                         -DpomFile=${pomFile} \
-                                                         -Dgpg.passphrase=${passphrase} \
-                                                         -Dfile=${artifact} \
-                                                         -Djavadoc=${javadoc_jar} \
-                                                         -Dsources=${sources_jar} 
+    : "${CENTRAL_TOKEN_USERNAME:?Missing Central token username}"
+    : "${CENTRAL_TOKEN_PASSWORD:?Missing Central token password}"
 
+    # Upload and sign the main JAR, sources, Javadoc, and POM.
+    "${maven_bin}" gpg:sign-and-deploy-file \
+        -s "${settings}" \
+        -Durl="${sonatype_url}" \
+        -DgroupId="${groupId}" \
+        -DartifactId="${artifactId}" \
+        -Dversion="${version}" \
+        -DrepositoryId="${repository}" \
+        -DpomFile="${pomFile}" \
+        -Dfile="${artifact}" \
+        -Djavadoc="${javadoc_jar}" \
+        -Dsources="${sources_jar}" \
+        -Dgpg.passphrase="${passphrase}" || return $?
 
-    return $?
+    # Transfer the uploaded deployment to the Central Publisher Portal.
+    local token
+    token=$(printf '%s:%s' \
+        "${CENTRAL_TOKEN_USERNAME}" \
+        "${CENTRAL_TOKEN_PASSWORD}" | base64 | tr -d '\n') || return $?
+
+    curl --fail-with-body --silent --show-error \
+        --request POST \
+        --header "Authorization: Bearer ${token}" \
+        "https://ossrh-staging-api.central.sonatype.com/manual/upload/defaultRepository/${groupId}?publishing_type=user_managed"
 }

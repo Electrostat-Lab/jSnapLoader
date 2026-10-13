@@ -2,8 +2,8 @@
 
 # Maven sonatype stuff
 # ---------------------
-sonatype_url="https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-repository="ossrh"
+sonatype_url="https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/"
+repository="central"
 groupId="io.github.electrostat-lab"
 maven_version="3.9.4"
 maven_bin="./apache-maven-$maven_version/bin/mvn"
