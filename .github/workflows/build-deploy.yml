@@ -102,8 +102,8 @@ jobs:
                 
             - name: Deploying snaploader binaries
               env:
-                OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-                OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+                CENTRAL_TOKEN_USERNAME: ${{ secrets.CENTRAL_TOKEN_USERNAME }}
+                CENTRAL_TOKEN_PASSWORD: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
               run: | 
                 chmod +rwx ./helper-scripts/project-impl/publishing/sonatype-publish-artifacts.sh 
                 # publish artifacts using the tag version
