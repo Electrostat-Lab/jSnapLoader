@@ -84,11 +84,14 @@ public enum NativeVariant {
      */
     JVM(System.getProperty("java.vm.name"));
     
-    private static final String Linux = "Linux";
-    private static final String Windows = "Windows";
-    private static final String Mac = "Mac";
-    private static final String WebOs = "WebOs";
-    private static final String Dalvik = "Dalvik";
+    private static final String Linux = "linux";
+    private static final String Windows = "windows";
+    private static final String Mac = "mac";
+    private static final String WebOs = "webos";
+    private static final String Web0s = "web0s";
+    private static final String Ios = "ios";
+    private static final String Iphone = "iphone";
+    private static final String Dalvik = "dalvik";
 
     private final String property;
 
@@ -156,7 +159,9 @@ public enum NativeVariant {
          * @return true if web-os; false otherwise. Current value is constantly false.
          */
         public static boolean isWebOs() {
-            return false;
+            return NativeVariant.OS_NAME.getProperty()
+                    .contains(NativeVariant.WebOs) || NativeVariant.OS_NAME.getProperty()
+                    .contains(NativeVariant.Web0s);
         }
 
         /**
@@ -166,7 +171,8 @@ public enum NativeVariant {
          * @return true if iOS; false otherwise. Current value is constantly false.
          */
         public static boolean isIos() {
-            return false;
+            return NativeVariant.OS_NAME.getProperty()
+                    .contains(NativeVariant.Ios) || NativeVariant.OS_NAME.getProperty().contains(NativeVariant.Iphone);
         }
     }
 
@@ -303,6 +309,15 @@ public enum NativeVariant {
         }
 
         /**
+         * Tests whether the current CPU vendor is a Loongson vendor (i.e., an independent Chinese vendor).
+         *
+         * @return true if the current CPU vendor is a Loongson vendor.
+         */
+        public static boolean isLoongArch() {
+            return OS_ARCH.getProperty().contains("loong");
+        }
+
+        /**
          * Reads named CPU features from the OSHI library and parses them into
          * words. If system commands are executed, this might be an expensive
          * operation.
@@ -411,11 +426,11 @@ public enum NativeVariant {
     }
 
     /**
-     * Retrieves the data of this native variant property.
+     * Retrieves the data of this native variant property in a lowercase style.
      * 
      * @return the specified property object in a string format.
      */
     public String getProperty() {
-        return property;
+        return property.toLowerCase();
     }
 }

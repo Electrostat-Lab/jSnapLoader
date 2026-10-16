@@ -34,7 +34,7 @@ jobs:
           uses: actions/setup-java@v3
           with:
             distribution: 'temurin' 
-            java-version: '19'
+            java-version: '27'
 
         - name: Compiling java
           run: ./gradlew --console="verbose" -Pversion=${GITHUB_REF_NAME} :snaploader:build
@@ -65,7 +65,7 @@ jobs:
               uses: actions/setup-java@v3
               with:
                 distribution: 'temurin' 
-                java-version: '19'
+                java-version: '27'
 
             - name: Setup maven-3.9
               run: | 

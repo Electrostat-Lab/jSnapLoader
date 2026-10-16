@@ -82,6 +82,12 @@ public final class PlatformPredicate {
     public static final PlatformPredicate LINUX_RISC_V_64 = new PlatformPredicate(NativeVariant.Os.isLinux() && NativeVariant.Cpu.isRiscV() && NativeVariant.Cpu.is64());
 
     /**
+     * Alias object for Linux on Loongson Arch 64 Chipset; a Chinese RISC microprocessor.
+     */
+    public static final PlatformPredicate LINUX_LOONGARCH_64 = new PlatformPredicate(NativeVariant.Os.isDesktop() &&
+            NativeVariant.Os.isLinux() && NativeVariant.Cpu.isLoongArch() && NativeVariant.Cpu.is64());
+
+    /**
      * Alias object for MacOSX on X86 Chipset.
      */
     public static final PlatformPredicate MACOS_X86 = new PlatformPredicate(NativeVariant.Os.isMac() && NativeVariant.Cpu.isX86());
