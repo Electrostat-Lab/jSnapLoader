@@ -303,6 +303,15 @@ public enum NativeVariant {
         }
 
         /**
+         * Tests whether the current CPU vendor is a Loongson vendor (i.e., an independent Chinese vendor).
+         *
+         * @return true if the current CPU vendor is a Loongson vendor.
+         */
+        public static boolean isLoongArch() {
+            return OS_ARCH.getProperty().contains("loong");
+        }
+
+        /**
          * Reads named CPU features from the OSHI library and parses them into
          * words. If system commands are executed, this might be an expensive
          * operation.
