@@ -51,7 +51,7 @@ BUILD SUCCESSFUL in 1s
 [build.gradle]
 ```groovy
 dependencies {
-    implementation "io.github.electrostat-lab:snaploader:1.1.1-stable"
+    implementation "io.github.electrostat-lab:snaploader:${latest-version}"
 }
 ```
 [settings.gradle]
